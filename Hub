@@ -1,562 +1,413 @@
--- Mila UI - Cute Roblox
+-- Mila UI Script for Roblox
+-- Tạo bởi: Mila
+-- Tính năng: Speed, Jump, Fly, Noclip, Teleport, Invisible
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
-local rootPart = character:WaitForChild("HumanoidRootPart")
 
--- Biến trạng thái
-local flyEnabled = false
-local speedEnabled = false
-local jumpEnabled = false
-local noclipEnabled = false
-local invisibleEnabled = false
-local infiniteJumpEnabled = false
+-- Variables
+local flying = false
+local noclip = false
+local invisible = false
+local originalWalkSpeed = 16
+local originalJumpPower = 50
 
-local flySpeed = 50
-local walkSpeed = 100
-local jumpPower = 120
-
--- Tạo ScreenGui chính
+-- UI Creation
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "MilaUI"
-screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.Parent = CoreGui
 screenGui.ResetOnSpawn = false
 
--- Frame chính với thiết kế cute
+-- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 350, 0, 450)
-mainFrame.Position = UDim2.new(0.5, -175, 0.5, -225)
-mainFrame.BackgroundColor3 = Color3.fromRGB(255, 182, 193) -- Màu hồng cute
+mainFrame.Size = UDim2.new(0, 300, 0, 200)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+mainFrame.BackgroundColor3 = Color3.new(1, 0.8, 0.9) -- Light pink
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 mainFrame.Draggable = true
 mainFrame.Parent = screenGui
 
--- Bo góc cho frame chính
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 20)
-mainCorner.Parent = mainFrame
+-- Round corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 15)
+corner.Parent = mainFrame
 
--- Gradient cho frame chính
+-- Gradient
 local gradient = Instance.new("UIGradient")
 gradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 182, 193)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 218, 255))
+    ColorSequenceKeypoint.new(0, Color3.new(1, 0.7, 0.9)),
+    ColorSequenceKeypoint.new(1, Color3.new(0.9, 0.8, 1))
 }
 gradient.Rotation = 45
 gradient.Parent = mainFrame
 
--- Header với tên Mila
-local header = Instance.new("TextLabel")
-header.Name = "Header"
-header.Size = UDim2.new(1, 0, 0, 50)
-header.Position = UDim2.new(0, 0, 0, 0)
-header.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
-header.BorderSizePixel = 0
-header.Text = "💖 Mila UI 💖"
-header.TextColor3 = Color3.fromRGB(255, 255, 255)
-header.TextScaled = true
-header.Font = Enum.Font.GothamBold
-header.Parent = mainFrame
+-- Title
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "💖 Mila UI 💖"
+title.TextColor3 = Color3.new(0.5, 0, 0.5)
+title.TextSize = 18
+title.Font = Enum.Font.GothamBold
+title.Parent = mainFrame
 
-local headerCorner = Instance.new("UICorner")
-headerCorner.CornerRadius = UDim.new(0, 20)
-headerCorner.Parent = header
-
--- Nút đóng
+-- Close Button
 local closeButton = Instance.new("TextButton")
 closeButton.Name = "CloseButton"
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -40, 0, 10)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 69, 0)
-closeButton.BorderSizePixel = 0
+closeButton.Size = UDim2.new(0, 25, 0, 25)
+closeButton.Position = UDim2.new(1, -30, 0, 5)
+closeButton.BackgroundColor3 = Color3.new(1, 0.5, 0.5)
 closeButton.Text = "✕"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.TextScaled = true
+closeButton.TextColor3 = Color3.new(1, 1, 1)
+closeButton.TextSize = 14
 closeButton.Font = Enum.Font.GothamBold
-closeButton.Parent = header
+closeButton.Parent = mainFrame
 
 local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 15)
+closeCorner.CornerRadius = UDim.new(0, 12)
 closeCorner.Parent = closeButton
 
--- ScrollingFrame cho các nút
-local scrollFrame = Instance.new("ScrollingFrame")
-scrollFrame.Name = "ScrollFrame"
-scrollFrame.Size = UDim2.new(1, -20, 1, -70)
-scrollFrame.Position = UDim2.new(0, 10, 0, 60)
-scrollFrame.BackgroundTransparency = 1
-scrollFrame.BorderSizePixel = 0
-scrollFrame.ScrollBarThickness = 8
-scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 600)
-scrollFrame.Parent = mainFrame
+-- Toggle Button (when closed)
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 80, 0, 30)
+toggleButton.Position = UDim2.new(0, 10, 0, 10)
+toggleButton.BackgroundColor3 = Color3.new(1, 0.8, 0.9)
+toggleButton.Text = "Mila 💖"
+toggleButton.TextColor3 = Color3.new(0.5, 0, 0.5)
+toggleButton.TextSize = 12
+toggleButton.Font = Enum.Font.Gotham
+toggleButton.Visible = false
+toggleButton.Parent = screenGui
 
--- UIListLayout cho scroll frame
-local listLayout = Instance.new("UIListLayout")
-listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-listLayout.Padding = UDim.new(0, 10)
-listLayout.Parent = scrollFrame
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 10)
+toggleCorner.Parent = toggleButton
 
--- Hàm tạo nút cute
-local function createCuteButton(name, text, emoji, callback)
+-- Content Frame
+local contentFrame = Instance.new("ScrollingFrame")
+contentFrame.Name = "ContentFrame"
+contentFrame.Size = UDim2.new(1, -20, 1, -40)
+contentFrame.Position = UDim2.new(0, 10, 0, 35)
+contentFrame.BackgroundTransparency = 1
+contentFrame.ScrollBarThickness = 6
+contentFrame.CanvasSize = UDim2.new(0, 0, 0, 300)
+contentFrame.Parent = mainFrame
+
+-- Button Creation Function
+local function createButton(name, text, position, callback)
     local button = Instance.new("TextButton")
     button.Name = name
-    button.Size = UDim2.new(1, -20, 0, 45)
-    button.BackgroundColor3 = Color3.fromRGB(255, 240, 245)
-    button.BorderSizePixel = 0
-    button.Text = emoji .. " " .. text
-    button.TextColor3 = Color3.fromRGB(139, 69, 19)
-    button.TextScaled = true
+    button.Size = UDim2.new(0, 120, 0, 30)
+    button.Position = position
+    button.BackgroundColor3 = Color3.new(0.9, 0.7, 0.9)
+    button.Text = text
+    button.TextColor3 = Color3.new(0.3, 0, 0.3)
+    button.TextSize = 12
     button.Font = Enum.Font.Gotham
-    button.Parent = scrollFrame
+    button.Parent = contentFrame
     
     local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 15)
+    buttonCorner.CornerRadius = UDim.new(0, 8)
     buttonCorner.Parent = button
     
-    -- Hiệu ứng hover
+    button.MouseButton1Click:Connect(callback)
+    
+    -- Hover effect
     button.MouseEnter:Connect(function()
-        local tween = TweenService:Create(button, 
-            TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
-            {BackgroundColor3 = Color3.fromRGB(255, 192, 203)}
-        )
-        tween:Play()
+        button.BackgroundColor3 = Color3.new(1, 0.8, 1)
     end)
     
     button.MouseLeave:Connect(function()
-        local tween = TweenService:Create(button, 
-            TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
-            {BackgroundColor3 = Color3.fromRGB(255, 240, 245)}
-        )
-        tween:Play()
+        button.BackgroundColor3 = Color3.new(0.9, 0.7, 0.9)
     end)
     
-    button.MouseButton1Click:Connect(callback)
     return button
 end
 
--- Hàm Speed Hack
-local function toggleSpeed()
-    speedEnabled = not speedEnabled
-    if speedEnabled then
-        humanoid.WalkSpeed = walkSpeed
-    else
-        humanoid.WalkSpeed = 16
+-- Speed Slider
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(1, 0, 0, 20)
+speedLabel.Position = UDim2.new(0, 0, 0, 160)
+speedLabel.BackgroundTransparency = 1
+speedLabel.Text = "Speed: 16"
+speedLabel.TextColor3 = Color3.new(0.3, 0, 0.3)
+speedLabel.TextSize = 12
+speedLabel.Font = Enum.Font.Gotham
+speedLabel.Parent = contentFrame
+
+local speedSlider = Instance.new("TextBox")
+speedSlider.Size = UDim2.new(0, 100, 0, 25)
+speedSlider.Position = UDim2.new(0, 10, 0, 180)
+speedSlider.BackgroundColor3 = Color3.new(1, 1, 1)
+speedSlider.Text = "16"
+speedSlider.TextColor3 = Color3.new(0, 0, 0)
+speedSlider.TextSize = 12
+speedSlider.Parent = contentFrame
+
+local sliderCorner = Instance.new("UICorner")
+sliderCorner.CornerRadius = UDim.new(0, 5)
+sliderCorner.Parent = speedSlider
+
+-- Jump Height Slider
+local jumpLabel = Instance.new("TextLabel")
+jumpLabel.Size = UDim2.new(1, 0, 0, 20)
+jumpLabel.Position = UDim2.new(0, 0, 0, 210)
+jumpLabel.BackgroundTransparency = 1
+jumpLabel.Text = "Jump: 50"
+jumpLabel.TextColor3 = Color3.new(0.3, 0, 0.3)
+jumpLabel.TextSize = 12
+jumpLabel.Font = Enum.Font.Gotham
+jumpLabel.Parent = contentFrame
+
+local jumpSlider = Instance.new("TextBox")
+jumpSlider.Size = UDim2.new(0, 100, 0, 25)
+jumpSlider.Position = UDim2.new(0, 10, 0, 230)
+jumpSlider.BackgroundColor3 = Color3.new(1, 1, 1)
+jumpSlider.Text = "50"
+jumpSlider.TextColor3 = Color3.new(0, 0, 0)
+jumpSlider.TextSize = 12
+jumpSlider.Parent = contentFrame
+
+local jumpCorner = Instance.new("UICorner")
+jumpCorner.CornerRadius = UDim.new(0, 5)
+jumpCorner.Parent = jumpSlider
+
+-- Player List for Teleport
+local playerList = Instance.new("ScrollingFrame")
+playerList.Name = "PlayerList"
+playerList.Size = UDim2.new(0, 120, 0, 80)
+playerList.Position = UDim2.new(0, 150, 0, 80)
+playerList.BackgroundColor3 = Color3.new(1, 1, 1)
+playerList.ScrollBarThickness = 4
+playerList.Visible = false
+playerList.Parent = contentFrame
+
+local listCorner = Instance.new("UICorner")
+listCorner.CornerRadius = UDim.new(0, 8)
+listCorner.Parent = playerList
+
+local listLayout = Instance.new("UIListLayout")
+listLayout.Parent = playerList
+
+-- Functions
+local function updatePlayerList()
+    for _, child in pairs(playerList:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
     end
+    
+    for _, targetPlayer in pairs(Players:GetPlayers()) do
+        if targetPlayer ~= player then
+            local playerButton = Instance.new("TextButton")
+            playerButton.Size = UDim2.new(1, 0, 0, 25)
+            playerButton.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
+            playerButton.Text = targetPlayer.Name
+            playerButton.TextSize = 10
+            playerButton.Parent = playerList
+            
+            playerButton.MouseButton1Click:Connect(function()
+                if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+                end
+                playerList.Visible = false
+            end)
+        end
+    end
+    
+    playerList.CanvasSize = UDim2.new(0, 0, 0, #Players:GetPlayers() * 25)
 end
 
--- Hàm Jump Hack
-local function toggleJump()
-    jumpEnabled = not jumpEnabled
-    if jumpEnabled then
-        humanoid.JumpPower = jumpPower
-    else
-        humanoid.JumpPower = 50
-    end
-end
-
--- Hàm Fly
-local bodyVelocity
 local function toggleFly()
-    flyEnabled = not flyEnabled
-    if flyEnabled then
-        bodyVelocity = Instance.new("BodyVelocity")
+    flying = not flying
+    if flying then
+        local bodyVelocity = Instance.new("BodyVelocity")
         bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
         bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-        bodyVelocity.Parent = rootPart
+        bodyVelocity.Parent = character.HumanoidRootPart
         
-        -- Điều khiển bay
-        local flyConnection
-        flyConnection = RunService.Heartbeat:Connect(function()
-            if not flyEnabled then
-                flyConnection:Disconnect()
+        local connection
+        connection = RunService.Heartbeat:Connect(function()
+            if not flying then
+                bodyVelocity:Destroy()
+                connection:Disconnect()
                 return
             end
             
-            local moveVector = humanoid.MoveDirection
-            local lookVector = Workspace.CurrentCamera.CFrame.LookVector
-            local rightVector = Workspace.CurrentCamera.CFrame.RightVector
+            local moveDirection = humanoid.MoveDirection
+            local camera = workspace.CurrentCamera
+            local cameraCFrame = camera.CFrame
             
             local velocity = Vector3.new(0, 0, 0)
             
             if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                velocity = velocity + (lookVector * flySpeed)
+                velocity = velocity + cameraCFrame.LookVector
             end
             if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                velocity = velocity - (lookVector * flySpeed)
+                velocity = velocity - cameraCFrame.LookVector
             end
             if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                velocity = velocity - (rightVector * flySpeed)
+                velocity = velocity - cameraCFrame.RightVector
             end
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                velocity = velocity + (rightVector * flySpeed)
+                velocity = velocity + cameraCFrame.RightVector
             end
             if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-                velocity = velocity + Vector3.new(0, flySpeed, 0)
+                velocity = velocity + Vector3.new(0, 1, 0)
             end
             if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
-                velocity = velocity - Vector3.new(0, flySpeed, 0)
+                velocity = velocity - Vector3.new(0, 1, 0)
             end
             
-            bodyVelocity.Velocity = velocity
-        end)
-    else
-        if bodyVelocity then
-            bodyVelocity:Destroy()
-            bodyVelocity = nil
-        end
-    end
-end
-
--- Hàm Infinite Jump
-local function toggleInfiniteJump()
-    infiniteJumpEnabled = not infiniteJumpEnabled
-    if infiniteJumpEnabled then
-        UserInputService.JumpRequest:Connect(function()
-            if infiniteJumpEnabled then
-                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-            end
+            bodyVelocity.Velocity = velocity * 50
         end)
     end
 end
 
--- Hàm Noclip
-local noclipConnection
 local function toggleNoclip()
-    noclipEnabled = not noclipEnabled
-    if noclipEnabled then
-        noclipConnection = RunService.Stepped:Connect(function()
-            if character and noclipEnabled then
-                for _, part in pairs(character:GetChildren()) do
-                    if part:IsA("BasePart") then
-                        part.CanCollide = false
-                    end
+    noclip = not noclip
+    if noclip then
+        local connection
+        connection = RunService.Stepped:Connect(function()
+            if not noclip then
+                connection:Disconnect()
+                return
+            end
+            for _, part in pairs(character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
                 end
             end
         end)
     else
-        if noclipConnection then
-            noclipConnection:Disconnect()
-        end
-        if character then
-            for _, part in pairs(character:GetChildren()) do
-                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                    part.CanCollide = true
-                end
-            end
-        end
-    end
-end
-
--- Hàm Invisibility
-local function toggleInvisibility()
-    invisibleEnabled = not invisibleEnabled
-    if character then
-        for _, part in pairs(character:GetChildren()) do
-            if part:IsA("BasePart") then
-                part.Transparency = invisibleEnabled and 1 or 0
-            elseif part:IsA("Accessory") then
-                for _, accessoryPart in pairs(part:GetChildren()) do
-                    if accessoryPart:IsA("BasePart") then
-                        accessoryPart.Transparency = invisibleEnabled and 1 or 0
-                    end
-                end
-            end
-        end
-        -- Giữ lại head để nhìn thấy
-        if character:FindFirstChild("Head") then
-            character.Head.Transparency = invisibleEnabled and 0.5 or 0
-        end
-    end
-end
-
--- Hàm Teleport to Player
-local function teleportToPlayer()
-    local targetPlayerName = ""
-    
-    -- Tạo input dialog đơn giản
-    local inputFrame = Instance.new("Frame")
-    inputFrame.Size = UDim2.new(0, 300, 0, 150)
-    inputFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
-    inputFrame.BackgroundColor3 = Color3.fromRGB(255, 240, 245)
-    inputFrame.BorderSizePixel = 0
-    inputFrame.Parent = screenGui
-    
-    local inputCorner = Instance.new("UICorner")
-    inputCorner.CornerRadius = UDim.new(0, 15)
-    inputCorner.Parent = inputFrame
-    
-    local inputLabel = Instance.new("TextLabel")
-    inputLabel.Size = UDim2.new(1, 0, 0, 40)
-    inputLabel.BackgroundTransparency = 1
-    inputLabel.Text = "Nhập tên người chơi:"
-    inputLabel.TextColor3 = Color3.fromRGB(139, 69, 19)
-    inputLabel.TextScaled = true
-    inputLabel.Font = Enum.Font.Gotham
-    inputLabel.Parent = inputFrame
-    
-    local textBox = Instance.new("TextBox")
-    textBox.Size = UDim2.new(1, -20, 0, 30)
-    textBox.Position = UDim2.new(0, 10, 0, 50)
-    textBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    textBox.BorderSizePixel = 0
-    textBox.PlaceholderText = "Tên người chơi..."
-    textBox.Text = ""
-    textBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-    textBox.TextScaled = true
-    textBox.Font = Enum.Font.Gotham
-    textBox.Parent = inputFrame
-    
-    local textBoxCorner = Instance.new("UICorner")
-    textBoxCorner.CornerRadius = UDim.new(0, 8)
-    textBoxCorner.Parent = textBox
-    
-    local confirmButton = Instance.new("TextButton")
-    confirmButton.Size = UDim2.new(0, 80, 0, 30)
-    confirmButton.Position = UDim2.new(0, 10, 0, 100)
-    confirmButton.BackgroundColor3 = Color3.fromRGB(144, 238, 144)
-    confirmButton.BorderSizePixel = 0
-    confirmButton.Text = "✓ OK"
-    confirmButton.TextColor3 = Color3.fromRGB(0, 100, 0)
-    confirmButton.TextScaled = true
-    confirmButton.Font = Enum.Font.GothamBold
-    confirmButton.Parent = inputFrame
-    
-    local confirmCorner = Instance.new("UICorner")
-    confirmCorner.CornerRadius = UDim.new(0, 8)
-    confirmCorner.Parent = confirmButton
-    
-    local cancelButton = Instance.new("TextButton")
-    cancelButton.Size = UDim2.new(0, 80, 0, 30)
-    cancelButton.Position = UDim2.new(1, -90, 0, 100)
-    cancelButton.BackgroundColor3 = Color3.fromRGB(255, 160, 160)
-    cancelButton.BorderSizePixel = 0
-    cancelButton.Text = "✕ Hủy"
-    cancelButton.TextColor3 = Color3.fromRGB(139, 0, 0)
-    cancelButton.TextScaled = true
-    cancelButton.Font = Enum.Font.GothamBold
-    cancelButton.Parent = inputFrame
-    
-    local cancelCorner = Instance.new("UICorner")
-    cancelCorner.CornerRadius = UDim.new(0, 8)
-    cancelCorner.Parent = cancelButton
-    
-    confirmButton.MouseButton1Click:Connect(function()
-        local targetName = textBox.Text
-        local targetPlayer = nil
-        
-        for _, p in pairs(Players:GetPlayers()) do
-            if string.lower(p.Name):find(string.lower(targetName)) or 
-               string.lower(p.DisplayName):find(string.lower(targetName)) then
-                targetPlayer = p
-                break
-            end
-        end
-        
-        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            rootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
-        end
-        
-        inputFrame:Destroy()
-    end)
-    
-    cancelButton.MouseButton1Click:Connect(function()
-        inputFrame:Destroy()
-    end)
-end
-
--- Tạo các nút chức năng
-createCuteButton("SpeedButton", "Chạy Nhanh", "🏃‍♀️", toggleSpeed)
-createCuteButton("JumpButton", "Nhảy Cao", "🦘", toggleJump)
-createCuteButton("FlyButton", "Bay", "🦋", toggleFly)
-createCuteButton("InfiniteJumpButton", "Vô Hạn Nhảy", "🌟", toggleInfiniteJump)
-createCuteButton("NoclipButton", "Xuyên Tường", "👻", toggleNoclip)
-createCuteButton("InvisibilityButton", "Tàng Hình", "🌙", toggleInvisibility)
-createCuteButton("TeleportButton", "Dịch Chuyển", "✨", teleportToPlayer)
-
--- Slider cho các giá trị
-local function createSlider(name, text, minVal, maxVal, defaultVal, callback)
-    local sliderFrame = Instance.new("Frame")
-    sliderFrame.Name = name .. "Frame"
-    sliderFrame.Size = UDim2.new(1, -20, 0, 60)
-    sliderFrame.BackgroundColor3 = Color3.fromRGB(255, 248, 220)
-    sliderFrame.BorderSizePixel = 0
-    sliderFrame.Parent = scrollFrame
-    
-    local sliderCorner = Instance.new("UICorner")
-    sliderCorner.CornerRadius = UDim.new(0, 10)
-    sliderCorner.Parent = sliderFrame
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 0, 25)
-    label.BackgroundTransparency = 1
-    label.Text = text .. ": " .. defaultVal
-    label.TextColor3 = Color3.fromRGB(139, 69, 19)
-    label.TextScaled = true
-    label.Font = Enum.Font.Gotham
-    label.Parent = sliderFrame
-    
-    local slider = Instance.new("TextButton")
-    slider.Size = UDim2.new(1, -20, 0, 20)
-    slider.Position = UDim2.new(0, 10, 0, 30)
-    slider.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
-    slider.BorderSizePixel = 0
-    slider.Text = ""
-    slider.Parent = sliderFrame
-    
-    local sliderBg = Instance.new("UICorner")
-    sliderBg.CornerRadius = UDim.new(0, 10)
-    sliderBg.Parent = slider
-    
-    local knob = Instance.new("Frame")
-    knob.Size = UDim2.new(0, 20, 1, 0)
-    knob.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
-    knob.BorderSizePixel = 0
-    knob.Parent = slider
-    
-    local knobCorner = Instance.new("UICorner")
-    knobCorner.CornerRadius = UDim.new(0, 10)
-    knobCorner.Parent = knob
-    
-    local dragging = false
-    local function updateSlider(input)
-        local percentage = math.clamp((input.Position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X, 0, 1)
-        knob.Position = UDim2.new(percentage, -10, 0, 0)
-        local value = math.floor(minVal + (maxVal - minVal) * percentage)
-        label.Text = text .. ": " .. value
-        callback(value)
-    end
-    
-    slider.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            updateSlider(input)
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            updateSlider(input)
-        end
-    end)
-    
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-end
-
--- Tạo sliders
-createSlider("Speed", "🏃‍♀️ Tốc Độ", 16, 200, 100, function(value)
-    walkSpeed = value
-    if speedEnabled then
-        humanoid.WalkSpeed = value
-    end
-end)
-
-createSlider("Jump", "🦘 Lực Nhảy", 50, 300, 120, function(value)
-    jumpPower = value
-    if jumpEnabled then
-        humanoid.JumpPower = value
-    end
-end)
-
-createSlider("Fly", "🦋 Tốc Độ Bay", 10, 100, 50, function(value)
-    flySpeed = value
-end)
-
--- Nút reset tất cả
-createCuteButton("ResetButton", "Reset Tất Cả", "🔄", function()
-    -- Tắt tất cả chức năng
-    speedEnabled = false
-    jumpEnabled = false
-    flyEnabled = false
-    noclipEnabled = false
-    invisibleEnabled = false
-    infiniteJumpEnabled = false
-    
-    -- Reset giá trị
-    humanoid.WalkSpeed = 16
-    humanoid.JumpPower = 50
-    
-    -- Dọn dẹp fly
-    if bodyVelocity then
-        bodyVelocity:Destroy()
-        bodyVelocity = nil
-    end
-    
-    -- Reset noclip
-    if noclipConnection then
-        noclipConnection:Disconnect()
-    end
-    if character then
         for _, part in pairs(character:GetChildren()) do
             if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
                 part.CanCollide = true
             end
         end
     end
+end
+
+local function toggleInvisible()
+    invisible = not invisible
+    for _, part in pairs(character:GetChildren()) do
+        if part:IsA("BasePart") then
+            part.Transparency = invisible and 1 or 0
+        elseif part:IsA("Accessory") then
+            part.Handle.Transparency = invisible and 1 or 0
+        end
+    end
+    if character:FindFirstChild("Head") then
+        character.Head.face.Transparency = invisible and 1 or 0
+    end
+end
+
+-- Create Buttons
+createButton("SpeedButton", "🏃 Chạy Nhanh", UDim2.new(0, 10, 0, 10), function()
+    local speed = tonumber(speedSlider.Text) or 16
+    humanoid.WalkSpeed = speed
+    speedLabel.Text = "Speed: " .. speed
+end)
+
+createButton("JumpButton", "🦘 Nhảy Cao", UDim2.new(0, 150, 0, 10), function()
+    local jump = tonumber(jumpSlider.Text) or 50
+    humanoid.JumpPower = jump
+    jumpLabel.Text = "Jump: " .. jump
+end)
+
+createButton("FlyButton", "🕊️ Bay", UDim2.new(0, 10, 0, 50), function()
+    toggleFly()
+end)
+
+createButton("NoclipButton", "👻 Xuyên Tường", UDim2.new(0, 150, 0, 50), function()
+    toggleNoclip()
+end)
+
+createButton("TeleportButton", "📍 Dịch Chuyển", UDim2.new(0, 10, 0, 90), function()
+    playerList.Visible = not playerList.Visible
+    if playerList.Visible then
+        updatePlayerList()
+    end
+end)
+
+createButton("InvisibleButton", "👤 Tàng Hình", UDim2.new(0, 150, 0, 90), function()
+    toggleInvisible()
+end)
+
+createButton("ResetButton", "🔄 Reset", UDim2.new(0, 10, 0, 130), function()
+    humanoid.WalkSpeed = originalWalkSpeed
+    humanoid.JumpPower = originalJumpPower
+    flying = false
+    noclip = false
+    invisible = false
+    speedSlider.Text = "16"
+    jumpSlider.Text = "50"
+    speedLabel.Text = "Speed: 16"
+    jumpLabel.Text = "Jump: 50"
     
-    -- Reset invisibility
-    if character then
-        for _, part in pairs(character:GetChildren()) do
-            if part:IsA("BasePart") then
-                part.Transparency = 0
-            elseif part:IsA("Accessory") then
-                for _, accessoryPart in pairs(part:GetChildren()) do
-                    if accessoryPart:IsA("BasePart") then
-                        accessoryPart.Transparency = 0
-                    end
-                end
+    for _, part in pairs(character:GetChildren()) do
+        if part:IsA("BasePart") then
+            part.Transparency = 0
+            if part.Name ~= "HumanoidRootPart" then
+                part.CanCollide = true
             end
+        elseif part:IsA("Accessory") then
+            part.Handle.Transparency = 0
+        end
+    end
+    if character:FindFirstChild("Head") then
+        character.Head.face.Transparency = 0
+    end
+end)
+
+-- Close/Toggle functionality
+closeButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    toggleButton.Visible = true
+end)
+
+toggleButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = true
+    toggleButton.Visible = false
+end)
+
+-- Keyboard shortcut to toggle UI (Right Shift)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        if mainFrame.Visible then
+            mainFrame.Visible = false
+            toggleButton.Visible = true
+        else
+            mainFrame.Visible = true
+            toggleButton.Visible = false
         end
     end
 end)
 
--- Chức năng đóng UI
-closeButton.MouseButton1Click:Connect(function()
-    screenGui:Destroy()
-end)
-
--- Hiệu ứng xuất hiện UI
-mainFrame.Size = UDim2.new(0, 0, 0, 0)
-local openTween = TweenService:Create(mainFrame,
-    TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-    {Size = UDim2.new(0, 350, 0, 450)}
-)
-openTween:Play()
-
--- Cập nhật khi character respawn
+-- Character respawn handling
 player.CharacterAdded:Connect(function(newCharacter)
     character = newCharacter
     humanoid = character:WaitForChild("Humanoid")
-    rootPart = character:WaitForChild("HumanoidRootPart")
-    
-    -- Reset tất cả trạng thái khi respawn
-    speedEnabled = false
-    jumpEnabled = false
-    flyEnabled = false
-    noclipEnabled = false
-    invisibleEnabled = false
-    infiniteJumpEnabled = false
-    
-    if bodyVelocity then
-        bodyVelocity:Destroy()
-        bodyVelocity = nil
-    end
-    
-    if noclipConnection then
-        noclipConnection:Disconnect()
-    end
+    flying = false
+    noclip = false
+    invisible = false
+    wait(1)
+    humanoid.WalkSpeed = originalWalkSpeed
+    humanoid.JumpPower = originalJumpPower
 end)
 
-print("💖 Mila UI đã được tải thành công! 💖")
+print("Mila UI đã được tải thành công! 💖")
+print("Nhấn Right Shift để bật/tắt UI")
