@@ -1,6 +1,6 @@
 -- Mila UI Script for Roblox
 -- Tạo bởi: Mila
--- Tính năng: Speed, Jump, Noclip, Teleport.
+-- Tính năng: Speed, Jump, Fly, Noclip, Teleport,view,...
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -28,8 +28,8 @@ screenGui.ResetOnSpawn = false
 -- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 300, 0, 220)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -110)
+mainFrame.Size = UDim2.new(0, 300, 0, 260)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -130)
 mainFrame.BackgroundColor3 = Color3.new(1, 0.8, 0.9) -- Light pink
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -56,7 +56,7 @@ title.Name = "Title"
 title.Size = UDim2.new(1, 0, 0, 30)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "💖 Mila 💖"
+title.Text = "💖 Mila UI 💖"
 title.TextColor3 = Color3.new(0.5, 0, 0.5)
 title.TextSize = 18
 title.Font = Enum.Font.GothamBold
@@ -102,7 +102,7 @@ contentFrame.Size = UDim2.new(1, -20, 1, -40)
 contentFrame.Position = UDim2.new(0, 10, 0, 35)
 contentFrame.BackgroundTransparency = 1
 contentFrame.ScrollBarThickness = 6
-contentFrame.CanvasSize = UDim2.new(0, 0, 0, 290)
+contentFrame.CanvasSize = UDim2.new(0, 0, 0, 330)
 contentFrame.Parent = mainFrame
 
 -- Button Creation Function
@@ -219,8 +219,8 @@ applyJumpCorner.Parent = applyJumpBtn
 -- Player List for Teleport (bên cạnh UI chính)
 local playerFrame = Instance.new("Frame")
 playerFrame.Name = "PlayerFrame"
-playerFrame.Size = UDim2.new(0, 150, 0, 200)
-playerFrame.Position = UDim2.new(0.5, 160, 0.5, -100)
+playerFrame.Size = UDim2.new(0, 180, 0, 260)
+playerFrame.Position = UDim2.new(0.5, 160, 0.5, -130)
 playerFrame.BackgroundColor3 = Color3.new(1, 0.9, 1)
 playerFrame.BorderSizePixel = 0
 playerFrame.Visible = false
@@ -259,30 +259,80 @@ listLayout.Parent = playerList
 -- Functions
 local function updatePlayerList()
     for _, child in pairs(playerList:GetChildren()) do
-        if child:IsA("TextButton") then
+        if child:IsA("Frame") then
             child:Destroy()
         end
     end
     
     for _, targetPlayer in pairs(Players:GetPlayers()) do
         if targetPlayer ~= player then
-            local playerButton = Instance.new("TextButton")
-            playerButton.Size = UDim2.new(1, 0, 0, 25)
-            playerButton.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
-            playerButton.Text = targetPlayer.Name
-            playerButton.TextSize = 10
-            playerButton.Parent = playerList
+            -- Player Frame Container
+            local playerContainer = Instance.new("Frame")
+            playerContainer.Size = UDim2.new(1, 0, 0, 60)
+            playerContainer.BackgroundColor3 = Color3.new(0.95, 0.95, 0.95)
+            playerContainer.Parent = playerList
             
-            playerButton.MouseButton1Click:Connect(function()
+            local containerCorner = Instance.new("UICorner")
+            containerCorner.CornerRadius = UDim.new(0, 5)
+            containerCorner.Parent = playerContainer
+            
+            -- Player Name
+            local playerName = Instance.new("TextLabel")
+            playerName.Size = UDim2.new(1, 0, 0, 20)
+            playerName.Position = UDim2.new(0, 0, 0, 5)
+            playerName.BackgroundTransparency = 1
+            playerName.Text = targetPlayer.Name
+            playerName.TextSize = 12
+            playerName.Font = Enum.Font.GothamBold
+            playerName.TextColor3 = Color3.new(0.2, 0, 0.2)
+            playerName.Parent = playerContainer
+            
+            -- Teleport Button
+            local teleportBtn = Instance.new("TextButton")
+            teleportBtn.Size = UDim2.new(0.45, 0, 0, 25)
+            teleportBtn.Position = UDim2.new(0, 5, 0, 30)
+            teleportBtn.BackgroundColor3 = Color3.new(0.7, 0.9, 1)
+            teleportBtn.Text = "📍 TP"
+            teleportBtn.TextSize = 10
+            teleportBtn.Font = Enum.Font.Gotham
+            teleportBtn.TextColor3 = Color3.new(0, 0.3, 0.6)
+            teleportBtn.Parent = playerContainer
+            
+            local tpCorner = Instance.new("UICorner")
+            tpCorner.CornerRadius = UDim.new(0, 5)
+            tpCorner.Parent = teleportBtn
+            
+            -- View Button
+            local viewBtn = Instance.new("TextButton")
+            viewBtn.Size = UDim2.new(0.45, 0, 0, 25)
+            viewBtn.Position = UDim2.new(0.55, 0, 0, 30)
+            viewBtn.BackgroundColor3 = Color3.new(1, 0.9, 0.7)
+            viewBtn.Text = "👁️ Xem"
+            viewBtn.TextSize = 10
+            viewBtn.Font = Enum.Font.Gotham
+            viewBtn.TextColor3 = Color3.new(0.6, 0.3, 0)
+            viewBtn.Parent = playerContainer
+            
+            local viewCorner = Instance.new("UICorner")
+            viewCorner.CornerRadius = UDim.new(0, 5)
+            viewCorner.Parent = viewBtn
+            
+            -- Button Functions
+            teleportBtn.MouseButton1Click:Connect(function()
                 if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
                 end
-                playerFrame.Visible = false
+            end)
+            
+            viewBtn.MouseButton1Click:Connect(function()
+                if targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
+                    workspace.CurrentCamera.CameraSubject = targetPlayer.Character.Humanoid
+                end
             end)
         end
     end
     
-    playerList.CanvasSize = UDim2.new(0, 0, 0, #Players:GetPlayers() * 25)
+    playerList.CanvasSize = UDim2.new(0, 0, 0, #Players:GetPlayers() * 65)
 end
 
 local function toggleNoclip()
@@ -325,6 +375,16 @@ local function toggleInfiniteJump()
     end
 end
 
+local function resetCamera()
+    workspace.CurrentCamera.CameraSubject = character.Humanoid
+end
+
+local function loadFlyScript()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Sddnin4/Mila/refs/heads/main/Fly"))()
+    end)
+end
+
 -- Create Buttons
 createButton("SpeedButton", "🏃 Chạy Nhanh", UDim2.new(0, 10, 0, 10), function()
     local speed = tonumber(speedSlider.Text) or 16
@@ -353,14 +413,22 @@ createButton("InfiniteJumpButton", "♾️ Vô Hạn Nhảy", UDim2.new(0, 150, 
     toggleInfiniteJump()
 end)
 
-createButton("TeleportButton", "📍 Dịch Chuyển", UDim2.new(0, 10, 0, 90), function()
+createButton("FlyButton", "🕊️ Bay", UDim2.new(0, 10, 0, 90), function()
+    loadFlyScript()
+end)
+
+createButton("TeleportButton", "📍 Dịch Chuyển", UDim2.new(0, 150, 0, 90), function()
     playerFrame.Visible = not playerFrame.Visible
     if playerFrame.Visible then
         updatePlayerList()
     end
 end)
 
-createButton("ResetButton", "🔄 Reset", UDim2.new(0, 150, 0, 90), function()
+createButton("CameraButton", "📷 Reset Cam", UDim2.new(0, 10, 0, 130), function()
+    resetCamera()
+end)
+
+createButton("ResetButton", "🔄 Reset", UDim2.new(0, 150, 0, 130), function()
     humanoid.WalkSpeed = originalWalkSpeed
     humanoid.JumpPower = originalJumpPower
     noclip = false
@@ -374,6 +442,7 @@ createButton("ResetButton", "🔄 Reset", UDim2.new(0, 150, 0, 90), function()
     speedLabel.Text = "Speed: 16"
     jumpLabel.Text = "Jump: 50"
     playerFrame.Visible = false
+    resetCamera()
     
     for _, part in pairs(character:GetChildren()) do
         if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
