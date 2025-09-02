@@ -13,9 +13,7 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 
 -- Variables
-local flying = false
 local noclip = false
-local invisible = false
 local originalWalkSpeed = 16
 local originalJumpPower = 50
 
@@ -28,8 +26,8 @@ screenGui.ResetOnSpawn = false
 -- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 300, 0, 200)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+mainFrame.Size = UDim2.new(0, 300, 0, 180)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
 mainFrame.BackgroundColor3 = Color3.new(1, 0.8, 0.9) -- Light pink
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -102,7 +100,7 @@ contentFrame.Size = UDim2.new(1, -20, 1, -40)
 contentFrame.Position = UDim2.new(0, 10, 0, 35)
 contentFrame.BackgroundTransparency = 1
 contentFrame.ScrollBarThickness = 6
-contentFrame.CanvasSize = UDim2.new(0, 0, 0, 300)
+contentFrame.CanvasSize = UDim2.new(0, 0, 0, 250)
 contentFrame.Parent = mainFrame
 
 -- Button Creation Function
@@ -139,7 +137,7 @@ end
 -- Speed Slider
 local speedLabel = Instance.new("TextLabel")
 speedLabel.Size = UDim2.new(1, 0, 0, 20)
-speedLabel.Position = UDim2.new(0, 0, 0, 160)
+speedLabel.Position = UDim2.new(0, 0, 0, 120)
 speedLabel.BackgroundTransparency = 1
 speedLabel.Text = "Speed: 16"
 speedLabel.TextColor3 = Color3.new(0.3, 0, 0.3)
@@ -149,7 +147,7 @@ speedLabel.Parent = contentFrame
 
 local speedSlider = Instance.new("TextBox")
 speedSlider.Size = UDim2.new(0, 100, 0, 25)
-speedSlider.Position = UDim2.new(0, 10, 0, 180)
+speedSlider.Position = UDim2.new(0, 10, 0, 140)
 speedSlider.BackgroundColor3 = Color3.new(1, 1, 1)
 speedSlider.Text = "16"
 speedSlider.TextColor3 = Color3.new(0, 0, 0)
@@ -163,7 +161,7 @@ sliderCorner.Parent = speedSlider
 -- Jump Height Slider
 local jumpLabel = Instance.new("TextLabel")
 jumpLabel.Size = UDim2.new(1, 0, 0, 20)
-jumpLabel.Position = UDim2.new(0, 0, 0, 210)
+jumpLabel.Position = UDim2.new(0, 0, 0, 170)
 jumpLabel.BackgroundTransparency = 1
 jumpLabel.Text = "Jump: 50"
 jumpLabel.TextColor3 = Color3.new(0.3, 0, 0.3)
@@ -173,7 +171,7 @@ jumpLabel.Parent = contentFrame
 
 local jumpSlider = Instance.new("TextBox")
 jumpSlider.Size = UDim2.new(0, 100, 0, 25)
-jumpSlider.Position = UDim2.new(0, 10, 0, 230)
+jumpSlider.Position = UDim2.new(0, 10, 0, 190)
 jumpSlider.BackgroundColor3 = Color3.new(1, 1, 1)
 jumpSlider.Text = "50"
 jumpSlider.TextColor3 = Color3.new(0, 0, 0)
@@ -184,15 +182,38 @@ local jumpCorner = Instance.new("UICorner")
 jumpCorner.CornerRadius = UDim.new(0, 5)
 jumpCorner.Parent = jumpSlider
 
--- Player List for Teleport
+-- Player List for Teleport (bên cạnh UI chính)
+local playerFrame = Instance.new("Frame")
+playerFrame.Name = "PlayerFrame"
+playerFrame.Size = UDim2.new(0, 150, 0, 200)
+playerFrame.Position = UDim2.new(0.5, 160, 0.5, -100)
+playerFrame.BackgroundColor3 = Color3.new(1, 0.9, 1)
+playerFrame.BorderSizePixel = 0
+playerFrame.Visible = false
+playerFrame.Parent = screenGui
+
+local playerFrameCorner = Instance.new("UICorner")
+playerFrameCorner.CornerRadius = UDim.new(0, 10)
+playerFrameCorner.Parent = playerFrame
+
+-- Title cho Player List
+local playerTitle = Instance.new("TextLabel")
+playerTitle.Size = UDim2.new(1, 0, 0, 25)
+playerTitle.Position = UDim2.new(0, 0, 0, 0)
+playerTitle.BackgroundTransparency = 1
+playerTitle.Text = "👥 Người Chơi"
+playerTitle.TextColor3 = Color3.new(0.5, 0, 0.5)
+playerTitle.TextSize = 14
+playerTitle.Font = Enum.Font.GothamBold
+playerTitle.Parent = playerFrame
+
 local playerList = Instance.new("ScrollingFrame")
 playerList.Name = "PlayerList"
-playerList.Size = UDim2.new(0, 120, 0, 80)
-playerList.Position = UDim2.new(0, 150, 0, 80)
+playerList.Size = UDim2.new(1, -10, 1, -30)
+playerList.Position = UDim2.new(0, 5, 0, 25)
 playerList.BackgroundColor3 = Color3.new(1, 1, 1)
 playerList.ScrollBarThickness = 4
-playerList.Visible = false
-playerList.Parent = contentFrame
+playerList.Parent = playerFrame
 
 local listCorner = Instance.new("UICorner")
 listCorner.CornerRadius = UDim.new(0, 8)
@@ -222,58 +243,12 @@ local function updatePlayerList()
                 if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
                 end
-                playerList.Visible = false
+                playerFrame.Visible = false
             end)
         end
     end
     
     playerList.CanvasSize = UDim2.new(0, 0, 0, #Players:GetPlayers() * 25)
-end
-
-local function toggleFly()
-    flying = not flying
-    if flying then
-        local bodyVelocity = Instance.new("BodyVelocity")
-        bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
-        bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-        bodyVelocity.Parent = character.HumanoidRootPart
-        
-        local connection
-        connection = RunService.Heartbeat:Connect(function()
-            if not flying then
-                bodyVelocity:Destroy()
-                connection:Disconnect()
-                return
-            end
-            
-            local moveDirection = humanoid.MoveDirection
-            local camera = workspace.CurrentCamera
-            local cameraCFrame = camera.CFrame
-            
-            local velocity = Vector3.new(0, 0, 0)
-            
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                velocity = velocity + cameraCFrame.LookVector
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                velocity = velocity - cameraCFrame.LookVector
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                velocity = velocity - cameraCFrame.RightVector
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                velocity = velocity + cameraCFrame.RightVector
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-                velocity = velocity + Vector3.new(0, 1, 0)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
-                velocity = velocity - Vector3.new(0, 1, 0)
-            end
-            
-            bodyVelocity.Velocity = velocity * 50
-        end)
-    end
 end
 
 local function toggleNoclip()
@@ -300,20 +275,6 @@ local function toggleNoclip()
     end
 end
 
-local function toggleInvisible()
-    invisible = not invisible
-    for _, part in pairs(character:GetChildren()) do
-        if part:IsA("BasePart") then
-            part.Transparency = invisible and 1 or 0
-        elseif part:IsA("Accessory") then
-            part.Handle.Transparency = invisible and 1 or 0
-        end
-    end
-    if character:FindFirstChild("Head") then
-        character.Head.face.Transparency = invisible and 1 or 0
-    end
-end
-
 -- Create Buttons
 createButton("SpeedButton", "🏃 Chạy Nhanh", UDim2.new(0, 10, 0, 10), function()
     local speed = tonumber(speedSlider.Text) or 16
@@ -327,48 +288,31 @@ createButton("JumpButton", "🦘 Nhảy Cao", UDim2.new(0, 150, 0, 10), function
     jumpLabel.Text = "Jump: " .. jump
 end)
 
-createButton("FlyButton", "🕊️ Bay", UDim2.new(0, 10, 0, 50), function()
-    toggleFly()
-end)
-
-createButton("NoclipButton", "👻 Xuyên Tường", UDim2.new(0, 150, 0, 50), function()
+createButton("NoclipButton", "👻 Xuyên Tường", UDim2.new(0, 10, 0, 50), function()
     toggleNoclip()
 end)
 
-createButton("TeleportButton", "📍 Dịch Chuyển", UDim2.new(0, 10, 0, 90), function()
-    playerList.Visible = not playerList.Visible
-    if playerList.Visible then
+createButton("TeleportButton", "📍 Dịch Chuyển", UDim2.new(0, 150, 0, 50), function()
+    playerFrame.Visible = not playerFrame.Visible
+    if playerFrame.Visible then
         updatePlayerList()
     end
 end)
 
-createButton("InvisibleButton", "👤 Tàng Hình", UDim2.new(0, 150, 0, 90), function()
-    toggleInvisible()
-end)
-
-createButton("ResetButton", "🔄 Reset", UDim2.new(0, 10, 0, 130), function()
+createButton("ResetButton", "🔄 Reset", UDim2.new(0, 80, 0, 90), function()
     humanoid.WalkSpeed = originalWalkSpeed
     humanoid.JumpPower = originalJumpPower
-    flying = false
     noclip = false
-    invisible = false
     speedSlider.Text = "16"
     jumpSlider.Text = "50"
     speedLabel.Text = "Speed: 16"
     jumpLabel.Text = "Jump: 50"
+    playerFrame.Visible = false
     
     for _, part in pairs(character:GetChildren()) do
-        if part:IsA("BasePart") then
-            part.Transparency = 0
-            if part.Name ~= "HumanoidRootPart" then
-                part.CanCollide = true
-            end
-        elseif part:IsA("Accessory") then
-            part.Handle.Transparency = 0
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            part.CanCollide = true
         end
-    end
-    if character:FindFirstChild("Head") then
-        character.Head.face.Transparency = 0
     end
 end)
 
@@ -376,6 +320,7 @@ end)
 closeButton.MouseButton1Click:Connect(function()
     mainFrame.Visible = false
     toggleButton.Visible = true
+    playerFrame.Visible = false
 end)
 
 toggleButton.MouseButton1Click:Connect(function()
@@ -390,6 +335,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if mainFrame.Visible then
             mainFrame.Visible = false
             toggleButton.Visible = true
+            playerFrame.Visible = false
         else
             mainFrame.Visible = true
             toggleButton.Visible = false
@@ -401,9 +347,7 @@ end)
 player.CharacterAdded:Connect(function(newCharacter)
     character = newCharacter
     humanoid = character:WaitForChild("Humanoid")
-    flying = false
     noclip = false
-    invisible = false
     wait(1)
     humanoid.WalkSpeed = originalWalkSpeed
     humanoid.JumpPower = originalJumpPower
