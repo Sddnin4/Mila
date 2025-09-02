@@ -1,0 +1,423 @@
+-- Roblox Fly Script với GUI và Animation
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local character = player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+-- Biến điều khiển fly
+local flying = false
+local flySpeed = 50
+local bodyVelocity = nil
+local bodyAngularVelocity = nil
+local flyConnection = nil
+
+-- Tạo GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FlyGUI"
+screenGui.Parent = player.PlayerGui
+
+-- Main Frame với animation
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 300, 0, 200)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+-- Bo góc cho frame
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = mainFrame
+
+-- Tiêu đề
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 255)
+titleLabel.Text = "✈️ FLY SCRIPT ✈️"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextScaled = true
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Parent = mainFrame
+
+-- Bo góc cho tiêu đề
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 10)
+titleCorner.Parent = titleLabel
+
+-- Nút X để đóng script
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -35, 0, 5)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+closeButton.Text = "✕"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextScaled = true
+closeButton.Font = Enum.Font.GothamBold
+closeButton.Parent = mainFrame
+
+-- Bo góc cho nút đóng
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 15)
+closeCorner.Parent = closeButton
+
+-- Nút Fly Toggle với animation
+local flyButton = Instance.new("TextButton")
+flyButton.Name = "FlyButton"
+flyButton.Size = UDim2.new(0.8, 0, 0, 40)
+flyButton.Position = UDim2.new(0.1, 0, 0.3, 0)
+flyButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+flyButton.Text = "🚀 BẬT FLY"
+flyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+flyButton.TextScaled = true
+flyButton.Font = Enum.Font.Gotham
+flyButton.Parent = mainFrame
+
+-- Bo góc cho nút
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 8)
+buttonCorner.Parent = flyButton
+
+-- Speed Slider
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Name = "SpeedLabel"
+speedLabel.Size = UDim2.new(1, 0, 0, 25)
+speedLabel.Position = UDim2.new(0, 0, 0.55, 0)
+speedLabel.BackgroundTransparency = 1
+speedLabel.Text = "Tốc độ: " .. flySpeed
+speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedLabel.TextScaled = true
+speedLabel.Font = Enum.Font.Gotham
+speedLabel.Parent = mainFrame
+
+local speedSlider = Instance.new("TextBox")
+speedSlider.Name = "SpeedSlider"
+speedSlider.Size = UDim2.new(0.8, 0, 0, 30)
+speedSlider.Position = UDim2.new(0.1, 0, 0.7, 0)
+speedSlider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+speedSlider.Text = tostring(flySpeed)
+speedSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedSlider.TextScaled = true
+speedSlider.Font = Enum.Font.Gotham
+speedSlider.PlaceholderText = "Nhập tốc độ (vô hạn: inf)"
+speedSlider.Parent = mainFrame
+
+-- Bo góc cho slider
+local sliderCorner = Instance.new("UICorner")
+sliderCorner.CornerRadius = UDim.new(0, 5)
+sliderCorner.Parent = speedSlider
+
+-- Animation tweens
+local buttonClickTween = TweenService:Create(
+    flyButton,
+    TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+    {Size = UDim2.new(0.75, 0, 0, 35)}
+)
+
+local buttonReleaseTween = TweenService:Create(
+    flyButton,
+    TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+    {Size = UDim2.new(0.8, 0, 0, 40)}
+)
+
+-- Hiệu ứng glow khi fly
+local glowEffect = Instance.new("PointLight")
+glowEffect.Color = Color3.fromRGB(0, 255, 255)
+glowEffect.Brightness = 2
+glowEffect.Range = 10
+
+-- Hàm tạo fly
+local function createFly()
+    if bodyVelocity then bodyVelocity:Destroy() end
+    if bodyAngularVelocity then bodyAngularVelocity:Destroy() end
+    
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    bodyVelocity.Parent = rootPart
+    
+    bodyAngularVelocity = Instance.new("BodyAngularVelocity")
+    bodyAngularVelocity.MaxTorque = Vector3.new(0, math.huge, 0)
+    bodyAngularVelocity.AngularVelocity = Vector3.new(0, 0, 0)
+    bodyAngularVelocity.Parent = rootPart
+    
+    -- Thêm hiệu ứng glow
+    glowEffect.Parent = rootPart
+    
+    -- Animation cho character
+    local flyAnim = humanoid:LoadAnimation(game:GetService("ReplicatedStorage"):FindFirstChild("FlyAnimation") or Instance.new("Animation"))
+    if flyAnim then
+        flyAnim:Play()
+    end
+end
+
+-- Hàm xóa fly
+local function removeFly()
+    if bodyVelocity then bodyVelocity:Destroy() bodyVelocity = nil end
+    if bodyAngularVelocity then bodyAngularVelocity:Destroy() bodyAngularVelocity = nil end
+    if glowEffect.Parent then glowEffect.Parent = nil end
+    
+    -- Dừng animation
+    for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+        if track.Animation.Name == "FlyAnimation" then
+            track:Stop()
+        end
+    end
+end
+
+-- Hàm điều khiển bay
+local function flyControl()
+    if not flying or not bodyVelocity then return end
+    
+    local camera = workspace.CurrentCamera
+    local moveVector = Vector3.new(0, 0, 0)
+    
+    -- Lấy input từ bàn phím
+    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+        moveVector = moveVector + camera.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+        moveVector = moveVector - camera.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+        moveVector = moveVector - camera.LookVector:Cross(Vector3.new(0, 1, 0))
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+        moveVector = moveVector + camera.LookVector:Cross(Vector3.new(0, 1, 0))
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        moveVector = moveVector + Vector3.new(0, 1, 0)
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+        moveVector = moveVector - Vector3.new(0, 1, 0)
+    end
+    
+    -- Áp dụng tốc độ
+    if moveVector.Magnitude > 0 then
+        moveVector = moveVector.Unit * flySpeed
+    end
+    
+    bodyVelocity.Velocity = moveVector
+end
+
+-- Toggle fly function
+local function toggleFly()
+    flying = not flying
+    
+    if flying then
+        flyButton.Text = "🛑 TẮT FLY"
+        flyButton.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+        createFly()
+        
+        -- Bắt đầu loop điều khiển
+        flyConnection = RunService.Heartbeat:Connect(flyControl)
+        
+        -- Animation hiệu ứng
+        local glowTween = TweenService:Create(
+            glowEffect,
+            TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+            {Brightness = 3}
+        )
+        glowTween:Play()
+        
+    else
+        flyButton.Text = "🚀 BẬT FLY"
+        flyButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        removeFly()
+        
+        -- Dừng loop điều khiển
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+    end
+    
+    -- Animation cho nút
+    buttonClickTween:Play()
+    buttonClickTween.Completed:Wait()
+    buttonReleaseTween:Play()
+end
+
+-- Xử lý sự kiện nút fly
+flyButton.MouseButton1Click:Connect(toggleFly)
+
+-- Xử lý thay đổi tốc độ
+speedSlider.FocusLost:Connect(function(enterPressed)
+    local newSpeed = tonumber(speedSlider.Text)
+    
+    if speedSlider.Text:lower() == "inf" or speedSlider.Text:lower() == "infinity" then
+        flySpeed = math.huge
+        speedLabel.Text = "Tốc độ: ∞"
+        speedSlider.Text = "∞"
+    elseif newSpeed and newSpeed >= 0 then
+        flySpeed = newSpeed
+        speedLabel.Text = "Tốc độ: " .. flySpeed
+    else
+        speedSlider.Text = tostring(flySpeed)
+    end
+end)
+
+-- Hiệu ứng hover cho nút đóng
+closeButton.MouseEnter:Connect(function()
+    local hoverTween = TweenService:Create(
+        closeButton,
+        TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {BackgroundColor3 = Color3.fromRGB(255, 80, 80), Size = UDim2.new(0, 32, 0, 32)}
+    )
+    hoverTween:Play()
+end)
+
+closeButton.MouseLeave:Connect(function()
+    local leaveTween = TweenService:Create(
+        closeButton,
+        TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {BackgroundColor3 = Color3.fromRGB(255, 50, 50), Size = UDim2.new(0, 30, 0, 30)}
+    )
+    leaveTween:Play()
+end)
+
+-- Xử lý sự kiện nút đóng
+closeButton.MouseButton1Click:Connect(function()
+    -- Animation đóng GUI
+    local closeTween = TweenService:Create(
+        mainFrame,
+        TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
+        {Size = UDim2.new(0, 0, 0, 0)}
+    )
+    closeTween:Play()
+    
+    -- Tắt fly nếu đang bật
+    if flying then
+        flying = false
+        removeFly()
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+    end
+    
+    -- Xóa toàn bộ script sau animation
+    closeTween.Completed:Connect(function()
+        showNotification("Fly Script đã được gỡ bỏ!", Color3.fromRGB(255, 100, 100))
+        wait(1)
+        screenGui:Destroy()
+        script:Destroy()
+    end)
+end)
+flyButton.MouseEnter:Connect(function()
+    local hoverTween = TweenService:Create(
+        flyButton,
+        TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {Size = UDim2.new(0.85, 0, 0, 42)}
+    )
+    hoverTween:Play()
+end)
+
+flyButton.MouseLeave:Connect(function()
+    local leaveTween = TweenService:Create(
+        flyButton,
+        TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {Size = UDim2.new(0.8, 0, 0, 40)}
+    )
+    leaveTween:Play()
+end)
+
+-- Animation mở GUI
+mainFrame.Size = UDim2.new(0, 0, 0, 0)
+local openTween = TweenService:Create(
+    mainFrame,
+    TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+    {Size = UDim2.new(0, 300, 0, 200)}
+)
+openTween:Play()
+
+-- Hotkey toggle (phím F để bật/tắt)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    if input.KeyCode == Enum.KeyCode.F then
+        toggleFly()
+    end
+end)
+
+-- Xử lý khi character respawn
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    humanoid = character:WaitForChild("Humanoid")
+    rootPart = character:WaitForChild("HumanoidRootPart")
+    
+    -- Reset trạng thái fly
+    if flying then
+        flying = false
+        flyButton.Text = "🚀 BẬT FLY"
+        flyButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+    end
+end)
+
+-- Thông báo
+local function showNotification(text, color)
+    local notif = Instance.new("TextLabel")
+    notif.Size = UDim2.new(0, 200, 0, 30)
+    notif.Position = UDim2.new(0.5, -100, 0, 50)
+    notif.BackgroundColor3 = color or Color3.fromRGB(50, 50, 50)
+    notif.Text = text
+    notif.TextColor3 = Color3.fromRGB(255, 255, 255)
+    notif.TextScaled = true
+    notif.Font = Enum.Font.Gotham
+    notif.Parent = screenGui
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 5)
+    notifCorner.Parent = notif
+    
+    -- Animation hiển thị
+    notif.BackgroundTransparency = 1
+    notif.TextTransparency = 1
+    
+    local showTween = TweenService:Create(
+        notif,
+        TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {BackgroundTransparency = 0.2, TextTransparency = 0}
+    )
+    showTween:Play()
+    
+    -- Tự động ẩn sau 2 giây
+    wait(2)
+    local hideTween = TweenService:Create(
+        notif,
+        TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+        {BackgroundTransparency = 1, TextTransparency = 1}
+    )
+    hideTween:Play()
+    hideTween.Completed:Connect(function()
+        notif:Destroy()
+    end)
+end
+
+-- Thông báo khởi động
+showNotification("Fly Script đã tải! Nhấn F hoặc nút để bay", Color3.fromRGB(50, 255, 50))
+
+print("=== FLY SCRIPT LOADED ===")
+print("Cách sử dụng:")
+print("- Nhấn nút 'BẬT FLY' hoặc phím F để bật/tắt fly")
+print("- WASD: Di chuyển")
+print("- Space: Bay lên")
+print("- Shift: Bay xuống")
+print("- Thay đổi tốc độ trong ô nhập (ghi 'inf' cho vô hạn)")
+print("==========================")
