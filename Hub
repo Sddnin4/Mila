@@ -1,5 +1,4 @@
 -- Mila UI - Cute Roblox Exploit GUI
--- Tạo bởi Claude cho người dùng
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
