@@ -1,224 +1,83 @@
--- Roblox UI Script - Fixed Version
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
--- Create ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "TabInterface"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = playerGui
-
--- Main Frame
+-- Tạo Frame cho UI
 local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 450, 0, 320)
-mainFrame.Position = UDim2.new(0.5, -225, 0.5, -160)
-mainFrame.BackgroundColor3 = Color3.fromRGB(25, 118, 210)
-mainFrame.BorderSizePixel = 0
-mainFrame.Parent = screenGui
+mainFrame.Size = UDim2.new(0.4, 0, 0.3, 0)
+mainFrame.Position = UDim2.new(0.3, 0, 0.35, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+mainFrame.BackgroundTransparency = 0.5
+mainFrame.Parent = ScreenGui
 
--- Rounded corners
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 12)
-mainCorner.Parent = mainFrame
+-- Tạo Tab Home
+local homeTabButton = Instance.new("TextButton")
+homeTabButton.Text = "Home"
+homeTabButton.Size = UDim2.new(0.2, 0, 0.1, 0)
+homeTabButton.Position = UDim2.new(0, 0, 0, 0)
+homeTabButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+homeTabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+homeTabButton.Parent = mainFrame
 
--- Background gradient
-local gradient = Instance.new("UIGradient")
-gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 118, 210)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(156, 39, 176))
-})
-gradient.Rotation = 135
-gradient.Parent = mainFrame
+-- Tạo Tab Script
+local scriptTabButton = Instance.new("TextButton")
+scriptTabButton.Text = "Script"
+scriptTabButton.Size = UDim2.new(0.2, 0, 0.1, 0)
+scriptTabButton.Position = UDim2.new(0.2, 0, 0, 0)
+scriptTabButton.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
+scriptTabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+scriptTabButton.Parent = mainFrame
 
--- Top bar
-local topBar = Instance.new("Frame")
-topBar.Name = "TopBar"
-topBar.Size = UDim2.new(1, 0, 0, 70)
-topBar.Position = UDim2.new(0, 0, 0, 0)
-topBar.BackgroundTransparency = 1
-topBar.Parent = mainFrame
+-- Tạo Tab Notifications
+local notificationsTabButton = Instance.new("TextButton")
+notificationsTabButton.Text = "Notifications"
+notificationsTabButton.Size = UDim2.new(0.2, 0, 0.1, 0)
+notificationsTabButton.Position = UDim2.new(0.4, 0, 0, 0)
+notificationsTabButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+notificationsTabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+notificationsTabButton.Parent = mainFrame
 
--- Tab buttons container
-local tabsContainer = Instance.new("Frame")
-tabsContainer.Size = UDim2.new(1, -40, 1, -10)
-tabsContainer.Position = UDim2.new(0, 20, 0, 5)
-tabsContainer.BackgroundTransparency = 1
-tabsContainer.Parent = topBar
+-- Tạo Tab Other
+local otherTabButton = Instance.new("TextButton")
+otherTabButton.Text = "Other"
+otherTabButton.Size = UDim2.new(0.2, 0, 0.1, 0)
+otherTabButton.Position = UDim2.new(0.6, 0, 0, 0)
+otherTabButton.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
+otherTabButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+otherTabButton.Parent = mainFrame
 
--- Variables
-local currentTab = 1
-local tabButtons = {}
-local indicators = {}
+-- Thêm chức năng "Chạy" trong tab Home
+local runButton = Instance.new("TextButton")
+runButton.Text = "Run"
+runButton.Size = UDim2.new(0.2, 0, 0.1, 0)
+runButton.Position = UDim2.new(0, 0, 0.2, 0)
+runButton.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+runButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+runButton.Parent = mainFrame
 
--- Tab data
-local tabInfo = {
-    {name = "Home", icon = "🏠"},
-    {name = "Script", icon = "</>"},
-    {name = "Notifications", icon = "🔔"}
-}
-
--- Create tabs
-for i = 1, 3 do
-    local tab = tabInfo[i]
-    
-    -- Tab button
-    local tabButton = Instance.new("TextButton")
-    tabButton.Name = tab.name
-    tabButton.Size = UDim2.new(1/3, -10, 1, -15)
-    tabButton.Position = UDim2.new((i-1)/3, 5, 0, 5)
-    tabButton.BackgroundTransparency = 1
-    tabButton.Text = ""
-    tabButton.Parent = tabsContainer
-    
-    -- Tab content frame
-    local tabContent = Instance.new("Frame")
-    tabContent.Size = UDim2.new(1, 0, 1, 0)
-    tabContent.BackgroundTransparency = 1
-    tabContent.Parent = tabButton
-    
-    -- Icon
-    local icon = Instance.new("TextLabel")
-    icon.Size = UDim2.new(0, 24, 0, 24)
-    icon.Position = UDim2.new(0.5, -12, 0, 8)
-    icon.BackgroundTransparency = 1
-    icon.Text = tab.icon
-    icon.TextColor3 = Color3.white
-    icon.TextSize = 18
-    icon.Font = Enum.Font.GothamBold
-    icon.Parent = tabContent
-    
-    -- Label
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 0, 20)
-    label.Position = UDim2.new(0, 0, 1, -25)
-    label.BackgroundTransparency = 1
-    label.Text = tab.name
-    label.TextColor3 = Color3.white
-    label.TextSize = 12
-    label.Font = Enum.Font.Gotham
-    label.Parent = tabContent
-    
-    -- Active indicator
-    local indicator = Instance.new("Frame")
-    indicator.Size = UDim2.new(0.7, 0, 0, 3)
-    indicator.Position = UDim2.new(0.15, 0, 1, -3)
-    indicator.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
-    indicator.BorderSizePixel = 0
-    indicator.Visible = (i == 1)
-    indicator.Parent = tabButton
-    
-    local indicatorCorner = Instance.new("UICorner")
-    indicatorCorner.CornerRadius = UDim.new(0, 2)
-    indicatorCorner.Parent = indicator
-    
-    tabButtons[i] = tabButton
-    indicators[i] = indicator
-end
-
--- Content area
-local contentArea = Instance.new("Frame")
-contentArea.Size = UDim2.new(1, -30, 1, -100)
-contentArea.Position = UDim2.new(0, 15, 0, 85)
-contentArea.BackgroundColor3 = Color3.white
-contentArea.BackgroundTransparency = 0.9
-contentArea.BorderSizePixel = 0
-contentArea.Parent = mainFrame
-
-local contentCorner = Instance.new("UICorner")
-contentCorner.CornerRadius = UDim.new(0, 8)
-contentCorner.Parent = contentArea
-
--- Content text
-local contentText = Instance.new("TextLabel")
-contentText.Size = UDim2.new(1, -20, 1, -20)
-contentText.Position = UDim2.new(0, 10, 0, 10)
-contentText.BackgroundTransparency = 1
-contentText.Text = "Welcome to Home Tab!"
-contentText.TextColor3 = Color3.white
-contentText.TextSize = 16
-contentText.Font = Enum.Font.Gotham
-contentText.TextXAlignment = Enum.TextXAlignment.Left
-contentText.TextYAlignment = Enum.TextYAlignment.Top
-contentText.TextWrapped = true
-contentText.Parent = contentArea
-
--- Content for each tab
-local tabContents = {
-    "🏠 Home Tab\n\nWelcome to your dashboard!\nAll your main tools are here.",
-    "📜 Script Tab\n\nExecute your scripts here.\nManage and run your code safely.",
-    "🔔 Notifications Tab\n\nCheck all your notifications.\nStay updated with alerts."
-}
-
--- Tab switching function
-local function switchTab(newTab)
-    if newTab == currentTab then return end
-    
-    -- Hide old indicator
-    indicators[currentTab].Visible = false
-    
-    -- Show new indicator
-    indicators[newTab].Visible = true
-    
-    -- Update content
-    contentText.Text = tabContents[newTab]
-    currentTab = newTab
-end
-
--- Connect tab buttons
-for i = 1, 3 do
-    tabButtons[i].MouseButton1Click:Connect(function()
-        switchTab(i)
-    end)
-end
-
--- Close button
-local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -40, 0, 10)
-closeButton.BackgroundColor3 = Color3.fromRGB(244, 67, 54)
-closeButton.BorderSizePixel = 0
-closeButton.Text = "×"
-closeButton.TextColor3 = Color3.white
-closeButton.TextSize = 20
-closeButton.Font = Enum.Font.GothamBold
-closeButton.Parent = mainFrame
-
-local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(1, 0)
-closeCorner.Parent = closeButton
-
-closeButton.MouseButton1Click:Connect(function()
-    screenGui:Destroy()
-end)
-
--- Make draggable
-local dragging = false
-local dragStart = nil
-local startPos = nil
-
-mainFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = mainFrame.Position
+runButton.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = 50  -- Chạy nhanh
+        end
     end
 end)
 
-mainFrame.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+-- Thêm chức năng "Teleport" trong tab Home
+local teleportButton = Instance.new("TextButton")
+teleportButton.Text = "Teleport"
+teleportButton.Size = UDim2.new(0.2, 0, 0.1, 0)
+teleportButton.Position = UDim2.new(0.2, 0, 0.2, 0)
+teleportButton.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
+teleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+teleportButton.Parent = mainFrame
+
+teleportButton.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+    local targetPlayer = game.Players:FindFirstChild("PlayerName")  -- Thay "PlayerName" bằng tên người chơi bạn muốn teleport tới.
+    if targetPlayer and targetPlayer.Character then
+        player.Character:SetPrimaryPartCFrame(targetPlayer.Character.PrimaryPart.CFrame)
     end
 end)
-
-game:GetService("UserInputService").InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
-
-print("✅ UI loaded successfully!")
