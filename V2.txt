@@ -80,12 +80,7 @@ loadingText.TextSize = 12
 loadingText.Font = Enum.Font.Gotham
 loadingText.Parent = loadingFrame
 
--- Progress Animation
-local function updateProgress(percentage, text)
-    progressFill:TweenSize(UDim2.new(percentage/100, 0, 1, 0), "Out", "Quad", 0.3, true)
-    loadingText.Text = text
-    wait(0.5)
-end
+
 
 -- Main Frame (Hidden during loading)
 local mainFrame = Instance.new("Frame")
@@ -623,19 +618,44 @@ player.CharacterAdded:Connect(function(newCharacter)
 end)
 
 -- Loading Animation
-spawn(function()
-    updateProgress(20, "Loading UI components...")
-    updateProgress(40, "Setting up functions...")
-    updateProgress(60, "Initializing player data...")
-    updateProgress(80, "Configuring interface...")
-    updateProgress(100, "Complete!")
-    
-    wait(1)
-    loadingFrame:TweenPosition(UDim2.new(0.5, -150, -1, 0), "Out", "Back", 0.5, true)
+local function animateLoading()
+    -- Step 1
+    progressFill:TweenSize(UDim2.new(0.2, 0, 1, 0), "Out", "Quad", 0.3, true)
+    loadingText.Text = "Loading UI components..."
     wait(0.5)
-    loadingFrame:Destroy()
-    mainFrame.Visible = true
-end)
+    
+    -- Step 2  
+    progressFill:TweenSize(UDim2.new(0.4, 0, 1, 0), "Out", "Quad", 0.3, true)
+    loadingText.Text = "Setting up functions..."
+    wait(0.5)
+    
+    -- Step 3
+    progressFill:TweenSize(UDim2.new(0.6, 0, 1, 0), "Out", "Quad", 0.3, true)
+    loadingText.Text = "Initializing player data..."
+    wait(0.5)
+    
+    -- Step 4
+    progressFill:TweenSize(UDim2.new(0.8, 0, 1, 0), "Out", "Quad", 0.3, true)
+    loadingText.Text = "Configuring interface..."
+    wait(0.5)
+    
+    -- Step 5
+    progressFill:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.3, true)
+    loadingText.Text = "Complete!"
+    wait(1)
+    
+    -- Hide loading and show main UI
+    local hideTween = TweenService:Create(loadingFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.new(0.5, -150, -1, 0)})
+    hideTween:Play()
+    
+    hideTween.Completed:Connect(function()
+        loadingFrame:Destroy()
+        mainFrame.Visible = true
+    end)
+end
+
+-- Start loading animation
+spawn(animateLoading)
 
 print("Mila UI loaded successfully! 💖")
 print("Press Right Shift to toggle UI")
