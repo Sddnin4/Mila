@@ -18,8 +18,8 @@ mainFrame.Name = "MainFrame"
 mainFrame.Parent = screenGui
 mainFrame.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 mainFrame.BorderSizePixel = 0
-mainFrame.Position = UDim2.new(0.5, -400, 0.5, -250)
-mainFrame.Size = UDim2.new(0, 800, 0, 500)
+mainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
+mainFrame.Size = UDim2.new(0, 500, 0, 300)
 
 -- Tạo viền đỏ
 local border = Instance.new("UIStroke")
@@ -32,13 +32,13 @@ local corner = Instance.new("UICorner")
 corner.Parent = mainFrame
 corner.CornerRadius = UDim.new(0, 12)
 
--- Tạo header với logo
+-- Header với kích thước nhỏ hơn
 local headerFrame = Instance.new("Frame")
 headerFrame.Name = "Header"
 headerFrame.Parent = mainFrame
 headerFrame.BackgroundColor3 = Color3.fromRGB(220, 70, 70)
 headerFrame.BorderSizePixel = 0
-headerFrame.Size = UDim2.new(1, 0, 0, 50)
+headerFrame.Size = UDim2.new(1, 0, 0, 35)
 
 local headerCorner = Instance.new("UICorner")
 headerCorner.Parent = headerFrame
@@ -49,8 +49,8 @@ local logoFrame = Instance.new("Frame")
 logoFrame.Name = "Logo"
 logoFrame.Parent = headerFrame
 logoFrame.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-logoFrame.Position = UDim2.new(0, 10, 0.5, -15)
-logoFrame.Size = UDim2.new(0, 30, 0, 30)
+logoFrame.Position = UDim2.new(0, 8, 0.5, -10)
+logoFrame.Size = UDim2.new(0, 20, 0, 20)
 
 local logoCorner = Instance.new("UICorner")
 logoCorner.Parent = logoFrame
@@ -70,8 +70,8 @@ local closeButton = Instance.new("TextButton")
 closeButton.Name = "CloseButton"
 closeButton.Parent = headerFrame
 closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-closeButton.Position = UDim2.new(1, -35, 0.5, -10)
-closeButton.Size = UDim2.new(0, 20, 0, 20)
+closeButton.Position = UDim2.new(1, -25, 0.5, -8)
+closeButton.Size = UDim2.new(0, 16, 0, 16)
 closeButton.Font = Enum.Font.Gotham
 closeButton.Text = "×"
 closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -86,8 +86,8 @@ local minimizeButton = Instance.new("TextButton")
 minimizeButton.Name = "MinimizeButton"
 minimizeButton.Parent = headerFrame
 minimizeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-minimizeButton.Position = UDim2.new(1, -60, 0.5, -10)
-minimizeButton.Size = UDim2.new(0, 20, 0, 20)
+minimizeButton.Position = UDim2.new(1, -45, 0.5, -8)
+minimizeButton.Size = UDim2.new(0, 16, 0, 16)
 minimizeButton.Font = Enum.Font.Gotham
 minimizeButton.Text = "−"
 minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -104,8 +104,8 @@ navFrame.Name = "Navigation"
 navFrame.Parent = mainFrame
 navFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 navFrame.BorderSizePixel = 0
-navFrame.Position = UDim2.new(0, 0, 0, 50)
-navFrame.Size = UDim2.new(1, 0, 0, 40)
+navFrame.Position = UDim2.new(0, 0, 0, 35)
+navFrame.Size = UDim2.new(1, 0, 0, 30)
 
 -- Tạo các tab buttons
 local tabs = {"Home", "Script", "Notifications", "Other"}
@@ -145,8 +145,8 @@ contentFrame.Name = "Content"
 contentFrame.Parent = mainFrame
 contentFrame.BackgroundColor3 = Color3.fromRGB(230, 235, 245)
 contentFrame.BorderSizePixel = 0
-contentFrame.Position = UDim2.new(0, 10, 0, 100)
-contentFrame.Size = UDim2.new(1, -20, 1, -110)
+contentFrame.Position = UDim2.new(0, 8, 0, 70)
+contentFrame.Size = UDim2.new(1, -16, 1, -78)
 
 local contentCorner = Instance.new("UICorner")
 contentCorner.Parent = contentFrame
@@ -230,7 +230,21 @@ end
 
 -- Close button functionality
 closeButton.MouseButton1Click:Connect(function()
-    screenGui:Destroy()
+    -- Add closing animation
+    local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+    local closeTween = TweenService:Create(
+        mainFrame,
+        tweenInfo,
+        {
+            Size = UDim2.new(0, 0, 0, 0),
+            Position = UDim2.new(0.5, 0, 0.5, 0)
+        }
+    )
+    closeTween:Play()
+    
+    closeTween.Completed:Connect(function()
+        screenGui:Destroy()
+    end)
 end)
 
 -- Minimize functionality
@@ -241,7 +255,7 @@ minimizeButton.MouseButton1Click:Connect(function()
         local tween = TweenService:Create(
             mainFrame,
             tweenInfo,
-            {Size = UDim2.new(0, 800, 0, 50)}
+            {Size = UDim2.new(0, 500, 0, 50)}
         )
         tween:Play()
         navFrame.Visible = false
@@ -252,7 +266,7 @@ minimizeButton.MouseButton1Click:Connect(function()
         local tween = TweenService:Create(
             mainFrame,
             tweenInfo,
-            {Size = UDim2.new(0, 800, 0, 500)}
+            {Size = UDim2.new(0, 500, 0, 300)}
         )
         tween:Play()
         wait(0.3)
