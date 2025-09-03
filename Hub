@@ -1,4 +1,4 @@
--- Mila UI Script for Roblox - New Design
+-- Mila UI Script for Roblox - Fixed Version
 -- Tạo bởi: Mila
 -- Tính năng: Speed, Jump, Fly, Noclip, Teleport, InfiniteJump
 
@@ -14,15 +14,32 @@ local humanoid = character:WaitForChild("Humanoid")
 
 -- Variables
 local noclip = false
+local flying = false
 local infiniteJump = false
 local originalWalkSpeed = 16
 local originalJumpPower = 50
 local jumpConnection
+local noclipConnection
+local flyConnection
+local bodyVelocity
+local bodyAngularVelocity
+
+-- Safe GUI creation function
+local function createScreenGui(name)
+    local existingGui = CoreGui:FindFirstChild(name)
+    if existingGui then
+        existingGui:Destroy()
+    end
+    
+    local gui = Instance.new("ScreenGui")
+    gui.Name = name
+    gui.Parent = CoreGui
+    gui.ResetOnSpawn = false
+    return gui
+end
 
 -- Loading Screen
-local loadingGui = Instance.new("ScreenGui")
-loadingGui.Name = "MilaLoading"
-loadingGui.Parent = CoreGui
+local loadingGui = createScreenGui("MilaLoading")
 
 local loadingFrame = Instance.new("Frame")
 loadingFrame.Size = UDim2.new(1, 0, 1, 0)
@@ -71,34 +88,37 @@ loadingText.TextSize = 14
 loadingText.Font = Enum.Font.Gotham
 loadingText.Parent = loadingFrame
 
--- Progress Animation
+-- Progress Animation with proper error handling
 local function animateLoading()
     local steps = {"Đang khởi tạo...", "Đang tải giao diện...", "Đang chuẩn bị tính năng...", "Hoàn thành!"}
+    local stepSize = 100 / #steps
+    
     for i = 1, 100 do
-        wait(0.02)
-        progressFill.Size = UDim2.new(i/100, 0, 1, 0)
-        if i <= 25 then
-            loadingText.Text = steps[1]
-        elseif i <= 50 then
-            loadingText.Text = steps[2]
-        elseif i <= 75 then
-            loadingText.Text = steps[3]
-        else
-            loadingText.Text = steps[4]
+        if not loadingGui or not loadingGui.Parent then break end
+        
+        task.wait(0.02) -- Use task.wait instead of wait
+        
+        if progressFill and progressFill.Parent then
+            progressFill.Size = UDim2.new(i/100, 0, 1, 0)
+        end
+        
+        if loadingText and loadingText.Parent then
+            local stepIndex = math.min(math.floor(i / stepSize) + 1, #steps)
+            loadingText.Text = steps[stepIndex]
         end
     end
-    wait(0.5)
-    loadingGui:Destroy()
+    
+    task.wait(0.5)
+    if loadingGui then
+        loadingGui:Destroy()
+    end
 end
 
 -- Start loading animation
-spawn(animateLoading)
+task.spawn(animateLoading)
 
 -- Main UI Creation
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "MilaUI"
-screenGui.Parent = CoreGui
-screenGui.ResetOnSpawn = false
+local screenGui = createScreenGui("MilaUI")
 
 -- Main Frame (Smaller size)
 local mainFrame = Instance.new("Frame")
@@ -345,13 +365,86 @@ local function createLabel(parent, text, position, size)
     return label
 end
 
+-- Fly function
+local function toggleFly()
+    if not character or not character:FindFirstChild("HumanoidRootPart") then
+        return
+    end
+    
+    flying = not flying
+    
+    if flying then
+        local rootPart = character.HumanoidRootPart
+        
+        bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+        bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        bodyVelocity.Parent = rootPart
+        
+        bodyAngularVelocity = Instance.new("BodyAngularVelocity")
+        bodyAngularVelocity.MaxTorque = Vector3.new(4000, 4000, 4000)
+        bodyAngularVelocity.AngularVelocity = Vector3.new(0, 0, 0)
+        bodyAngularVelocity.Parent = rootPart
+        
+        flyConnection = RunService.Heartbeat:Connect(function()
+            if not flying or not character or not rootPart or not rootPart.Parent then
+                return
+            end
+            
+            local camera = workspace.CurrentCamera
+            local humanoidRootPart = character.HumanoidRootPart
+            
+            local moveVector = humanoid.MoveDirection
+            local speed = 50
+            
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                speed = 100
+            end
+            
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                bodyVelocity.Velocity = bodyVelocity.Velocity + Vector3.new(0, speed, 0)
+            elseif UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                bodyVelocity.Velocity = bodyVelocity.Velocity + Vector3.new(0, -speed, 0)
+            end
+            
+            if moveVector.Magnitude > 0 then
+                local lookDirection = camera.CFrame.LookVector
+                local rightDirection = camera.CFrame.RightVector
+                
+                bodyVelocity.Velocity = (lookDirection * moveVector.Z + rightDirection * moveVector.X) * speed
+            else
+                bodyVelocity.Velocity = Vector3.new(0, bodyVelocity.Velocity.Y, 0)
+            end
+            
+            if not UserInputService:IsKeyDown(Enum.KeyCode.Space) and not UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                bodyVelocity.Velocity = Vector3.new(bodyVelocity.Velocity.X, 0, bodyVelocity.Velocity.Z)
+            end
+        end)
+    else
+        if bodyVelocity then
+            bodyVelocity:Destroy()
+            bodyVelocity = nil
+        end
+        if bodyAngularVelocity then
+            bodyAngularVelocity:Destroy()
+            bodyAngularVelocity = nil
+        end
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+    end
+end
+
 -- HOME TAB CONTENT
 -- Speed Controls
 local speedLabel = createLabel(homeContent, "Speed:", UDim2.new(0, 10, 0, 10))
 local speedInput = createInput(homeContent, "SpeedInput", "16", UDim2.new(0, 60, 0, 10), UDim2.new(0, 50, 0, 20))
 createButton(homeContent, "SpeedBtn", "Apply", UDim2.new(0, 120, 0, 10), UDim2.new(0, 50, 0, 20), function()
     local speed = tonumber(speedInput.Text) or 16
-    humanoid.WalkSpeed = speed
+    if humanoid then
+        humanoid.WalkSpeed = math.max(0, math.min(speed, 1000)) -- Clamp between 0 and 1000
+    end
 end)
 
 -- Jump Controls
@@ -359,19 +452,30 @@ local jumpLabel = createLabel(homeContent, "Jump:", UDim2.new(0, 10, 0, 40))
 local jumpInput = createInput(homeContent, "JumpInput", "50", UDim2.new(0, 60, 0, 40), UDim2.new(0, 50, 0, 20))
 createButton(homeContent, "JumpBtn", "Apply", UDim2.new(0, 120, 0, 40), UDim2.new(0, 50, 0, 20), function()
     local jump = tonumber(jumpInput.Text) or 50
-    humanoid.JumpPower = jump
+    if humanoid then
+        humanoid.JumpPower = math.max(0, math.min(jump, 1000)) -- Clamp between 0 and 1000
+    end
 end)
 
 -- Main Buttons
 createButton(homeContent, "NoclipBtn", "👻 Noclip", UDim2.new(0, 10, 0, 70), UDim2.new(0, 75, 0, 25), function()
     noclip = not noclip
+    
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+    end
+    
     if noclip then
-        local connection
-        connection = RunService.Stepped:Connect(function()
-            if not noclip then
-                connection:Disconnect()
+        noclipConnection = RunService.Stepped:Connect(function()
+            if not noclip or not character then
+                if noclipConnection then
+                    noclipConnection:Disconnect()
+                    noclipConnection = nil
+                end
                 return
             end
+            
             for _, part in pairs(character:GetChildren()) do
                 if part:IsA("BasePart") then
                     part.CanCollide = false
@@ -389,24 +493,23 @@ end)
 
 createButton(homeContent, "InfJumpBtn", "♾️ Inf Jump", UDim2.new(0, 95, 0, 70), UDim2.new(0, 75, 0, 25), function()
     infiniteJump = not infiniteJump
+    
+    if jumpConnection then
+        jumpConnection:Disconnect()
+        jumpConnection = nil
+    end
+    
     if infiniteJump then
         jumpConnection = UserInputService.JumpRequest:Connect(function()
             if character and character:FindFirstChild("Humanoid") then
                 character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
             end
         end)
-    else
-        if jumpConnection then
-            jumpConnection:Disconnect()
-            jumpConnection = nil
-        end
     end
 end)
 
 createButton(homeContent, "FlyBtn", "🕊️ Fly", UDim2.new(0, 10, 0, 105), UDim2.new(0, 75, 0, 25), function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Vehicle%20Fly%20Gui"))()
-    end)
+    toggleFly()
 end)
 
 createButton(homeContent, "PlayersBtn", "👥 Players", UDim2.new(0, 95, 0, 105), UDim2.new(0, 75, 0, 25), function()
@@ -417,26 +520,66 @@ createButton(homeContent, "PlayersBtn", "👥 Players", UDim2.new(0, 95, 0, 105)
 end)
 
 createButton(homeContent, "ResetCamBtn", "📷 Reset Cam", UDim2.new(0, 10, 0, 140), UDim2.new(0, 75, 0, 25), function()
-    workspace.CurrentCamera.CameraSubject = character.Humanoid
+    if workspace.CurrentCamera and character and humanoid then
+        workspace.CurrentCamera.CameraSubject = humanoid
+        workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+    end
 end)
 
 createButton(homeContent, "ResetBtn", "🔄 Reset All", UDim2.new(0, 95, 0, 140), UDim2.new(0, 75, 0, 25), function()
-    humanoid.WalkSpeed = originalWalkSpeed
-    humanoid.JumpPower = originalJumpPower
+    -- Reset speed and jump
+    if humanoid then
+        humanoid.WalkSpeed = originalWalkSpeed
+        humanoid.JumpPower = originalJumpPower
+    end
+    
+    -- Disable noclip
     noclip = false
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+    end
+    
+    -- Disable infinite jump
     infiniteJump = false
     if jumpConnection then
         jumpConnection:Disconnect()
         jumpConnection = nil
     end
+    
+    -- Disable fly
+    flying = false
+    if flyConnection then
+        flyConnection:Disconnect()
+        flyConnection = nil
+    end
+    if bodyVelocity then
+        bodyVelocity:Destroy()
+        bodyVelocity = nil
+    end
+    if bodyAngularVelocity then
+        bodyAngularVelocity:Destroy()
+        bodyAngularVelocity = nil
+    end
+    
+    -- Reset UI inputs
     speedInput.Text = ""
     jumpInput.Text = ""
-    playerFrame.Visible = false
-    workspace.CurrentCamera.CameraSubject = character.Humanoid
     
-    for _, part in pairs(character:GetChildren()) do
-        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-            part.CanCollide = true
+    -- Hide player frame
+    playerFrame.Visible = false
+    
+    -- Reset camera
+    if workspace.CurrentCamera and character and humanoid then
+        workspace.CurrentCamera.CameraSubject = humanoid
+    end
+    
+    -- Reset collision
+    if character then
+        for _, part in pairs(character:GetChildren()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                part.CanCollide = true
+            end
         end
     end
 end)
@@ -447,151 +590,17 @@ createLabel(scriptContent, "Các script sẽ được thêm vào đây", UDim2.n
 
 -- Player List Functions
 function updatePlayerList()
+    -- Clear existing players
     for _, child in pairs(playerList:GetChildren()) do
         if child:IsA("Frame") then
             child:Destroy()
         end
     end
     
+    local playerCount = 0
     for _, targetPlayer in pairs(Players:GetPlayers()) do
         if targetPlayer ~= player then
+            playerCount = playerCount + 1
+            
             local playerContainer = Instance.new("Frame")
-            playerContainer.Size = UDim2.new(1, 0, 0, 45)
-            playerContainer.BackgroundColor3 = Color3.new(0.98, 0.98, 0.98)
-            playerContainer.Parent = playerList
-            
-            local containerCorner = Instance.new("UICorner")
-            containerCorner.CornerRadius = UDim.new(0, 4)
-            containerCorner.Parent = playerContainer
-            
-            local playerName = Instance.new("TextLabel")
-            playerName.Size = UDim2.new(1, 0, 0, 15)
-            playerName.Position = UDim2.new(0, 5, 0, 2)
-            playerName.BackgroundTransparency = 1
-            playerName.Text = targetPlayer.Name
-            playerName.TextSize = 10
-            playerName.Font = Enum.Font.GothamBold
-            playerName.TextColor3 = Color3.new(0.2, 0.2, 0.2)
-            playerName.TextXAlignment = Enum.TextXAlignment.Left
-            playerName.Parent = playerContainer
-            
-            local teleportBtn = Instance.new("TextButton")
-            teleportBtn.Size = UDim2.new(0, 65, 0, 20)
-            teleportBtn.Position = UDim2.new(0, 5, 0, 20)
-            teleportBtn.BackgroundColor3 = Color3.new(0.3, 0.7, 1)
-            teleportBtn.Text = "📍 Teleport"
-            teleportBtn.TextSize = 8
-            teleportBtn.Font = Enum.Font.Gotham
-            teleportBtn.TextColor3 = Color3.new(1, 1, 1)
-            teleportBtn.Parent = playerContainer
-            
-            local tpCorner = Instance.new("UICorner")
-            tpCorner.CornerRadius = UDim.new(0, 4)
-            tpCorner.Parent = teleportBtn
-            
-            local viewBtn = Instance.new("TextButton")
-            viewBtn.Size = UDim2.new(0, 65, 0, 20)
-            viewBtn.Position = UDim2.new(0, 80, 0, 20)
-            viewBtn.BackgroundColor3 = Color3.new(1, 0.6, 0.2)
-            viewBtn.Text = "👁️ View"
-            viewBtn.TextSize = 8
-            viewBtn.Font = Enum.Font.Gotham
-            viewBtn.TextColor3 = Color3.new(1, 1, 1)
-            viewBtn.Parent = playerContainer
-            
-            local viewCorner = Instance.new("UICorner")
-            viewCorner.CornerRadius = UDim.new(0, 4)
-            viewCorner.Parent = viewBtn
-            
-            teleportBtn.MouseButton1Click:Connect(function()
-                if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
-                end
-            end)
-            
-            viewBtn.MouseButton1Click:Connect(function()
-                if targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
-                    workspace.CurrentCamera.CameraSubject = targetPlayer.Character.Humanoid
-                end
-            end)
-        end
-    end
-    
-    playerList.CanvasSize = UDim2.new(0, 0, 0, #Players:GetPlayers() * 47)
-end
-
--- Tab Switching
-local function switchTab(tabName)
-    if tabName == "Home" then
-        homeContent.Visible = true
-        scriptContent.Visible = false
-        homeTab.BackgroundColor3 = Color3.new(1, 1, 1)
-        homeTab.TextColor3 = Color3.new(0.2, 0.2, 0.2)
-        scriptTab.BackgroundColor3 = Color3.new(0.8, 0.8, 0.8)
-        scriptTab.TextColor3 = Color3.new(0.4, 0.4, 0.4)
-    else
-        homeContent.Visible = false
-        scriptContent.Visible = true
-        homeTab.BackgroundColor3 = Color3.new(0.8, 0.8, 0.8)
-        homeTab.TextColor3 = Color3.new(0.4, 0.4, 0.4)
-        scriptTab.BackgroundColor3 = Color3.new(1, 1, 1)
-        scriptTab.TextColor3 = Color3.new(0.2, 0.2, 0.2)
-    end
-end
-
-homeTab.MouseButton1Click:Connect(function()
-    switchTab("Home")
-end)
-
-scriptTab.MouseButton1Click:Connect(function()
-    switchTab("Script")
-end)
-
--- Close/Toggle functionality
-closeButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = false
-    toggleButton.Visible = true
-    playerFrame.Visible = false
-end)
-
-toggleButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = true
-    toggleButton.Visible = false
-end)
-
--- Keyboard shortcut (Right Shift)
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.RightShift then
-        if mainFrame.Visible then
-            mainFrame.Visible = false
-            toggleButton.Visible = true
-            playerFrame.Visible = false
-        else
-            mainFrame.Visible = true
-            toggleButton.Visible = false
-        end
-    end
-end)
-
--- Character respawn handling
-player.CharacterAdded:Connect(function(newCharacter)
-    character = newCharacter
-    humanoid = character:WaitForChild("Humanoid")
-    noclip = false
-    infiniteJump = false
-    if jumpConnection then
-        jumpConnection:Disconnect()
-        jumpConnection = nil
-    end
-    wait(1)
-    humanoid.WalkSpeed = originalWalkSpeed
-    humanoid.JumpPower = originalJumpPower
-end)
-
--- Show UI after loading
-wait(2.5)
-mainFrame.Visible = true
-
-print("Mila UI đã được tải thành công! 💖")
-print("Nhấn Right Shift để bật/tắt UI")
+            playerCont
