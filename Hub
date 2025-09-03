@@ -1,4 +1,4 @@
--- Mila UI Script for Roblox - Tab System
+-- Mila UI Script for Roblox - Tab Design
 -- Tạo bởi: Mila
 -- Tính năng: Speed, Jump, Fly, Noclip, Teleport, Infinite Jump
 
@@ -26,133 +26,101 @@ screenGui.Name = "MilaUI"
 screenGui.Parent = CoreGui
 screenGui.ResetOnSpawn = false
 
--- Main Container
-local mainContainer = Instance.new("Frame")
-mainContainer.Name = "MainContainer"
-mainContainer.Size = UDim2.new(0, 500, 0, 400)
-mainContainer.Position = UDim2.new(0.5, -250, 0.5, -200)
-mainContainer.BackgroundColor3 = Color3.new(1, 0.4, 0.5) -- Pink background like image
-mainContainer.BorderSizePixel = 0
-mainContainer.Active = true
-mainContainer.Draggable = true
-mainContainer.Parent = screenGui
+-- Background
+local background = Instance.new("Frame")
+background.Name = "Background"
+background.Size = UDim2.new(0, 400, 0, 300)
+background.Position = UDim2.new(0.5, -200, 0.5, -150)
+background.BackgroundColor3 = Color3.fromRGB(234, 67, 104) -- Pink/Red background
+background.BorderSizePixel = 0
+background.Active = true
+background.Draggable = true
+background.Parent = screenGui
 
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 20)
-mainCorner.Parent = mainContainer
+-- Round corners for background
+local bgCorner = Instance.new("UICorner")
+bgCorner.CornerRadius = UDim.new(0, 15)
+bgCorner.Parent = background
 
 -- Tab Container
 local tabContainer = Instance.new("Frame")
 tabContainer.Name = "TabContainer"
-tabContainer.Size = UDim2.new(0, 500, 0, 50)
-tabContainer.Position = UDim2.new(0, 0, 0, 0)
+tabContainer.Size = UDim2.new(1, -20, 0, 40)
+tabContainer.Position = UDim2.new(0, 10, 0, 10)
 tabContainer.BackgroundTransparency = 1
-tabContainer.Parent = mainContainer
+tabContainer.Parent = background
 
 -- Home Tab
 local homeTab = Instance.new("TextButton")
 homeTab.Name = "HomeTab"
-homeTab.Size = UDim2.new(0, 240, 0, 40)
-homeTab.Position = UDim2.new(0, 20, 0, 5)
-homeTab.BackgroundColor3 = Color3.new(1, 1, 1) -- White when active
+homeTab.Size = UDim2.new(0, 120, 1, 0)
+homeTab.Position = UDim2.new(0, 0, 0, 0)
+homeTab.BackgroundColor3 = Color3.new(1, 1, 1)
 homeTab.Text = "Home"
 homeTab.TextColor3 = Color3.new(0, 0, 0)
-homeTab.TextSize = 18
+homeTab.TextSize = 16
 homeTab.Font = Enum.Font.GothamBold
 homeTab.Parent = tabContainer
 
 local homeTabCorner = Instance.new("UICorner")
-homeTabCorner.CornerRadius = UDim.new(0, 12)
+homeTabCorner.CornerRadius = UDim.new(0, 10)
 homeTabCorner.Parent = homeTab
 
 -- Script Tab
 local scriptTab = Instance.new("TextButton")
 scriptTab.Name = "ScriptTab"
-scriptTab.Size = UDim2.new(0, 240, 0, 40)
-scriptTab.Position = UDim2.new(0, 240, 0, 5)
-scriptTab.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9) -- Light gray when inactive
+scriptTab.Size = UDim2.new(0, 120, 1, 0)
+scriptTab.Position = UDim2.new(0, 130, 0, 0)
+scriptTab.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
 scriptTab.Text = "Script"
-scriptTab.TextColor3 = Color3.new(0.3, 0.3, 0.3)
-scriptTab.TextSize = 18
-scriptTab.Font = Enum.Font.GothamBold
+scriptTab.TextColor3 = Color3.new(0, 0, 0)
+scriptTab.TextSize = 16
+scriptTab.Font = Enum.Font.Gotham
 scriptTab.Parent = tabContainer
 
 local scriptTabCorner = Instance.new("UICorner")
-scriptTabCorner.CornerRadius = UDim.new(0, 12)
+scriptTabCorner.CornerRadius = UDim.new(0, 10)
 scriptTabCorner.Parent = scriptTab
 
--- Content Frame
-local contentFrame = Instance.new("Frame")
-contentFrame.Name = "ContentFrame"
-contentFrame.Size = UDim2.new(1, -40, 1, -70)
-contentFrame.Position = UDim2.new(0, 20, 0, 50)
-contentFrame.BackgroundColor3 = Color3.new(1, 1, 1) -- White content area
-contentFrame.BorderSizePixel = 0
-contentFrame.Parent = mainContainer
+-- Content Area
+local contentArea = Instance.new("Frame")
+contentArea.Name = "ContentArea"
+contentArea.Size = UDim2.new(1, -20, 1, -70)
+contentArea.Position = UDim2.new(0, 10, 0, 60)
+contentArea.BackgroundColor3 = Color3.new(0.95, 0.95, 0.95)
+contentArea.BorderSizePixel = 0
+contentArea.Parent = background
 
 local contentCorner = Instance.new("UICorner")
-contentCorner.CornerRadius = UDim.new(0, 15)
-contentCorner.Parent = contentFrame
-
--- Home Content (ScrollingFrame)
-local homeContent = Instance.new("ScrollingFrame")
-homeContent.Name = "HomeContent"
-homeContent.Size = UDim2.new(1, -20, 1, -20)
-homeContent.Position = UDim2.new(0, 10, 0, 10)
-homeContent.BackgroundTransparency = 1
-homeContent.ScrollBarThickness = 6
-homeContent.CanvasSize = UDim2.new(0, 0, 0, 500)
-homeContent.Parent = contentFrame
-
--- Script Content (Hidden initially)
-local scriptContent = Instance.new("ScrollingFrame")
-scriptContent.Name = "ScriptContent"
-scriptContent.Size = UDim2.new(1, -20, 1, -20)
-scriptContent.Position = UDim2.new(0, 10, 0, 10)
-scriptContent.BackgroundTransparency = 1
-scriptContent.ScrollBarThickness = 6
-scriptContent.CanvasSize = UDim2.new(0, 0, 0, 300)
-scriptContent.Visible = false
-scriptContent.Parent = contentFrame
-
--- Script Content Text (Placeholder)
-local scriptText = Instance.new("TextLabel")
-scriptText.Size = UDim2.new(1, 0, 0, 200)
-scriptText.Position = UDim2.new(0, 0, 0, 50)
-scriptText.BackgroundTransparency = 1
-scriptText.Text = "Script tab - Coming soon!\nThis area will contain additional scripts and features."
-scriptText.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-scriptText.TextSize = 16
-scriptText.Font = Enum.Font.Gotham
-scriptText.TextWrapped = true
-scriptText.Parent = scriptContent
+contentCorner.CornerRadius = UDim.new(0, 10)
+contentCorner.Parent = contentArea
 
 -- Close Button
 local closeButton = Instance.new("TextButton")
 closeButton.Name = "CloseButton"
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -35, 0, 5)
+closeButton.Size = UDim2.new(0, 25, 0, 25)
+closeButton.Position = UDim2.new(1, -35, 0, 10)
 closeButton.BackgroundColor3 = Color3.new(1, 0.3, 0.3)
 closeButton.Text = "✕"
 closeButton.TextColor3 = Color3.new(1, 1, 1)
-closeButton.TextSize = 16
+closeButton.TextSize = 14
 closeButton.Font = Enum.Font.GothamBold
-closeButton.Parent = mainContainer
+closeButton.Parent = background
 
 local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 15)
+closeCorner.CornerRadius = UDim.new(0, 12)
 closeCorner.Parent = closeButton
 
 -- Toggle Button (when closed)
 local toggleButton = Instance.new("TextButton")
 toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.new(0, 100, 0, 40)
+toggleButton.Size = UDim2.new(0, 80, 0, 30)
 toggleButton.Position = UDim2.new(0, 10, 0, 10)
-toggleButton.BackgroundColor3 = Color3.new(1, 0.4, 0.5)
+toggleButton.BackgroundColor3 = Color3.fromRGB(234, 67, 104)
 toggleButton.Text = "Mila 💖"
 toggleButton.TextColor3 = Color3.new(1, 1, 1)
-toggleButton.TextSize = 14
-toggleButton.Font = Enum.Font.GothamBold
+toggleButton.TextSize = 12
+toggleButton.Font = Enum.Font.Gotham
 toggleButton.Visible = false
 toggleButton.Parent = screenGui
 
@@ -160,32 +128,53 @@ local toggleCorner = Instance.new("UICorner")
 toggleCorner.CornerRadius = UDim.new(0, 10)
 toggleCorner.Parent = toggleButton
 
--- Button Creation Function for Home Tab
-local function createHomeButton(name, text, position, callback)
+-- Home Content Frame
+local homeContent = Instance.new("ScrollingFrame")
+homeContent.Name = "HomeContent"
+homeContent.Size = UDim2.new(1, -20, 1, -20)
+homeContent.Position = UDim2.new(0, 10, 0, 10)
+homeContent.BackgroundTransparency = 1
+homeContent.ScrollBarThickness = 6
+homeContent.CanvasSize = UDim2.new(0, 0, 0, 350)
+homeContent.Parent = contentArea
+
+-- Script Content Frame
+local scriptContent = Instance.new("ScrollingFrame")
+scriptContent.Name = "ScriptContent"
+scriptContent.Size = UDim2.new(1, -20, 1, -20)
+scriptContent.Position = UDim2.new(0, 10, 0, 10)
+scriptContent.BackgroundTransparency = 1
+scriptContent.ScrollBarThickness = 6
+scriptContent.CanvasSize = UDim2.new(0, 0, 0, 400)
+scriptContent.Visible = false
+scriptContent.Parent = contentArea
+
+-- Button Creation Function
+local function createButton(parent, name, text, position, size, callback)
     local button = Instance.new("TextButton")
     button.Name = name
-    button.Size = UDim2.new(0, 140, 0, 35)
+    button.Size = size or UDim2.new(0, 140, 0, 30)
     button.Position = position
-    button.BackgroundColor3 = Color3.new(1, 0.4, 0.5)
+    button.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
     button.Text = text
-    button.TextColor3 = Color3.new(1, 1, 1)
-    button.TextSize = 13
-    button.Font = Enum.Font.GothamBold
-    button.Parent = homeContent
+    button.TextColor3 = Color3.new(0.3, 0, 0.3)
+    button.TextSize = 12
+    button.Font = Enum.Font.Gotham
+    button.Parent = parent
     
     local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 10)
+    buttonCorner.CornerRadius = UDim.new(0, 8)
     buttonCorner.Parent = button
     
     button.MouseButton1Click:Connect(callback)
     
     -- Hover effect
     button.MouseEnter:Connect(function()
-        button.BackgroundColor3 = Color3.new(1, 0.5, 0.6)
+        button.BackgroundColor3 = Color3.fromRGB(255, 192, 203)
     end)
     
     button.MouseLeave:Connect(function()
-        button.BackgroundColor3 = Color3.new(1, 0.4, 0.5)
+        button.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
     end)
     
     return button
@@ -193,137 +182,91 @@ end
 
 -- Speed Controls
 local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(1, 0, 0, 25)
-speedLabel.Position = UDim2.new(0, 0, 0, 10)
+speedLabel.Size = UDim2.new(1, 0, 0, 20)
+speedLabel.Position = UDim2.new(0, 0, 0, 120)
 speedLabel.BackgroundTransparency = 1
-speedLabel.Text = "⚡ Speed Control"
-speedLabel.TextColor3 = Color3.new(0.2, 0.2, 0.2)
-speedLabel.TextSize = 16
-speedLabel.Font = Enum.Font.GothamBold
+speedLabel.Text = "Speed: 16"
+speedLabel.TextColor3 = Color3.new(0.3, 0, 0.3)
+speedLabel.TextSize = 12
+speedLabel.Font = Enum.Font.Gotham
 speedLabel.Parent = homeContent
 
 local speedSlider = Instance.new("TextBox")
-speedSlider.Size = UDim2.new(0, 100, 0, 30)
-speedSlider.Position = UDim2.new(0, 20, 0, 40)
-speedSlider.BackgroundColor3 = Color3.new(0.95, 0.95, 0.95)
+speedSlider.Size = UDim2.new(0, 80, 0, 25)
+speedSlider.Position = UDim2.new(0, 10, 0, 145)
+speedSlider.BackgroundColor3 = Color3.new(1, 1, 1)
 speedSlider.Text = "16"
 speedSlider.TextColor3 = Color3.new(0, 0, 0)
 speedSlider.TextSize = 12
-speedSlider.PlaceholderText = "Speed"
+speedSlider.PlaceholderText = "16"
 speedSlider.Parent = homeContent
 
 local speedCorner = Instance.new("UICorner")
-speedCorner.CornerRadius = UDim.new(0, 8)
+speedCorner.CornerRadius = UDim.new(0, 5)
 speedCorner.Parent = speedSlider
-
-local applySpeedBtn = Instance.new("TextButton")
-applySpeedBtn.Size = UDim2.new(0, 80, 0, 30)
-applySpeedBtn.Position = UDim2.new(0, 130, 0, 40)
-applySpeedBtn.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
-applySpeedBtn.Text = "Apply"
-applySpeedBtn.TextColor3 = Color3.new(1, 1, 1)
-applySpeedBtn.TextSize = 12
-applySpeedBtn.Font = Enum.Font.Gotham
-applySpeedBtn.Parent = homeContent
-
-local applySpeedCorner = Instance.new("UICorner")
-applySpeedCorner.CornerRadius = UDim.new(0, 8)
-applySpeedCorner.Parent = applySpeedBtn
 
 -- Jump Controls
 local jumpLabel = Instance.new("TextLabel")
-jumpLabel.Size = UDim2.new(1, 0, 0, 25)
-jumpLabel.Position = UDim2.new(0, 0, 0, 80)
+jumpLabel.Size = UDim2.new(1, 0, 0, 20)
+jumpLabel.Position = UDim2.new(0, 0, 0, 180)
 jumpLabel.BackgroundTransparency = 1
-jumpLabel.Text = "🦘 Jump Control"
-jumpLabel.TextColor3 = Color3.new(0.2, 0.2, 0.2)
-jumpLabel.TextSize = 16
-jumpLabel.Font = Enum.Font.GothamBold
+jumpLabel.Text = "Jump: 50"
+jumpLabel.TextColor3 = Color3.new(0.3, 0, 0.3)
+jumpLabel.TextSize = 12
+jumpLabel.Font = Enum.Font.Gotham
 jumpLabel.Parent = homeContent
 
 local jumpSlider = Instance.new("TextBox")
-jumpSlider.Size = UDim2.new(0, 100, 0, 30)
-jumpSlider.Position = UDim2.new(0, 20, 0, 110)
-jumpSlider.BackgroundColor3 = Color3.new(0.95, 0.95, 0.95)
+jumpSlider.Size = UDim2.new(0, 80, 0, 25)
+jumpSlider.Position = UDim2.new(0, 10, 0, 205)
+jumpSlider.BackgroundColor3 = Color3.new(1, 1, 1)
 jumpSlider.Text = "50"
 jumpSlider.TextColor3 = Color3.new(0, 0, 0)
 jumpSlider.TextSize = 12
-jumpSlider.PlaceholderText = "Jump Power"
+jumpSlider.PlaceholderText = "50"
 jumpSlider.Parent = homeContent
 
 local jumpCorner = Instance.new("UICorner")
-jumpCorner.CornerRadius = UDim.new(0, 8)
+jumpCorner.CornerRadius = UDim.new(0, 5)
 jumpCorner.Parent = jumpSlider
 
-local applyJumpBtn = Instance.new("TextButton")
-applyJumpBtn.Size = UDim2.new(0, 80, 0, 30)
-applyJumpBtn.Position = UDim2.new(0, 130, 0, 110)
-applyJumpBtn.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
-applyJumpBtn.Text = "Apply"
-applyJumpBtn.TextColor3 = Color3.new(1, 1, 1)
-applyJumpBtn.TextSize = 12
-applyJumpBtn.Font = Enum.Font.Gotham
-applyJumpBtn.Parent = homeContent
-
-local applyJumpCorner = Instance.new("UICorner")
-applyJumpCorner.CornerRadius = UDim.new(0, 8)
-applyJumpCorner.Parent = applyJumpBtn
-
--- Features Label
-local featuresLabel = Instance.new("TextLabel")
-featuresLabel.Size = UDim2.new(1, 0, 0, 25)
-featuresLabel.Position = UDim2.new(0, 0, 0, 160)
-featuresLabel.BackgroundTransparency = 1
-featuresLabel.Text = "🎮 Features"
-featuresLabel.TextColor3 = Color3.new(0.2, 0.2, 0.2)
-featuresLabel.TextSize = 16
-featuresLabel.Font = Enum.Font.GothamBold
-featuresLabel.Parent = homeContent
-
--- Player List Frame (Right side)
+-- Player List (right side)
 local playerFrame = Instance.new("Frame")
 playerFrame.Name = "PlayerFrame"
-playerFrame.Size = UDim2.new(0, 200, 0, 350)
-playerFrame.Position = UDim2.new(0.5, 260, 0.5, -175)
-playerFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+playerFrame.Size = UDim2.new(0, 180, 0, 300)
+playerFrame.Position = UDim2.new(0.5, 210, 0.5, -150)
+playerFrame.BackgroundColor3 = Color3.fromRGB(255, 240, 245)
 playerFrame.BorderSizePixel = 0
 playerFrame.Visible = false
 playerFrame.Parent = screenGui
 
 local playerFrameCorner = Instance.new("UICorner")
-playerFrameCorner.CornerRadius = UDim.new(0, 15)
+playerFrameCorner.CornerRadius = UDim.new(0, 10)
 playerFrameCorner.Parent = playerFrame
 
--- Player Frame Header
-local playerHeader = Instance.new("Frame")
-playerHeader.Size = UDim2.new(1, 0, 0, 40)
-playerHeader.BackgroundColor3 = Color3.new(1, 0.4, 0.5)
-playerHeader.Parent = playerFrame
-
-local playerHeaderCorner = Instance.new("UICorner")
-playerHeaderCorner.CornerRadius = UDim.new(0, 15)
-playerHeaderCorner.Parent = playerHeader
-
--- Player Title
 local playerTitle = Instance.new("TextLabel")
-playerTitle.Size = UDim2.new(1, 0, 1, 0)
+playerTitle.Size = UDim2.new(1, 0, 0, 30)
+playerTitle.Position = UDim2.new(0, 0, 0, 0)
 playerTitle.BackgroundTransparency = 1
-playerTitle.Text = "👥 Players"
-playerTitle.TextColor3 = Color3.new(1, 1, 1)
-playerTitle.TextSize = 16
+playerTitle.Text = "👥 Người Chơi"
+playerTitle.TextColor3 = Color3.new(0.5, 0, 0.5)
+playerTitle.TextSize = 14
 playerTitle.Font = Enum.Font.GothamBold
-playerTitle.Parent = playerHeader
+playerTitle.Parent = playerFrame
 
 local playerList = Instance.new("ScrollingFrame")
 playerList.Name = "PlayerList"
-playerList.Size = UDim2.new(1, -10, 1, -50)
-playerList.Position = UDim2.new(0, 5, 0, 45)
-playerList.BackgroundTransparency = 1
+playerList.Size = UDim2.new(1, -10, 1, -35)
+playerList.Position = UDim2.new(0, 5, 0, 30)
+playerList.BackgroundColor3 = Color3.new(1, 1, 1)
 playerList.ScrollBarThickness = 4
 playerList.Parent = playerFrame
 
+local listCorner = Instance.new("UICorner")
+listCorner.CornerRadius = UDim.new(0, 8)
+listCorner.Parent = playerList
+
 local listLayout = Instance.new("UIListLayout")
-listLayout.Padding = UDim.new(0, 5)
 listLayout.Parent = playerList
 
 -- Functions
@@ -337,32 +280,32 @@ local function updatePlayerList()
     for _, targetPlayer in pairs(Players:GetPlayers()) do
         if targetPlayer ~= player then
             local playerContainer = Instance.new("Frame")
-            playerContainer.Size = UDim2.new(1, 0, 0, 70)
-            playerContainer.BackgroundColor3 = Color3.new(0.98, 0.98, 0.98)
+            playerContainer.Size = UDim2.new(1, 0, 0, 60)
+            playerContainer.BackgroundColor3 = Color3.new(0.95, 0.95, 0.95)
             playerContainer.Parent = playerList
             
             local containerCorner = Instance.new("UICorner")
-            containerCorner.CornerRadius = UDim.new(0, 8)
+            containerCorner.CornerRadius = UDim.new(0, 5)
             containerCorner.Parent = playerContainer
             
             local playerName = Instance.new("TextLabel")
-            playerName.Size = UDim2.new(1, 0, 0, 25)
+            playerName.Size = UDim2.new(1, 0, 0, 20)
             playerName.Position = UDim2.new(0, 0, 0, 5)
             playerName.BackgroundTransparency = 1
             playerName.Text = targetPlayer.Name
-            playerName.TextSize = 12
+            playerName.TextSize = 11
             playerName.Font = Enum.Font.GothamBold
-            playerName.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+            playerName.TextColor3 = Color3.new(0.2, 0, 0.2)
             playerName.Parent = playerContainer
             
             local teleportBtn = Instance.new("TextButton")
             teleportBtn.Size = UDim2.new(0.45, 0, 0, 25)
-            teleportBtn.Position = UDim2.new(0, 5, 0, 35)
-            teleportBtn.BackgroundColor3 = Color3.new(0.3, 0.6, 1)
+            teleportBtn.Position = UDim2.new(0, 5, 0, 30)
+            teleportBtn.BackgroundColor3 = Color3.fromRGB(173, 216, 230)
             teleportBtn.Text = "📍 TP"
-            teleportBtn.TextSize = 10
+            teleportBtn.TextSize = 9
             teleportBtn.Font = Enum.Font.Gotham
-            teleportBtn.TextColor3 = Color3.new(1, 1, 1)
+            teleportBtn.TextColor3 = Color3.new(0, 0.3, 0.6)
             teleportBtn.Parent = playerContainer
             
             local tpCorner = Instance.new("UICorner")
@@ -371,12 +314,12 @@ local function updatePlayerList()
             
             local viewBtn = Instance.new("TextButton")
             viewBtn.Size = UDim2.new(0.45, 0, 0, 25)
-            viewBtn.Position = UDim2.new(0.55, 0, 0, 35)
-            viewBtn.BackgroundColor3 = Color3.new(1, 0.6, 0.2)
-            viewBtn.Text = "👁️ View"
-            viewBtn.TextSize = 10
+            viewBtn.Position = UDim2.new(0.55, 0, 0, 30)
+            viewBtn.BackgroundColor3 = Color3.fromRGB(255, 218, 185)
+            viewBtn.Text = "👁️ Xem"
+            viewBtn.TextSize = 9
             viewBtn.Font = Enum.Font.Gotham
-            viewBtn.TextColor3 = Color3.new(1, 1, 1)
+            viewBtn.TextColor3 = Color3.new(0.6, 0.3, 0)
             viewBtn.Parent = playerContainer
             
             local viewCorner = Instance.new("UICorner")
@@ -397,7 +340,7 @@ local function updatePlayerList()
         end
     end
     
-    playerList.CanvasSize = UDim2.new(0, 0, 0, #Players:GetPlayers() * 75)
+    playerList.CanvasSize = UDim2.new(0, 0, 0, #Players:GetPlayers() * 65)
 end
 
 local function toggleNoclip()
@@ -446,57 +389,66 @@ end
 
 local function loadFlyScript()
     pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Sddnin4/Mila/refs/heads/main/Fly"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Vehicle%20Fly%20Gui"))()
     end)
 end
 
 local function switchTab(tabName)
-    currentTab = tabName
-    
     if tabName == "Home" then
-        homeTab.BackgroundColor3 = Color3.new(1, 1, 1)
-        homeTab.TextColor3 = Color3.new(0, 0, 0)
-        scriptTab.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
-        scriptTab.TextColor3 = Color3.new(0.3, 0.3, 0.3)
-        
         homeContent.Visible = true
         scriptContent.Visible = false
-    else
-        homeTab.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
-        homeTab.TextColor3 = Color3.new(0.3, 0.3, 0.3)
-        scriptTab.BackgroundColor3 = Color3.new(1, 1, 1)
-        scriptTab.TextColor3 = Color3.new(0, 0, 0)
-        
+        homeTab.BackgroundColor3 = Color3.new(1, 1, 1)
+        scriptTab.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+        homeTab.Font = Enum.Font.GothamBold
+        scriptTab.Font = Enum.Font.Gotham
+    elseif tabName == "Script" then
         homeContent.Visible = false
         scriptContent.Visible = true
+        homeTab.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+        scriptTab.BackgroundColor3 = Color3.new(1, 1, 1)
+        homeTab.Font = Enum.Font.Gotham
+        scriptTab.Font = Enum.Font.GothamBold
     end
+    currentTab = tabName
 end
 
 -- Create Home Buttons
-createHomeButton("FlyButton", "🕊️ Fly", UDim2.new(0, 20, 0, 200), function()
-    loadFlyScript()
+createButton(homeContent, "SpeedButton", "🏃 Chạy Nhanh", UDim2.new(0, 10, 0, 10), UDim2.new(0, 140, 0, 30), function()
+    local speed = tonumber(speedSlider.Text) or 16
+    humanoid.WalkSpeed = speed
+    speedLabel.Text = "Speed: " .. speed
 end)
 
-createHomeButton("NoclipButton", "👻 Noclip", UDim2.new(0, 180, 0, 200), function()
+createButton(homeContent, "JumpButton", "🦘 Nhảy Cao", UDim2.new(0, 160, 0, 10), UDim2.new(0, 140, 0, 30), function()
+    local jump = tonumber(jumpSlider.Text) or 50
+    humanoid.JumpPower = jump
+    jumpLabel.Text = "Jump: " .. jump
+end)
+
+createButton(homeContent, "NoclipButton", "👻 Xuyên Tường", UDim2.new(0, 10, 0, 50), UDim2.new(0, 140, 0, 30), function()
     toggleNoclip()
 end)
 
-createHomeButton("InfiniteJumpButton", "♾️ Infinite Jump", UDim2.new(0, 340, 0, 200), function()
+createButton(homeContent, "InfiniteJumpButton", "♾️ Vô Hạn Nhảy", UDim2.new(0, 160, 0, 50), UDim2.new(0, 140, 0, 30), function()
     toggleInfiniteJump()
 end)
 
-createHomeButton("TeleportButton", "📍 Teleport", UDim2.new(0, 20, 0, 250), function()
+createButton(homeContent, "FlyButton", "🕊️ Bay", UDim2.new(0, 10, 0, 90), UDim2.new(0, 140, 0, 30), function()
+    loadFlyScript()
+end)
+
+createButton(homeContent, "TeleportButton", "📍 Dịch Chuyển", UDim2.new(0, 160, 0, 90), UDim2.new(0, 140, 0, 30), function()
     playerFrame.Visible = not playerFrame.Visible
     if playerFrame.Visible then
         updatePlayerList()
     end
 end)
 
-createHomeButton("CameraButton", "📷 Reset Cam", UDim2.new(0, 180, 0, 250), function()
+createButton(homeContent, "CameraButton", "📷 Reset Cam", UDim2.new(0, 10, 0, 240), UDim2.new(0, 140, 0, 30), function()
     resetCamera()
 end)
 
-createHomeButton("ResetButton", "🔄 Reset All", UDim2.new(0, 340, 0, 250), function()
+createButton(homeContent, "ResetButton", "🔄 Reset", UDim2.new(0, 160, 0, 240), UDim2.new(0, 140, 0, 30), function()
     humanoid.WalkSpeed = originalWalkSpeed
     humanoid.JumpPower = originalJumpPower
     noclip = false
@@ -507,6 +459,8 @@ createHomeButton("ResetButton", "🔄 Reset All", UDim2.new(0, 340, 0, 250), fun
     end
     speedSlider.Text = "16"
     jumpSlider.Text = "50"
+    speedLabel.Text = "Speed: 16"
+    jumpLabel.Text = "Jump: 50"
     playerFrame.Visible = false
     resetCamera()
     
@@ -517,26 +471,23 @@ createHomeButton("ResetButton", "🔄 Reset All", UDim2.new(0, 340, 0, 250), fun
     end
 end)
 
--- Apply Button Functions
-applySpeedBtn.MouseButton1Click:Connect(function()
-    local speed = tonumber(speedSlider.Text) or 16
-    humanoid.WalkSpeed = speed
-    
-    applySpeedBtn.BackgroundColor3 = Color3.new(0.1, 0.9, 0.1)
-    wait(0.1)
-    applySpeedBtn.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
-end)
+-- Script Tab Content (placeholder)
+local scriptInfo = Instance.new("TextLabel")
+scriptInfo.Size = UDim2.new(1, -20, 0, 100)
+scriptInfo.Position = UDim2.new(0, 10, 0, 10)
+scriptInfo.BackgroundColor3 = Color3.fromRGB(255, 240, 245)
+scriptInfo.Text = "Tính năng Script sẽ được thêm vào sau!\n\nHiện tại hãy sử dụng tab Home\nđể trải nghiệm các chức năng chính."
+scriptInfo.TextColor3 = Color3.new(0.3, 0, 0.3)
+scriptInfo.TextSize = 12
+scriptInfo.Font = Enum.Font.Gotham
+scriptInfo.TextWrapped = true
+scriptInfo.Parent = scriptContent
 
-applyJumpBtn.MouseButton1Click:Connect(function()
-    local jump = tonumber(jumpSlider.Text) or 50
-    humanoid.JumpPower = jump
-    
-    applyJumpBtn.BackgroundColor3 = Color3.new(0.1, 0.9, 0.1)
-    wait(0.1)
-    applyJumpBtn.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
-end)
+local scriptInfoCorner = Instance.new("UICorner")
+scriptInfoCorner.CornerRadius = UDim.new(0, 8)
+scriptInfoCorner.Parent = scriptInfo
 
--- Tab Events
+-- Tab switching
 homeTab.MouseButton1Click:Connect(function()
     switchTab("Home")
 end)
@@ -547,13 +498,13 @@ end)
 
 -- Close/Toggle functionality
 closeButton.MouseButton1Click:Connect(function()
-    mainContainer.Visible = false
+    background.Visible = false
     toggleButton.Visible = true
     playerFrame.Visible = false
 end)
 
 toggleButton.MouseButton1Click:Connect(function()
-    mainContainer.Visible = true
+    background.Visible = true
     toggleButton.Visible = false
 end)
 
@@ -561,12 +512,12 @@ end)
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.RightShift then
-        if mainContainer.Visible then
-            mainContainer.Visible = false
+        if background.Visible then
+            background.Visible = false
             toggleButton.Visible = true
             playerFrame.Visible = false
         else
-            mainContainer.Visible = true
+            background.Visible = true
             toggleButton.Visible = false
         end
     end
@@ -587,8 +538,5 @@ player.CharacterAdded:Connect(function(newCharacter)
     humanoid.JumpPower = originalJumpPower
 end)
 
--- Initialize
-switchTab("Home")
-
-print("Mila UI với Tab System đã được tải thành công! 💖")
+print("Mila UI (Tab Version) đã được tải thành công! 💖")
 print("Nhấn Right Shift để bật/tắt UI")
