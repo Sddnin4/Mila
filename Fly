@@ -1,7 +1,6 @@
--- Roblox UI Script - Tab Interface
+-- Roblox UI Script - Fixed Version
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -15,100 +14,99 @@ screenGui.Parent = playerGui
 -- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 400, 0, 300)
-mainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 85, 140)
+mainFrame.Size = UDim2.new(0, 450, 0, 320)
+mainFrame.Position = UDim2.new(0.5, -225, 0.5, -160)
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 118, 210)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 
--- Create gradient background
+-- Rounded corners
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 12)
+mainCorner.Parent = mainFrame
+
+-- Background gradient
 local gradient = Instance.new("UIGradient")
-gradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 85, 140)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(60, 80, 150)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(120, 60, 180))
-}
-gradient.Rotation = 45
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 118, 210)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(156, 39, 176))
+})
+gradient.Rotation = 135
 gradient.Parent = mainFrame
 
--- Corner radius
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 15)
-corner.Parent = mainFrame
+-- Top bar
+local topBar = Instance.new("Frame")
+topBar.Name = "TopBar"
+topBar.Size = UDim2.new(1, 0, 0, 70)
+topBar.Position = UDim2.new(0, 0, 0, 0)
+topBar.BackgroundTransparency = 1
+topBar.Parent = mainFrame
 
--- Tab Container
-local tabContainer = Instance.new("Frame")
-tabContainer.Name = "TabContainer"
-tabContainer.Size = UDim2.new(1, 0, 0, 60)
-tabContainer.Position = UDim2.new(0, 0, 0, 0)
-tabContainer.BackgroundTransparency = 1
-tabContainer.Parent = mainFrame
+-- Tab buttons container
+local tabsContainer = Instance.new("Frame")
+tabsContainer.Size = UDim2.new(1, -40, 1, -10)
+tabsContainer.Position = UDim2.new(0, 20, 0, 5)
+tabsContainer.BackgroundTransparency = 1
+tabsContainer.Parent = topBar
 
--- Content Container
-local contentContainer = Instance.new("Frame")
-contentContainer.Name = "ContentContainer"
-contentContainer.Size = UDim2.new(1, -20, 1, -80)
-contentContainer.Position = UDim2.new(0, 10, 0, 70)
-contentContainer.BackgroundTransparency = 1
-contentContainer.Parent = mainFrame
+-- Variables
+local currentTab = 1
+local tabButtons = {}
+local indicators = {}
 
 -- Tab data
-local tabs = {
-    {name = "Home", icon = "🏠", content = "Welcome to Home Tab!\n\nThis is your main dashboard."},
-    {name = "Script", icon = "</>', content = "Script Tab\n\nPlace your scripts here.\nExecute and manage your code."},
-    {name = "Notifications", icon = "🔔", content = "Notifications Tab\n\nView all your notifications here.\nStay updated with latest alerts."}
+local tabInfo = {
+    {name = "Home", icon = "🏠"},
+    {name = "Script", icon = "</>"},
+    {name = "Notifications", icon = "🔔"}
 }
 
-local tabButtons = {}
-local currentTab = 1
-
--- Create tab buttons
-for i, tabData in ipairs(tabs) do
+-- Create tabs
+for i = 1, 3 do
+    local tab = tabInfo[i]
+    
+    -- Tab button
     local tabButton = Instance.new("TextButton")
-    tabButton.Name = tabData.name .. "Tab"
-    tabButton.Size = UDim2.new(1/3, -5, 1, -10)
-    tabButton.Position = UDim2.new((i-1)/3, 2.5, 0, 5)
-    tabButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    tabButton.BackgroundTransparency = 0.9
-    tabButton.BorderSizePixel = 0
+    tabButton.Name = tab.name
+    tabButton.Size = UDim2.new(1/3, -10, 1, -15)
+    tabButton.Position = UDim2.new((i-1)/3, 5, 0, 5)
+    tabButton.BackgroundTransparency = 1
     tabButton.Text = ""
-    tabButton.Parent = tabContainer
+    tabButton.Parent = tabsContainer
     
-    -- Tab corner
-    local tabCorner = Instance.new("UICorner")
-    tabCorner.CornerRadius = UDim.new(0, 8)
-    tabCorner.Parent = tabButton
+    -- Tab content frame
+    local tabContent = Instance.new("Frame")
+    tabContent.Size = UDim2.new(1, 0, 1, 0)
+    tabContent.BackgroundTransparency = 1
+    tabContent.Parent = tabButton
     
-    -- Tab icon
-    local tabIcon = Instance.new("TextLabel")
-    tabIcon.Name = "Icon"
-    tabIcon.Size = UDim2.new(0, 20, 0, 20)
-    tabIcon.Position = UDim2.new(0.5, -10, 0, 8)
-    tabIcon.BackgroundTransparency = 1
-    tabIcon.Text = tabData.icon
-    tabIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tabIcon.TextScaled = true
-    tabIcon.Font = Enum.Font.GothamBold
-    tabIcon.Parent = tabButton
+    -- Icon
+    local icon = Instance.new("TextLabel")
+    icon.Size = UDim2.new(0, 24, 0, 24)
+    icon.Position = UDim2.new(0.5, -12, 0, 8)
+    icon.BackgroundTransparency = 1
+    icon.Text = tab.icon
+    icon.TextColor3 = Color3.white
+    icon.TextSize = 18
+    icon.Font = Enum.Font.GothamBold
+    icon.Parent = tabContent
     
-    -- Tab label
-    local tabLabel = Instance.new("TextLabel")
-    tabLabel.Name = "Label"
-    tabLabel.Size = UDim2.new(1, 0, 0, 15)
-    tabLabel.Position = UDim2.new(0, 0, 1, -20)
-    tabLabel.BackgroundTransparency = 1
-    tabLabel.Text = tabData.name
-    tabLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tabLabel.TextSize = 12
-    tabLabel.Font = Enum.Font.Gotham
-    tabLabel.Parent = tabButton
+    -- Label
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 0, 20)
+    label.Position = UDim2.new(0, 0, 1, -25)
+    label.BackgroundTransparency = 1
+    label.Text = tab.name
+    label.TextColor3 = Color3.white
+    label.TextSize = 12
+    label.Font = Enum.Font.Gotham
+    label.Parent = tabContent
     
     -- Active indicator
     local indicator = Instance.new("Frame")
-    indicator.Name = "Indicator"
-    indicator.Size = UDim2.new(0.8, 0, 0, 3)
-    indicator.Position = UDim2.new(0.1, 0, 1, -5)
-    indicator.BackgroundColor3 = Color3.fromRGB(0, 255, 127)
+    indicator.Size = UDim2.new(0.7, 0, 0, 3)
+    indicator.Position = UDim2.new(0.15, 0, 1, -3)
+    indicator.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
     indicator.BorderSizePixel = 0
     indicator.Visible = (i == 1)
     indicator.Parent = tabButton
@@ -117,167 +115,110 @@ for i, tabData in ipairs(tabs) do
     indicatorCorner.CornerRadius = UDim.new(0, 2)
     indicatorCorner.Parent = indicator
     
-    tabButtons[i] = {button = tabButton, indicator = indicator}
+    tabButtons[i] = tabButton
+    indicators[i] = indicator
 end
 
--- Content frame
-local contentFrame = Instance.new("Frame")
-contentFrame.Name = "ContentFrame"
-contentFrame.Size = UDim2.new(1, 0, 1, 0)
-contentFrame.Position = UDim2.new(0, 0, 0, 0)
-contentFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-contentFrame.BackgroundTransparency = 0.95
-contentFrame.BorderSizePixel = 0
-contentFrame.Parent = contentContainer
+-- Content area
+local contentArea = Instance.new("Frame")
+contentArea.Size = UDim2.new(1, -30, 1, -100)
+contentArea.Position = UDim2.new(0, 15, 0, 85)
+contentArea.BackgroundColor3 = Color3.white
+contentArea.BackgroundTransparency = 0.9
+contentArea.BorderSizePixel = 0
+contentArea.Parent = mainFrame
 
 local contentCorner = Instance.new("UICorner")
-contentCorner.CornerRadius = UDim.new(0, 10)
-contentCorner.Parent = contentFrame
+contentCorner.CornerRadius = UDim.new(0, 8)
+contentCorner.Parent = contentArea
 
 -- Content text
 local contentText = Instance.new("TextLabel")
-contentText.Name = "ContentText"
 contentText.Size = UDim2.new(1, -20, 1, -20)
 contentText.Position = UDim2.new(0, 10, 0, 10)
 contentText.BackgroundTransparency = 1
-contentText.Text = tabs[1].content
-contentText.TextColor3 = Color3.fromRGB(255, 255, 255)
-contentText.TextSize = 14
+contentText.Text = "Welcome to Home Tab!"
+contentText.TextColor3 = Color3.white
+contentText.TextSize = 16
 contentText.Font = Enum.Font.Gotham
 contentText.TextXAlignment = Enum.TextXAlignment.Left
 contentText.TextYAlignment = Enum.TextYAlignment.Top
 contentText.TextWrapped = true
-contentText.Parent = contentFrame
+contentText.Parent = contentArea
 
--- Function to switch tabs
-local function switchTab(tabIndex)
-    if tabIndex == currentTab then return end
+-- Content for each tab
+local tabContents = {
+    "🏠 Home Tab\n\nWelcome to your dashboard!\nAll your main tools are here.",
+    "📜 Script Tab\n\nExecute your scripts here.\nManage and run your code safely.",
+    "🔔 Notifications Tab\n\nCheck all your notifications.\nStay updated with alerts."
+}
+
+-- Tab switching function
+local function switchTab(newTab)
+    if newTab == currentTab then return end
     
-    -- Hide current indicator
-    tabButtons[currentTab].indicator.Visible = false
+    -- Hide old indicator
+    indicators[currentTab].Visible = false
     
-    -- Show new indicator with animation
-    local newIndicator = tabButtons[tabIndex].indicator
-    newIndicator.Size = UDim2.new(0, 0, 0, 3)
-    newIndicator.Position = UDim2.new(0.5, 0, 1, -5)
-    newIndicator.Visible = true
+    -- Show new indicator
+    indicators[newTab].Visible = true
     
-    local indicatorTween = TweenService:Create(
-        newIndicator,
-        TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
-        {Size = UDim2.new(0.8, 0, 0, 3), Position = UDim2.new(0.1, 0, 1, -5)}
-    )
-    indicatorTween:Play()
-    
-    -- Update content with fade effect
-    local fadeOutTween = TweenService:Create(
-        contentText,
-        TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
-        {TextTransparency = 1}
-    )
-    
-    fadeOutTween.Completed:Connect(function()
-        contentText.Text = tabs[tabIndex].content
-        local fadeInTween = TweenService:Create(
-            contentText,
-            TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
-            {TextTransparency = 0}
-        )
-        fadeInTween:Play()
-    end)
-    
-    fadeOutTween:Play()
-    currentTab = tabIndex
+    -- Update content
+    contentText.Text = tabContents[newTab]
+    currentTab = newTab
 end
 
--- Connect tab button events
-for i, tabData in ipairs(tabButtons) do
-    tabData.button.MouseButton1Click:Connect(function()
+-- Connect tab buttons
+for i = 1, 3 do
+    tabButtons[i].MouseButton1Click:Connect(function()
         switchTab(i)
     end)
-    
-    -- Hover effects
-    tabData.button.MouseEnter:Connect(function()
-        local hoverTween = TweenService:Create(
-            tabData.button,
-            TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
-            {BackgroundTransparency = 0.7}
-        )
-        hoverTween:Play()
-    end)
-    
-    tabData.button.MouseLeave:Connect(function()
-        local leaveTween = TweenService:Create(
-            tabData.button,
-            TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
-            {BackgroundTransparency = 0.9}
-        )
-        leaveTween:Play()
-    end)
 end
-
--- Make GUI draggable
-local dragging = false
-local dragStart = nil
-local startPos = nil
-
-local function updateInput(input)
-    local delta = input.Position - dragStart
-    mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end
-
-mainFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = mainFrame.Position
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-mainFrame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        if dragging then
-            updateInput(input)
-        end
-    end
-end)
 
 -- Close button
 local closeButton = Instance.new("TextButton")
-closeButton.Name = "CloseButton"
-closeButton.Size = UDim2.new(0, 25, 0, 25)
-closeButton.Position = UDim2.new(1, -35, 0, 10)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -40, 0, 10)
+closeButton.BackgroundColor3 = Color3.fromRGB(244, 67, 54)
 closeButton.BorderSizePixel = 0
 closeButton.Text = "×"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.TextSize = 18
+closeButton.TextColor3 = Color3.white
+closeButton.TextSize = 20
 closeButton.Font = Enum.Font.GothamBold
 closeButton.Parent = mainFrame
 
 local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 12)
+closeCorner.CornerRadius = UDim.new(1, 0)
 closeCorner.Parent = closeButton
 
 closeButton.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
--- Entrance animation
-mainFrame.Size = UDim2.new(0, 0, 0, 0)
-mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+-- Make draggable
+local dragging = false
+local dragStart = nil
+local startPos = nil
 
-local entranceTween = TweenService:Create(
-    mainFrame,
-    TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-    {Size = UDim2.new(0, 400, 0, 300), Position = UDim2.new(0.5, -200, 0.5, -150)}
-)
-entranceTween:Play()
+mainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+    end
+end)
 
-print("Tab Interface GUI loaded successfully!")
+mainFrame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+game:GetService("UserInputService").InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+print("✅ UI loaded successfully!")
