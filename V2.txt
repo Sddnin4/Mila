@@ -142,17 +142,17 @@ tabFrame.Position = UDim2.new(0, 0, 0, 50)
 tabFrame.BackgroundTransparency = 1
 tabFrame.Parent = mainFrame
 
-local tabs = {"Home", "Script", "Search", "Notifications", "Other"}
+local tabs = {"Home", "Script", "Notifications", "Other"}
 local tabButtons = {}
 
 for i, tabName in ipairs(tabs) do
     local tabButton = Instance.new("TextButton")
-    tabButton.Size = UDim2.new(0.2, -4, 1, 0)
-    tabButton.Position = UDim2.new((i-1) * 0.2, (i-1) * 2, 0, 0)
+    tabButton.Size = UDim2.new(0.25, -5, 1, 0)
+    tabButton.Position = UDim2.new((i-1) * 0.25, (i-1) * 2.5, 0, 0)
     tabButton.BackgroundTransparency = 1
     tabButton.Text = tabName
     tabButton.TextColor3 = tabName == "Home" and Color3.new(0.2, 0.4, 0.8) or Color3.new(0.5, 0.5, 0.5)
-    tabButton.TextSize = 11
+    tabButton.TextSize = 12
     tabButton.Font = Enum.Font.Gotham
     tabButton.Parent = tabFrame
     
@@ -190,9 +190,49 @@ scriptContent.Name = "ScriptContent"
 scriptContent.Size = UDim2.new(1, 0, 1, 0)
 scriptContent.BackgroundTransparency = 1
 scriptContent.ScrollBarThickness = 6
-scriptContent.CanvasSize = UDim2.new(0, 0, 0, 600)
+scriptContent.CanvasSize = UDim2.new(0, 0, 0, 650)
 scriptContent.Visible = false
 scriptContent.Parent = contentArea
+
+-- Search Box inside Script Tab
+local searchFrame = Instance.new("Frame")
+searchFrame.Size = UDim2.new(1, -20, 0, 35)
+searchFrame.Position = UDim2.new(0, 10, 0, 10)
+searchFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+searchFrame.BorderSizePixel = 0
+searchFrame.Parent = scriptContent
+
+local searchCorner = Instance.new("UICorner")
+searchCorner.CornerRadius = UDim.new(0, 8)
+searchCorner.Parent = searchFrame
+
+local searchBox = Instance.new("TextBox")
+searchBox.Size = UDim2.new(1, -40, 1, -10)
+searchBox.Position = UDim2.new(0, 10, 0, 5)
+searchBox.BackgroundTransparency = 1
+searchBox.Text = ""
+searchBox.PlaceholderText = "🔍 Search scripts..."
+searchBox.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+searchBox.PlaceholderColor3 = Color3.new(0.6, 0.6, 0.6)
+searchBox.TextSize = 12
+searchBox.Font = Enum.Font.Gotham
+searchBox.TextXAlignment = Enum.TextXAlignment.Left
+searchBox.Parent = searchFrame
+
+-- Clear Search Button
+local clearButton = Instance.new("TextButton")
+clearButton.Size = UDim2.new(0, 25, 0, 25)
+clearButton.Position = UDim2.new(1, -30, 0, 5)
+clearButton.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
+clearButton.Text = "✕"
+clearButton.TextColor3 = Color3.new(0.5, 0.5, 0.5)
+clearButton.TextSize = 12
+clearButton.Font = Enum.Font.Gotham
+clearButton.Parent = searchFrame
+
+local clearCorner = Instance.new("UICorner")
+clearCorner.CornerRadius = UDim.new(1, 0)
+clearCorner.Parent = clearButton
 
 -- Script List Data
 local scriptList = {
@@ -213,14 +253,18 @@ local scriptList = {
     {name = "ThunderZ", url = "https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua"}
 }
 
+local allScriptFrames = {}
+
 -- Create Script Buttons
-local function createScriptButton(scriptData, position)
+local function createScriptButton(scriptData, position, parent)
+    parent = parent or scriptContent
+    
     local scriptFrame = Instance.new("Frame")
     scriptFrame.Size = UDim2.new(1, -20, 0, 35)
     scriptFrame.Position = position
     scriptFrame.BackgroundColor3 = Color3.new(0.95, 0.96, 0.98)
     scriptFrame.BorderSizePixel = 0
-    scriptFrame.Parent = scriptContent
+    scriptFrame.Parent = parent
     
     local frameCorner = Instance.new("UICorner")
     frameCorner.CornerRadius = UDim.new(0, 8)
@@ -247,6 +291,10 @@ local function createScriptButton(scriptData, position)
     statusLabel.Font = Enum.Font.Gotham
     statusLabel.Visible = false
     statusLabel.Parent = scriptFrame
+    
+    -- Store reference for search
+    scriptFrame.ScriptData = scriptData
+    table.insert(allScriptFrames, scriptFrame)
     
     -- Loading animation
     local function animateLoading()
@@ -308,93 +356,43 @@ local function createScriptButton(scriptData, position)
             leaveTween:Play()
         end
     end)
+    
+    return scriptFrame
 end
 
--- Create all script buttons
+-- Create all script buttons initially
 for i, scriptData in ipairs(scriptList) do
-    createScriptButton(scriptData, UDim2.new(0, 10, 0, (i-1) * 40 + 10))
+    createScriptButton(scriptData, UDim2.new(0, 10, 0, (i-1) * 40 + 55))
 end
-
--- Search Tab Content
-local searchContent = Instance.new("Frame")
-searchContent.Name = "SearchContent"
-searchContent.Size = UDim2.new(1, 0, 1, 0)
-searchContent.BackgroundTransparency = 1
-searchContent.Visible = false
-searchContent.Parent = contentArea
-
--- Search Box
-local searchFrame = Instance.new("Frame")
-searchFrame.Size = UDim2.new(1, -20, 0, 35)
-searchFrame.Position = UDim2.new(0, 10, 0, 10)
-searchFrame.BackgroundColor3 = Color3.new(1, 1, 1)
-searchFrame.BorderSizePixel = 0
-searchFrame.Parent = searchContent
-
-local searchCorner = Instance.new("UICorner")
-searchCorner.CornerRadius = UDim.new(0, 8)
-searchCorner.Parent = searchFrame
-
-local searchBox = Instance.new("TextBox")
-searchBox.Size = UDim2.new(1, -40, 1, -10)
-searchBox.Position = UDim2.new(0, 10, 0, 5)
-searchBox.BackgroundTransparency = 1
-searchBox.Text = ""
-searchBox.PlaceholderText = "🔍 Search scripts..."
-searchBox.TextColor3 = Color3.new(0.2, 0.2, 0.2)
-searchBox.PlaceholderColor3 = Color3.new(0.6, 0.6, 0.6)
-searchBox.TextSize = 12
-searchBox.Font = Enum.Font.Gotham
-searchBox.TextXAlignment = Enum.TextXAlignment.Left
-searchBox.Parent = searchFrame
-
--- Search Results
-local searchResults = Instance.new("ScrollingFrame")
-searchResults.Size = UDim2.new(1, -20, 1, -60)
-searchResults.Position = UDim2.new(0, 10, 0, 50)
-searchResults.BackgroundTransparency = 1
-searchResults.ScrollBarThickness = 6
-searchResults.CanvasSize = UDim2.new(0, 0, 0, 0)
-searchResults.Parent = searchContent
 
 -- Search Function
 local function performSearch()
-    -- Clear previous results
-    for _, child in pairs(searchResults:GetChildren()) do
-        if child:IsA("Frame") then
-            child:Destroy()
-        end
-    end
-    
     local query = string.lower(searchBox.Text)
-    local resultCount = 0
+    local visibleCount = 0
     
-    if query == "" then
-        searchResults.CanvasSize = UDim2.new(0, 0, 0, 0)
-        return
-    end
-    
-    for _, scriptData in ipairs(scriptList) do
-        if string.find(string.lower(scriptData.name), query) then
-            createScriptButton(scriptData, UDim2.new(0, 0, 0, resultCount * 40))
-            resultCount = resultCount + 1
+    for _, frame in pairs(allScriptFrames) do
+        local scriptName = string.lower(frame.ScriptData.name)
+        if query == "" or string.find(scriptName, query) then
+            frame.Visible = true
+            frame.Position = UDim2.new(0, 10, 0, visibleCount * 40 + 55)
+            visibleCount = visibleCount + 1
+        else
+            frame.Visible = false
         end
     end
     
-    searchResults.CanvasSize = UDim2.new(0, 0, 0, resultCount * 40 + 10)
+    -- Update canvas size
+    scriptContent.CanvasSize = UDim2.new(0, 0, 0, math.max(visibleCount * 40 + 60, 200))
 end
 
+-- Search events
 searchBox.Changed:Connect(function()
-    if searchBox.Text ~= "" then
-        performSearch()
-    else
-        searchResults.CanvasSize = UDim2.new(0, 0, 0, 0)
-        for _, child in pairs(searchResults:GetChildren()) do
-            if child:IsA("Frame") then
-                child:Destroy()
-            end
-        end
-    end
+    performSearch()
+end)
+
+clearButton.MouseButton1Click:Connect(function()
+    searchBox.Text = ""
+    performSearch()
 end)
 
 local notifContent = Instance.new("Frame")
@@ -626,8 +624,8 @@ end
 
 local function switchTab(tabName)
     currentTab = tabName
-
--- Update tab buttons
+    
+    -- Update tab buttons
     for name, tabData in pairs(tabButtons) do
         if name == tabName then
             tabData.button.TextColor3 = Color3.new(0.2, 0.4, 0.8)
@@ -641,7 +639,6 @@ local function switchTab(tabName)
     -- Update content visibility
     homeContent.Visible = tabName == "Home"
     scriptContent.Visible = tabName == "Script"
-    searchContent.Visible = tabName == "Search"
     notifContent.Visible = tabName == "Notifications"
     otherContent.Visible = tabName == "Other"
 end
