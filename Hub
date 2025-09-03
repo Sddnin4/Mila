@@ -575,4 +575,23 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 -- Character respawn handling
-player.CharacterAdded:Connec
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    humanoid = character:WaitForChild("Humanoid")
+    noclip = false
+    infiniteJump = false
+    if jumpConnection then
+        jumpConnection:Disconnect()
+        jumpConnection = nil
+    end
+    wait(1)
+    humanoid.WalkSpeed = originalWalkSpeed
+    humanoid.JumpPower = originalJumpPower
+end)
+
+-- Show UI after loading
+wait(2.5)
+mainFrame.Visible = true
+
+print("Mila UI đã được tải thành công! 💖")
+print("Nhấn Right Shift để bật/tắt UI")
