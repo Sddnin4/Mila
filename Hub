@@ -120,11 +120,11 @@ task.spawn(animateLoading)
 -- Main UI Creation
 local screenGui = createScreenGui("MilaUI")
 
--- Main Frame (Smaller size)
+-- Main Frame (Larger size for better text display)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 280, 0, 180)
-mainFrame.Position = UDim2.new(0.5, -140, 0.5, -90)
+mainFrame.Size = UDim2.new(0, 320, 0, 220)
+mainFrame.Position = UDim2.new(0.5, -160, 0.5, -110)
 mainFrame.BackgroundColor3 = Color3.new(0.95, 0.95, 0.95)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -230,22 +230,64 @@ homeContent.ScrollBarThickness = 4
 homeContent.CanvasSize = UDim2.new(0, 0, 0, 300)
 homeContent.Parent = mainFrame
 
--- Script Content Frame
+-- Script Content Frame with search
 local scriptContent = Instance.new("ScrollingFrame")
 scriptContent.Name = "ScriptContent"
-scriptContent.Size = UDim2.new(1, -10, 1, -45)
-scriptContent.Position = UDim2.new(0, 5, 0, 40)
+scriptContent.Size = UDim2.new(1, -10, 1, -75) -- Adjusted for search bar
+scriptContent.Position = UDim2.new(0, 5, 0, 70) -- Adjusted for search bar
 scriptContent.BackgroundTransparency = 1
 scriptContent.ScrollBarThickness = 4
-scriptContent.CanvasSize = UDim2.new(0, 0, 0, 200)
+scriptContent.CanvasSize = UDim2.new(0, 0, 0, 800)
 scriptContent.Visible = false
 scriptContent.Parent = mainFrame
 
--- Player Frame (Smaller)
+-- Search bar for scripts
+local searchFrame = Instance.new("Frame")
+searchFrame.Name = "SearchFrame"
+searchFrame.Size = UDim2.new(1, -10, 0, 25)
+searchFrame.Position = UDim2.new(0, 5, 0, 40)
+searchFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+searchFrame.BorderSizePixel = 0
+searchFrame.Visible = false
+searchFrame.Parent = mainFrame
+
+local searchCorner = Instance.new("UICorner")
+searchCorner.CornerRadius = UDim.new(0, 6)
+searchCorner.Parent = searchFrame
+
+local searchBox = Instance.new("TextBox")
+searchBox.Name = "SearchBox"
+searchBox.Size = UDim2.new(1, -30, 1, -4)
+searchBox.Position = UDim2.new(0, 8, 0, 2)
+searchBox.BackgroundTransparency = 1
+searchBox.PlaceholderText = "🔍 Tìm kiếm script..."
+searchBox.Text = ""
+searchBox.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+searchBox.TextSize = 12
+searchBox.Font = Enum.Font.Gotham
+searchBox.TextXAlignment = Enum.TextXAlignment.Left
+searchBox.Parent = searchFrame
+
+local clearButton = Instance.new("TextButton")
+clearButton.Name = "ClearButton"
+clearButton.Size = UDim2.new(0, 20, 0, 20)
+clearButton.Position = UDim2.new(1, -22, 0, 2.5)
+clearButton.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
+clearButton.Text = "✕"
+clearButton.TextColor3 = Color3.new(0.5, 0.5, 0.5)
+clearButton.TextSize = 12
+clearButton.Font = Enum.Font.GothamBold
+clearButton.Parent = searchFrame
+
+local clearCorner = Instance.new("UICorner")
+clearCorner.CornerRadius = UDim.new(1, 0)
+clearCorner.Parent = clearButton
+
+-- Player Frame (Adjusted position)
 local playerFrame = Instance.new("Frame")
 playerFrame.Name = "PlayerFrame"
 playerFrame.Size = UDim2.new(0, 160, 0, 180)
-playerFrame.Position = UDim2.new(0.5, 145, 0.5, -90)
+playerFrame.Position = UDim2.new(0.5, 165, 0.5, -90)
 playerFrame.BackgroundColor3 = Color3.new(0.95, 0.95, 0.95)
 playerFrame.BorderSizePixel = 0
 playerFrame.Visible = false
@@ -298,7 +340,7 @@ local listLayout = Instance.new("UIListLayout")
 listLayout.Padding = UDim.new(0, 2)
 listLayout.Parent = playerList
 
--- Button Creation Function
+-- Button Creation Function with better text size
 local function createButton(parent, name, text, position, size, callback)
     local button = Instance.new("TextButton")
     button.Name = name
@@ -307,13 +349,20 @@ local function createButton(parent, name, text, position, size, callback)
     button.BackgroundColor3 = Color3.new(1, 0.4, 0.7)
     button.Text = text
     button.TextColor3 = Color3.new(1, 1, 1)
-    button.TextSize = 11
-    button.Font = Enum.Font.Gotham
+    button.TextSize = 12
+    button.Font = Enum.Font.GothamBold
+    button.TextScaled = true -- Auto scale text
     button.Parent = parent
     
     local buttonCorner = Instance.new("UICorner")
     buttonCorner.CornerRadius = UDim.new(0, 6)
     buttonCorner.Parent = button
+    
+    -- Add text size constraints
+    local textSizeConstraint = Instance.new("UITextSizeConstraint")
+    textSizeConstraint.MaxTextSize = 12
+    textSizeConstraint.MinTextSize = 8
+    textSizeConstraint.Parent = button
     
     button.MouseButton1Click:Connect(callback)
     
@@ -329,7 +378,7 @@ local function createButton(parent, name, text, position, size, callback)
     return button
 end
 
--- Input Creation Function
+-- Input Creation Function with better text size
 local function createInput(parent, name, placeholder, position, size)
     local input = Instance.new("TextBox")
     input.Name = name
@@ -339,18 +388,25 @@ local function createInput(parent, name, placeholder, position, size)
     input.Text = ""
     input.PlaceholderText = placeholder
     input.TextColor3 = Color3.new(0.2, 0.2, 0.2)
-    input.TextSize = 10
+    input.TextSize = 11
     input.Font = Enum.Font.Gotham
+    input.TextScaled = false
     input.Parent = parent
     
     local inputCorner = Instance.new("UICorner")
     inputCorner.CornerRadius = UDim.new(0, 4)
     inputCorner.Parent = input
     
+    -- Add padding for better text display
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 4)
+    padding.PaddingRight = UDim.new(0, 4)
+    padding.Parent = input
+    
     return input
 end
 
--- Label Creation Function
+-- Label Creation Function with better text size
 local function createLabel(parent, text, position, size)
     local label = Instance.new("TextLabel")
     label.Size = size or UDim2.new(0, 120, 0, 15)
@@ -358,8 +414,9 @@ local function createLabel(parent, text, position, size)
     label.BackgroundTransparency = 1
     label.Text = text
     label.TextColor3 = Color3.new(0.3, 0.3, 0.3)
-    label.TextSize = 10
-    label.Font = Enum.Font.Gotham
+    label.TextSize = 11
+    label.Font = Enum.Font.GothamBold
+    label.TextScaled = false
     label.Parent = parent
     
     return label
@@ -585,8 +642,139 @@ createButton(homeContent, "ResetBtn", "🔄 Reset All", UDim2.new(0, 95, 0, 140)
 end)
 
 -- SCRIPT TAB CONTENT
-createLabel(scriptContent, "Script Hub Coming Soon...", UDim2.new(0, 10, 0, 10), UDim2.new(0, 200, 0, 20))
-createLabel(scriptContent, "Các script sẽ được thêm vào đây", UDim2.new(0, 10, 0, 40), UDim2.new(0, 200, 0, 20))
+-- Scripts data
+local scriptsData = {
+    {name = "Infinity Yield", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()"},
+    {name = "Airflow", code = "loadstring(game:HttpGet(\"https://api.luarmor.net/files/v3/loaders/255ac567ced3dcb9e69aa7e44c423f19.lua\"))()"},
+    {name = "H4X", code = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua\", true))()"},
+    {name = "R15 Emote", code = "loadstring(game:HttpGetAsync(\"https://gist.githubusercontent.com/RedZenXYZ/3da6af1961efa275de6c3c2a6dbace03/raw/bb027f99cec0ea48ef9c5eabfb9116ddff20633d/FE%2520Emotes%2520Gui\"))()"},
+    {name = "Skull Hub", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/hungquan99/SkullHub/main/loader.lua'))()"},
+    {name = "Nameless Admin", code = "loadstring(game:HttpGet(\"https://rawscripts.net/raw/Universal-Script-nameless-admin-15646\"))()"},
+    {name = "NatHub", code = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/ArdyBotzz/NatHub/refs/heads/master/NatHub.lua\"))()"},
+    {name = "Arceus X", code = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/AZYsGithub/chillz-workshop/main/Arceus%20X%20V3\"))()"},
+    {name = "Shader", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/randomstring0/pshade-ultimate/refs/heads/main/src/cd.lua'))()"},
+    {name = "Native", code = "loadstring(game:HttpGet(\"https://getnative.cc/script/loader\"))()"},
+    {name = "Nolag", code = "loadstring(game:HttpGetAsync(\"https://raw.githubusercontent.com/NoLag-id/No-Lag-HUB/refs/heads/main/Loader/LoaderV1.lua\"))()"},
+    {name = "Limit Hub", code = "loadstring(game:HttpGet(('https://raw.githubusercontent.com/FakeModz/LimitHub/refs/heads/main/LimitHub_Loader.lua')))()"},
+    {name = "Speed Hub X", code = "loadstring(game:HttpGet(\"https://rawscripts.net/raw/Grow-a-Garden-Speed-Hub-X-Keyless-38062\"))()"},
+    {name = "Lunor", code = "loadstring(game:HttpGet(\"https://lunor.dev/loader\"))()"},
+    {name = "ThunderZ", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua'))()"}
+}
+
+-- Function to create script button
+local function createScriptButton(script, index)
+    local scriptContainer = Instance.new("Frame")
+    scriptContainer.Name = "ScriptContainer_" .. index
+    scriptContainer.Size = UDim2.new(1, -10, 0, 35)
+    scriptContainer.Position = UDim2.new(0, 5, 0, (index - 1) * 40)
+    scriptContainer.BackgroundColor3 = Color3.new(0.98, 0.98, 0.98)
+    scriptContainer.BorderSizePixel = 0
+    scriptContainer.Parent = scriptContent
+    
+    local containerCorner = Instance.new("UICorner")
+    containerCorner.CornerRadius = UDim.new(0, 6)
+    containerCorner.Parent = scriptContainer
+    
+    local scriptButton = Instance.new("TextButton")
+    scriptButton.Name = "ScriptButton"
+    scriptButton.Size = UDim2.new(1, -4, 1, -4)
+    scriptButton.Position = UDim2.new(0, 2, 0, 2)
+    scriptButton.BackgroundColor3 = Color3.new(1, 0.4, 0.7)
+    scriptButton.Text = "▶️ " .. script.name
+    scriptButton.TextColor3 = Color3.new(1, 1, 1)
+    scriptButton.TextSize = 12
+    scriptButton.Font = Enum.Font.GothamBold
+    scriptButton.TextXAlignment = Enum.TextXAlignment.Left
+    scriptButton.Parent = scriptContainer
+    
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 4)
+    buttonCorner.Parent = scriptButton
+    
+    -- Add padding for text
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 8)
+    padding.Parent = scriptButton
+    
+    -- Button click event
+    scriptButton.MouseButton1Click:Connect(function()
+        scriptButton.Text = "⏳ Loading..."
+        scriptButton.BackgroundColor3 = Color3.new(1, 0.6, 0.2)
+        
+        task.spawn(function()
+            pcall(function()
+                loadstring(script.code)()
+            end)
+            
+            task.wait(0.5)
+            if scriptButton and scriptButton.Parent then
+                scriptButton.Text = "✅ " .. script.name
+                scriptButton.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
+                
+                task.wait(2)
+                if scriptButton and scriptButton.Parent then
+                    scriptButton.Text = "▶️ " .. script.name
+                    scriptButton.BackgroundColor3 = Color3.new(1, 0.4, 0.7)
+                end
+            end
+        end)
+    end)
+    
+    -- Hover effects
+    scriptButton.MouseEnter:Connect(function()
+        if scriptButton.Text:find("▶️") then
+            scriptButton.BackgroundColor3 = Color3.new(1, 0.5, 0.8)
+        end
+    end)
+    
+    scriptButton.MouseLeave:Connect(function()
+        if scriptButton.Text:find("▶️") then
+            scriptButton.BackgroundColor3 = Color3.new(1, 0.4, 0.7)
+        end
+    end)
+    
+    return scriptContainer
+end
+
+-- Function to filter and display scripts
+local function filterScripts(searchTerm)
+    -- Clear existing script buttons
+    for _, child in pairs(scriptContent:GetChildren()) do
+        if child.Name:find("ScriptContainer_") then
+            child:Destroy()
+        end
+    end
+    
+    local filteredScripts = {}
+    searchTerm = searchTerm:lower()
+    
+    for _, script in pairs(scriptsData) do
+        if searchTerm == "" or script.name:lower():find(searchTerm) then
+            table.insert(filteredScripts, script)
+        end
+    end
+    
+    -- Create buttons for filtered scripts
+    for i, script in pairs(filteredScripts) do
+        createScriptButton(script, i)
+    end
+    
+    -- Update canvas size
+    scriptContent.CanvasSize = UDim2.new(0, 0, 0, #filteredScripts * 40 + 10)
+end
+
+-- Search functionality
+searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    filterScripts(searchBox.Text)
+end)
+
+clearButton.MouseButton1Click:Connect(function()
+    searchBox.Text = ""
+    filterScripts("")
+end)
+
+-- Initialize scripts display
+filterScripts("")
 
 -- Player List Functions
 function updatePlayerList()
@@ -673,6 +861,7 @@ local function switchTab(tabName)
     if tabName == "Home" then
         homeContent.Visible = true
         scriptContent.Visible = false
+        searchFrame.Visible = false
         homeTab.BackgroundColor3 = Color3.new(1, 1, 1)
         homeTab.TextColor3 = Color3.new(0.2, 0.2, 0.2)
         scriptTab.BackgroundColor3 = Color3.new(0.8, 0.8, 0.8)
@@ -680,6 +869,7 @@ local function switchTab(tabName)
     else
         homeContent.Visible = false
         scriptContent.Visible = true
+        searchFrame.Visible = true
         homeTab.BackgroundColor3 = Color3.new(0.8, 0.8, 0.8)
         homeTab.TextColor3 = Color3.new(0.4, 0.4, 0.4)
         scriptTab.BackgroundColor3 = Color3.new(1, 1, 1)
