@@ -1,5 +1,5 @@
 -- Mila UI Script for Roblox (Tab Design)
--- Tạo bởi: Mila
+-- Tạo bởi: Assistant
 -- Tính năng: Speed, Jump, Fly, Noclip, Teleport, Infinite Jump
 
 local Players = game:GetService("Players")
@@ -142,17 +142,17 @@ tabFrame.Position = UDim2.new(0, 0, 0, 50)
 tabFrame.BackgroundTransparency = 1
 tabFrame.Parent = mainFrame
 
-local tabs = {"Home", "Script", "Notifications", "Other"}
+local tabs = {"Home", "Script", "Search", "Notifications", "Other"}
 local tabButtons = {}
 
 for i, tabName in ipairs(tabs) do
     local tabButton = Instance.new("TextButton")
-    tabButton.Size = UDim2.new(0.25, -5, 1, 0)
-    tabButton.Position = UDim2.new((i-1) * 0.25, (i-1) * 2.5, 0, 0)
+    tabButton.Size = UDim2.new(0.2, -4, 1, 0)
+    tabButton.Position = UDim2.new((i-1) * 0.2, (i-1) * 2, 0, 0)
     tabButton.BackgroundTransparency = 1
     tabButton.Text = tabName
     tabButton.TextColor3 = tabName == "Home" and Color3.new(0.2, 0.4, 0.8) or Color3.new(0.5, 0.5, 0.5)
-    tabButton.TextSize = 12
+    tabButton.TextSize = 11
     tabButton.Font = Enum.Font.Gotham
     tabButton.Parent = tabFrame
     
@@ -185,21 +185,217 @@ homeContent.CanvasSize = UDim2.new(0, 0, 0, 300)
 homeContent.Parent = contentArea
 
 -- Other Tab Contents (placeholder)
-local scriptContent = Instance.new("Frame")
+local scriptContent = Instance.new("ScrollingFrame")
 scriptContent.Name = "ScriptContent"
 scriptContent.Size = UDim2.new(1, 0, 1, 0)
 scriptContent.BackgroundTransparency = 1
+scriptContent.ScrollBarThickness = 6
+scriptContent.CanvasSize = UDim2.new(0, 0, 0, 600)
 scriptContent.Visible = false
 scriptContent.Parent = contentArea
 
-local scriptLabel = Instance.new("TextLabel")
-scriptLabel.Size = UDim2.new(1, 0, 1, 0)
-scriptLabel.BackgroundTransparency = 1
-scriptLabel.Text = "Script Tab - Coming Soon!"
-scriptLabel.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-scriptLabel.TextSize = 16
-scriptLabel.Font = Enum.Font.Gotham
-scriptLabel.Parent = scriptContent
+-- Script List Data
+local scriptList = {
+    {name = "Infinity Yield", url = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"},
+    {name = "Airflow", url = "https://api.luarmor.net/files/v3/loaders/255ac567ced3dcb9e69aa7e44c423f19.lua"},
+    {name = "H4X", url = "https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua"},
+    {name = "R15 Emote", url = "https://gist.githubusercontent.com/RedZenXYZ/3da6af1961efa275de6c3c2a6dbace03/raw/bb027f99cec0ea48ef9c5eabfb9116ddff20633d/FE%2520Emotes%2520Gui"},
+    {name = "Skull Hub", url = "https://raw.githubusercontent.com/hungquan99/SkullHub/main/loader.lua"},
+    {name = "Nameless Admin", url = "https://rawscripts.net/raw/Universal-Script-nameless-admin-15646"},
+    {name = "NatHub", url = "https://raw.githubusercontent.com/ArdyBotzz/NatHub/refs/heads/master/NatHub.lua"},
+    {name = "Arceus X", url = "https://raw.githubusercontent.com/AZYsGithub/chillz-workshop/main/Arceus%20X%20V3"},
+    {name = "Shader", url = "https://raw.githubusercontent.com/randomstring0/pshade-ultimate/refs/heads/main/src/cd.lua"},
+    {name = "Native", url = "https://getnative.cc/script/loader"},
+    {name = "Nolag", url = "https://raw.githubusercontent.com/NoLag-id/No-Lag-HUB/refs/heads/main/Loader/LoaderV1.lua"},
+    {name = "Limit Hub", url = "https://raw.githubusercontent.com/FakeModz/LimitHub/refs/heads/main/LimitHub_Loader.lua"},
+    {name = "Speed Hub X", url = "https://rawscripts.net/raw/Grow-a-Garden-Speed-Hub-X-Keyless-38062"},
+    {name = "Lunor", url = "https://lunor.dev/loader"},
+    {name = "ThunderZ", url = "https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua"}
+}
+
+-- Create Script Buttons
+local function createScriptButton(scriptData, position)
+    local scriptFrame = Instance.new("Frame")
+    scriptFrame.Size = UDim2.new(1, -20, 0, 35)
+    scriptFrame.Position = position
+    scriptFrame.BackgroundColor3 = Color3.new(0.95, 0.96, 0.98)
+    scriptFrame.BorderSizePixel = 0
+    scriptFrame.Parent = scriptContent
+    
+    local frameCorner = Instance.new("UICorner")
+    frameCorner.CornerRadius = UDim.new(0, 8)
+    frameCorner.Parent = scriptFrame
+    
+    local scriptButton = Instance.new("TextButton")
+    scriptButton.Size = UDim2.new(1, -10, 1, -10)
+    scriptButton.Position = UDim2.new(0, 5, 0, 5)
+    scriptButton.BackgroundTransparency = 1
+    scriptButton.Text = "🚀 " .. scriptData.name
+    scriptButton.TextColor3 = Color3.new(0.2, 0.3, 0.6)
+    scriptButton.TextSize = 12
+    scriptButton.Font = Enum.Font.GothamBold
+    scriptButton.TextXAlignment = Enum.TextXAlignment.Left
+    scriptButton.Parent = scriptFrame
+    
+    local statusLabel = Instance.new("TextLabel")
+    statusLabel.Size = UDim2.new(0, 80, 1, 0)
+    statusLabel.Position = UDim2.new(1, -85, 0, 0)
+    statusLabel.BackgroundTransparency = 1
+    statusLabel.Text = "Ready"
+    statusLabel.TextColor3 = Color3.new(0.4, 0.7, 0.4)
+    statusLabel.TextSize = 10
+    statusLabel.Font = Enum.Font.Gotham
+    statusLabel.Visible = false
+    statusLabel.Parent = scriptFrame
+    
+    -- Loading animation
+    local function animateLoading()
+        statusLabel.Visible = true
+        statusLabel.Text = "Loading..."
+        statusLabel.TextColor3 = Color3.new(0.8, 0.6, 0.2)
+        
+        -- Animate frame color
+        local tween = TweenService:Create(scriptFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+            BackgroundColor3 = Color3.new(0.9, 0.93, 1)
+        })
+        tween:Play()
+        
+        -- Success animation
+        wait(0.5)
+        statusLabel.Text = "Success!"
+        statusLabel.TextColor3 = Color3.new(0.2, 0.8, 0.2)
+        
+        local successTween = TweenService:Create(scriptFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+            BackgroundColor3 = Color3.new(0.9, 1, 0.9)
+        })
+        successTween:Play()
+        
+        -- Reset after 2 seconds
+        wait(2)
+        statusLabel.Visible = false
+        local resetTween = TweenService:Create(scriptFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+            BackgroundColor3 = Color3.new(0.95, 0.96, 0.98)
+        })
+        resetTween:Play()
+    end
+    
+    scriptButton.MouseButton1Click:Connect(function()
+        spawn(function()
+            animateLoading()
+            pcall(function()
+                if scriptData.name == "R15 Emote" then
+                    loadstring(game:HttpGetAsync(scriptData.url))()
+                else
+                    loadstring(game:HttpGet(scriptData.url))()
+                end
+            end)
+        end)
+    end)
+    
+    -- Hover effect
+    scriptButton.MouseEnter:Connect(function()
+        local hoverTween = TweenService:Create(scriptFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+            BackgroundColor3 = Color3.new(0.9, 0.93, 1)
+        })
+        hoverTween:Play()
+    end)
+    
+    scriptButton.MouseLeave:Connect(function()
+        if not statusLabel.Visible then
+            local leaveTween = TweenService:Create(scriptFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                BackgroundColor3 = Color3.new(0.95, 0.96, 0.98)
+            })
+            leaveTween:Play()
+        end
+    end)
+end
+
+-- Create all script buttons
+for i, scriptData in ipairs(scriptList) do
+    createScriptButton(scriptData, UDim2.new(0, 10, 0, (i-1) * 40 + 10))
+end
+
+-- Search Tab Content
+local searchContent = Instance.new("Frame")
+searchContent.Name = "SearchContent"
+searchContent.Size = UDim2.new(1, 0, 1, 0)
+searchContent.BackgroundTransparency = 1
+searchContent.Visible = false
+searchContent.Parent = contentArea
+
+-- Search Box
+local searchFrame = Instance.new("Frame")
+searchFrame.Size = UDim2.new(1, -20, 0, 35)
+searchFrame.Position = UDim2.new(0, 10, 0, 10)
+searchFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+searchFrame.BorderSizePixel = 0
+searchFrame.Parent = searchContent
+
+local searchCorner = Instance.new("UICorner")
+searchCorner.CornerRadius = UDim.new(0, 8)
+searchCorner.Parent = searchFrame
+
+local searchBox = Instance.new("TextBox")
+searchBox.Size = UDim2.new(1, -40, 1, -10)
+searchBox.Position = UDim2.new(0, 10, 0, 5)
+searchBox.BackgroundTransparency = 1
+searchBox.Text = ""
+searchBox.PlaceholderText = "🔍 Search scripts..."
+searchBox.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+searchBox.PlaceholderColor3 = Color3.new(0.6, 0.6, 0.6)
+searchBox.TextSize = 12
+searchBox.Font = Enum.Font.Gotham
+searchBox.TextXAlignment = Enum.TextXAlignment.Left
+searchBox.Parent = searchFrame
+
+-- Search Results
+local searchResults = Instance.new("ScrollingFrame")
+searchResults.Size = UDim2.new(1, -20, 1, -60)
+searchResults.Position = UDim2.new(0, 10, 0, 50)
+searchResults.BackgroundTransparency = 1
+searchResults.ScrollBarThickness = 6
+searchResults.CanvasSize = UDim2.new(0, 0, 0, 0)
+searchResults.Parent = searchContent
+
+-- Search Function
+local function performSearch()
+    -- Clear previous results
+    for _, child in pairs(searchResults:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
+        end
+    end
+    
+    local query = string.lower(searchBox.Text)
+    local resultCount = 0
+    
+    if query == "" then
+        searchResults.CanvasSize = UDim2.new(0, 0, 0, 0)
+        return
+    end
+    
+    for _, scriptData in ipairs(scriptList) do
+        if string.find(string.lower(scriptData.name), query) then
+            createScriptButton(scriptData, UDim2.new(0, 0, 0, resultCount * 40))
+            resultCount = resultCount + 1
+        end
+    end
+    
+    searchResults.CanvasSize = UDim2.new(0, 0, 0, resultCount * 40 + 10)
+end
+
+searchBox.Changed:Connect(function()
+    if searchBox.Text ~= "" then
+        performSearch()
+    else
+        searchResults.CanvasSize = UDim2.new(0, 0, 0, 0)
+        for _, child in pairs(searchResults:GetChildren()) do
+            if child:IsA("Frame") then
+                child:Destroy()
+            end
+        end
+    end
+end)
 
 local notifContent = Instance.new("Frame")
 notifContent.Name = "NotifContent"
@@ -445,6 +641,7 @@ local function switchTab(tabName)
     -- Update content visibility
     homeContent.Visible = tabName == "Home"
     scriptContent.Visible = tabName == "Script"
+    searchContent.Visible = tabName == "Search"
     notifContent.Visible = tabName == "Notifications"
     otherContent.Visible = tabName == "Other"
 end
