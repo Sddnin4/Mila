@@ -5,6 +5,11 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
+-- Kiểm tra xem script đã chạy chưa
+if playerGui:FindFirstChild("LoadingUI") then
+    return -- Nếu đã có UI loading thì không chạy nữa
+end
+
 -- Tạo ScreenGui
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "LoadingUI"
@@ -111,16 +116,19 @@ percentText.TextScaled = true
 percentText.Font = Enum.Font.Gotham
 percentText.Parent = mainFrame
 
+-- Biến để đảm bảo script chỉ chạy một lần
+local scriptExecuted = false
+
 -- Hàm animate loading
 local function animateLoading()
-    local totalTime = 3 -- Thời gian loading (giây)
+    local totalTime = 4 -- Thời gian loading (giây)
     local steps = 100
     local timePerStep = totalTime / steps
     
     for i = 1, steps do
         local progress = i / steps
         
-        -- Update progress bar
+        -- Update progress bar với animation mượt
         local progressTween = TweenService:Create(
             progressBar,
             TweenInfo.new(timePerStep, Enum.EasingStyle.Linear),
@@ -141,11 +149,16 @@ local function animateLoading()
             shineTween:Play()
         end
         
-        wait(timePerStep)
+        -- Chờ để đảm bảo animation hoàn thành
+        progressTween.Completed:Wait()
     end
     
-    -- Sau khi loading xong
-    wait(0.5)
+    -- Đảm bảo thanh loading đã 100%
+    progressBar.Size = UDim2.new(1, 0, 1, 0)
+    percentText.Text = "100%"
+    
+    -- Chờ một chút trước khi fade out
+    wait(1)
     
     -- Fade out loading UI
     local fadeOutTween = TweenService:Create(
@@ -185,13 +198,23 @@ local function animateLoading()
     fadeOutPercent:Play()
     
     -- Chờ fade out hoàn thành
-    fadeOutTween.Completed:Connect(function()
-        -- Xóa UI
-        screenGui:Destroy()
-        
+    fadeOutTween.Completed:Wait()
+    
+    -- Xóa UI
+    screenGui:Destroy()
+    
+    -- Chỉ chạy script chính nếu chưa được thực thi
+    if not scriptExecuted then
+        scriptExecuted = true
         -- Chạy script chính
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Sddnin4/Mila/refs/heads/main/V2.txt"))()
-    end)
+        local success, error = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Sddnin4/Mila/refs/heads/main/V2.txt"))()
+        end)
+        
+        if not success then
+            warn("Lỗi khi load script chính: " .. tostring(error))
+        end
+    end
 end
 
 -- Bắt đầu animation loading
