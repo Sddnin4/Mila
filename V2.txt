@@ -274,7 +274,7 @@ local scriptsData = {
     {name = "Speed Hub X", code = "loadstring(game:HttpGet(\"https://rawscripts.net/raw/Grow-a-Garden-Speed-Hub-X-Keyless-38062\"))()"},
     {name = "Lunor", code = "loadstring(game:HttpGet(\"https://lunor.dev/loader\"))()"},
     {name = "ThunderZ", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua'))()"}
-{name = "Fram Diamond 99 Night", code ="loadstring(game:HttpGet("https://rawscripts.net/raw/99-Nights-in-the-Forest-Farm-diamond-v2-50169"))()"}   
+{name = "Fram Diamond 99 Night", code = "loadstring(game:HttpGet("https://rawscripts.net/raw/99-Nights-in-the-Forest-Farm-diamond-v2-50169"))()"}   
 }
 
 local notifContent = Instance.new("ScrollingFrame")
