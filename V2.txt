@@ -276,21 +276,120 @@ local scriptsData = {
     {name = "ThunderZ", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua'))()"}
 }
 
-local notifContent = Instance.new("Frame")
+local notifContent = Instance.new("ScrollingFrame")
 notifContent.Name = "NotifContent"
 notifContent.Size = UDim2.new(1, 0, 1, 0)
 notifContent.BackgroundTransparency = 1
+notifContent.ScrollBarThickness = 6
+notifContent.CanvasSize = UDim2.new(0, 0, 0, 300)
 notifContent.Visible = false
 notifContent.Parent = contentArea
 
-local notifLabel = Instance.new("TextLabel")
-notifLabel.Size = UDim2.new(1, 0, 1, 0)
-notifLabel.BackgroundTransparency = 1
-notifLabel.Text = "Notifications Tab - Coming Soon!"
-notifLabel.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-notifLabel.TextSize = 16
-notifLabel.Font = Enum.Font.Gotham
-notifLabel.Parent = notifContent
+-- Notification Header
+local notifHeader = Instance.new("TextLabel")
+notifHeader.Size = UDim2.new(1, 0, 0, 30)
+notifHeader.Position = UDim2.new(0, 0, 0, 5)
+notifHeader.BackgroundTransparency = 1
+notifHeader.Text = "🔔 Notifications & Updates"
+notifHeader.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+notifHeader.TextSize = 14
+notifHeader.Font = Enum.Font.GothamBold
+notifHeader.Parent = notifContent
+
+-- New Update Notification
+local updateFrame = Instance.new("Frame")
+updateFrame.Size = UDim2.new(1, -10, 0, 120)
+updateFrame.Position = UDim2.new(0, 5, 0, 40)
+updateFrame.BackgroundColor3 = Color3.new(0.9, 1, 0.9)
+updateFrame.BorderSizePixel = 0
+updateFrame.Parent = notifContent
+
+local updateCorner = Instance.new("UICorner")
+updateCorner.CornerRadius = UDim.new(0, 8)
+updateCorner.Parent = updateFrame
+
+-- Update Badge
+local updateBadge = Instance.new("Frame")
+updateBadge.Size = UDim2.new(0, 60, 0, 20)
+updateBadge.Position = UDim2.new(0, 10, 0, 10)
+updateBadge.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
+updateBadge.BorderSizePixel = 0
+updateBadge.Parent = updateFrame
+
+local badgeCorner = Instance.new("UICorner")
+badgeCorner.CornerRadius = UDim.new(0, 10)
+badgeCorner.Parent = updateBadge
+
+local badgeText = Instance.new("TextLabel")
+badgeText.Size = UDim2.new(1, 0, 1, 0)
+badgeText.BackgroundTransparency = 1
+badgeText.Text = "NEW"
+badgeText.TextColor3 = Color3.new(1, 1, 1)
+badgeText.TextSize = 10
+badgeText.Font = Enum.Font.GothamBold
+badgeText.Parent = updateBadge
+
+-- Update Title
+local updateTitle = Instance.new("TextLabel")
+updateTitle.Size = UDim2.new(1, -80, 0, 25)
+updateTitle.Position = UDim2.new(0, 75, 0, 8)
+updateTitle.BackgroundTransparency = 1
+updateTitle.Text = "New Update - V1.1"
+updateTitle.TextColor3 = Color3.new(0.1, 0.5, 0.1)
+updateTitle.TextSize = 12
+updateTitle.Font = Enum.Font.GothamBold
+updateTitle.TextXAlignment = Enum.TextXAlignment.Left
+updateTitle.Parent = updateFrame
+
+-- Update Content
+local updateContent = Instance.new("TextLabel")
+updateContent.Size = UDim2.new(1, -20, 0, 80)
+updateContent.Position = UDim2.new(0, 10, 0, 35)
+updateContent.BackgroundTransparency = 1
+updateContent.Text = "+ V1.1 Thêm các script có liên quan\n+ Animation khi loading\n+ Fix một số lỗi nhỏ"
+updateContent.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+updateContent.TextSize = 11
+updateContent.Font = Enum.Font.Gotham
+updateContent.TextXAlignment = Enum.TextXAlignment.Left
+updateContent.TextYAlignment = Enum.TextYAlignment.Top
+updateContent.TextWrapped = true
+updateContent.Parent = updateFrame
+
+-- Welcome Notification
+local welcomeFrame = Instance.new("Frame")
+welcomeFrame.Size = UDim2.new(1, -10, 0, 80)
+welcomeFrame.Position = UDim2.new(0, 5, 0, 170)
+welcomeFrame.BackgroundColor3 = Color3.new(1, 0.95, 1)
+welcomeFrame.BorderSizePixel = 0
+welcomeFrame.Parent = notifContent
+
+local welcomeCorner = Instance.new("UICorner")
+welcomeCorner.CornerRadius = UDim.new(0, 8)
+welcomeCorner.Parent = welcomeFrame
+
+local welcomeTitle = Instance.new("TextLabel")
+welcomeTitle.Size = UDim2.new(1, -20, 0, 25)
+welcomeTitle.Position = UDim2.new(0, 10, 0, 8)
+welcomeTitle.BackgroundTransparency = 1
+welcomeTitle.Text = "💖 Welcome to Mila UI!"
+welcomeTitle.TextColor3 = Color3.new(0.5, 0.2, 0.5)
+welcomeTitle.TextSize = 12
+welcomeTitle.Font = Enum.Font.GothamBold
+welcomeTitle.TextXAlignment = Enum.TextXAlignment.Left
+welcomeTitle.Parent = welcomeFrame
+
+local welcomeText = Instance.new("TextLabel")
+welcomeText.Size = UDim2.new(1, -20, 0, 40)
+welcomeText.Position = UDim2.new(0, 10, 0, 35)
+welcomeText.BackgroundTransparency = 1
+welcomeText.Text = "Thank you for using Mila UI! Enjoy all the features and scripts available."
+welcomeText.TextColor3 = Color3.new(0.3, 0.3, 0.3)
+welcomeText.TextSize = 10
+welcomeText.Font = Enum.Font.Gotham
+welcomeText.TextXAlignment = Enum.TextXAlignment.Left
+welcomeText.TextYAlignment = Enum.TextYAlignment.Top
+welcomeText.TextWrapped = true
+welcomeText.Parent = welcomeFrame
 
 local otherContent = Instance.new("Frame")
 otherContent.Name = "OtherContent"
@@ -518,7 +617,12 @@ local function createScriptButton(scriptData, position)
     end)
     
     copyBtn.MouseButton1Click:Connect(function()
-        -- Copy to clipboard (simulated feedback)
+        -- Copy script code to clipboard
+        pcall(function()
+            setclipboard(scriptData.code)
+        end)
+        
+        -- Visual feedback
         copyBtn.Text = "✅ Copied!"
         copyBtn.BackgroundColor3 = Color3.new(0.4, 0.8, 0.4)
         wait(1)
