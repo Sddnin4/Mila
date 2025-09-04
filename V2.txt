@@ -1,5 +1,5 @@
 -- Mila UI Script for Roblox (Tab Design)
--- Tạo bởi: Mila
+-- Tạo bởi: Assistant
 -- Tính năng: Speed, Jump, Fly, Noclip, Teleport, Infinite Jump
 
 local Players = game:GetService("Players")
@@ -184,18 +184,20 @@ homeContent.ScrollBarThickness = 6
 homeContent.CanvasSize = UDim2.new(0, 0, 0, 300)
 homeContent.Parent = contentArea
 
--- Script Tab Content
-local scriptContent = Instance.new("Frame")
+-- Other Tab Contents (placeholder)
+local scriptContent = Instance.new("ScrollingFrame")
 scriptContent.Name = "ScriptContent"
 scriptContent.Size = UDim2.new(1, 0, 1, 0)
 scriptContent.BackgroundTransparency = 1
+scriptContent.ScrollBarThickness = 6
+scriptContent.CanvasSize = UDim2.new(0, 0, 0, 600)
 scriptContent.Visible = false
 scriptContent.Parent = contentArea
 
--- Search Box
+-- Search Bar for Scripts
 local searchFrame = Instance.new("Frame")
-searchFrame.Size = UDim2.new(1, 0, 0, 25)
-searchFrame.Position = UDim2.new(0, 0, 0, 5)
+searchFrame.Size = UDim2.new(1, 0, 0, 30)
+searchFrame.Position = UDim2.new(0, 0, 0, 0)
 searchFrame.BackgroundTransparency = 1
 searchFrame.Parent = scriptContent
 
@@ -205,9 +207,8 @@ searchBox.Position = UDim2.new(0, 5, 0, 0)
 searchBox.BackgroundColor3 = Color3.new(1, 1, 1)
 searchBox.Text = ""
 searchBox.PlaceholderText = "🔍 Search scripts..."
-searchBox.TextColor3 = Color3.new(0.3, 0.3, 0.3)
-searchBox.PlaceholderColor3 = Color3.new(0.6, 0.6, 0.6)
-searchBox.TextSize = 10
+searchBox.TextColor3 = Color3.new(0, 0, 0)
+searchBox.TextSize = 12
 searchBox.Font = Enum.Font.Gotham
 searchBox.Parent = searchFrame
 
@@ -215,32 +216,64 @@ local searchCorner = Instance.new("UICorner")
 searchCorner.CornerRadius = UDim.new(0, 5)
 searchCorner.Parent = searchBox
 
--- Scripts List
-local scriptsFrame = Instance.new("ScrollingFrame")
-scriptsFrame.Size = UDim2.new(1, 0, 1, -35)
-scriptsFrame.Position = UDim2.new(0, 0, 0, 35)
-scriptsFrame.BackgroundTransparency = 1
-scriptsFrame.ScrollBarThickness = 6
-scriptsFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-scriptsFrame.Parent = scriptContent
+-- Scripts Container
+local scriptsContainer = Instance.new("Frame")
+scriptsContainer.Size = UDim2.new(1, 0, 1, -40)
+scriptsContainer.Position = UDim2.new(0, 0, 0, 40)
+scriptsContainer.BackgroundTransparency = 1
+scriptsContainer.Parent = scriptContent
 
--- Script Database
-local scripts = {
-    {name = "Infinity Yield", url = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"},
-    {name = "Airflow", url = "https://api.luarmor.net/files/v3/loaders/255ac567ced3dcb9e69aa7e44c423f19.lua"},
-    {name = "H4X", url = "https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua"},
-    {name = "R15 Emote", url = "https://gist.githubusercontent.com/RedZenXYZ/3da6af1961efa275de6c3c2a6dbace03/raw/bb027f99cec0ea48ef9c5eabfb9116ddff20633d/FE%2520Emotes%2520Gui"},
-    {name = "Skull Hub", url = "https://raw.githubusercontent.com/hungquan99/SkullHub/main/loader.lua"},
-    {name = "Nameless Admin", url = "https://rawscripts.net/raw/Universal-Script-nameless-admin-15646"},
-    {name = "NatHub", url = "https://raw.githubusercontent.com/ArdyBotzz/NatHub/refs/heads/master/NatHub.lua"},
-    {name = "Arceus X", url = "https://raw.githubusercontent.com/AZYsGithub/chillz-workshop/main/Arceus%20X%20V3"},
-    {name = "Shader", url = "https://raw.githubusercontent.com/randomstring0/pshade-ultimate/refs/heads/main/src/cd.lua"},
-    {name = "Native", url = "https://getnative.cc/script/loader"},
-    {name = "Nolag", url = "https://raw.githubusercontent.com/NoLag-id/No-Lag-HUB/refs/heads/main/Loader/LoaderV1.lua"},
-    {name = "Limit Hub", url = "https://raw.githubusercontent.com/FakeModz/LimitHub/refs/heads/main/LimitHub_Loader.lua"},
-    {name = "Speed Hub X", url = "https://rawscripts.net/raw/Grow-a-Garden-Speed-Hub-X-Keyless-38062"},
-    {name = "Lunor", url = "https://lunor.dev/loader"},
-    {name = "ThunderZ", url = "https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua"}
+-- Loading Animation Frame
+local loadingFrame = Instance.new("Frame")
+loadingFrame.Size = UDim2.new(0, 200, 0, 100)
+loadingFrame.Position = UDim2.new(0.5, -100, 0.5, -50)
+loadingFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+loadingFrame.BackgroundTransparency = 0.3
+loadingFrame.BorderSizePixel = 0
+loadingFrame.Visible = false
+loadingFrame.Parent = screenGui
+
+local loadingCorner = Instance.new("UICorner")
+loadingCorner.CornerRadius = UDim.new(0, 10)
+loadingCorner.Parent = loadingFrame
+
+local loadingText = Instance.new("TextLabel")
+loadingText.Size = UDim2.new(1, 0, 0, 30)
+loadingText.Position = UDim2.new(0, 0, 0, 10)
+loadingText.BackgroundTransparency = 1
+loadingText.Text = "Loading Script..."
+loadingText.TextColor3 = Color3.new(1, 1, 1)
+loadingText.TextSize = 14
+loadingText.Font = Enum.Font.GothamBold
+loadingText.Parent = loadingFrame
+
+local loadingSpinner = Instance.new("TextLabel")
+loadingSpinner.Size = UDim2.new(1, 0, 0, 30)
+loadingSpinner.Position = UDim2.new(0, 0, 0, 40)
+loadingSpinner.BackgroundTransparency = 1
+loadingSpinner.Text = "⭕"
+loadingSpinner.TextColor3 = Color3.new(1, 1, 1)
+loadingSpinner.TextSize = 20
+loadingSpinner.Font = Enum.Font.Gotham
+loadingSpinner.Parent = loadingFrame
+
+-- Scripts Data
+local scriptsData = {
+    {name = "Infinity Yield", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()"},
+    {name = "Airflow", code = "loadstring(game:HttpGet(\"https://api.luarmor.net/files/v3/loaders/255ac567ced3dcb9e69aa7e44c423f19.lua\"))()"},
+    {name = "H4X", code = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua\", true))()"},
+    {name = "R15 Emote", code = "loadstring(game:HttpGetAsync(\"https://gist.githubusercontent.com/RedZenXYZ/3da6af1961efa275de6c3c2a6dbace03/raw/bb027f99cec0ea48ef9c5eabfb9116ddff20633d/FE%2520Emotes%2520Gui\"))()"},
+    {name = "Skull Hub", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/hungquan99/SkullHub/main/loader.lua'))()"},
+    {name = "Nameless Admin", code = "loadstring(game:HttpGet(\"https://rawscripts.net/raw/Universal-Script-nameless-admin-15646\"))()"},
+    {name = "NatHub", code = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/ArdyBotzz/NatHub/refs/heads/master/NatHub.lua\"))()"},
+    {name = "Arceus X", code = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/AZYsGithub/chillz-workshop/main/Arceus%20X%20V3\"))()"},
+    {name = "Shader", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/randomstring0/pshade-ultimate/refs/heads/main/src/cd.lua'))()"},
+    {name = "Native", code = "loadstring(game:HttpGet(\"https://getnative.cc/script/loader\"))()"},
+    {name = "Nolag", code = "loadstring(game:HttpGetAsync(\"https://raw.githubusercontent.com/NoLag-id/No-Lag-HUB/refs/heads/main/Loader/LoaderV1.lua\"))()"},
+    {name = "Limit Hub", code = "loadstring(game:HttpGet(('https://raw.githubusercontent.com/FakeModz/LimitHub/refs/heads/main/LimitHub_Loader.lua')))()"},
+    {name = "Speed Hub X", code = "loadstring(game:HttpGet(\"https://rawscripts.net/raw/Grow-a-Garden-Speed-Hub-X-Keyless-38062\"))()"},
+    {name = "Lunor", code = "loadstring(game:HttpGet(\"https://lunor.dev/loader\"))()"},
+    {name = "ThunderZ", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua'))()"}
 }
 
 local notifContent = Instance.new("Frame")
@@ -396,142 +429,153 @@ jumpCorner.CornerRadius = UDim.new(0, 3)
 jumpCorner.Parent = jumpSlider
 
 -- Functions
-local function loadScript(scriptData)
-    -- Animation effect
-    local button = scriptData.button
-    if not button then return end
+local function showLoadingAnimation(scriptName)
+    loadingText.Text = "Loading " .. scriptName .. "..."
+    loadingFrame.Visible = true
     
-    -- Create loading animation
-    local originalText = button.Text
-    local originalColor = button.BackgroundColor3
-    
-    -- Loading state
-    button.BackgroundColor3 = Color3.new(0.4, 0.8, 0.4)
-    button.Text = "⏳ Loading..."
-    
-    -- Animate loading dots
-    spawn(function()
-        local dots = ""
-        for i = 1, 3 do
-            wait(0.2)
-            dots = dots .. "."
-            if button.Text:find("Loading") then
-                button.Text = "⏳ Loading" .. dots
-            end
+    -- Spinning animation
+    local spinConnection
+    spinConnection = RunService.Heartbeat:Connect(function()
+        if not loadingFrame.Visible then
+            spinConnection:Disconnect()
+            return
         end
+        loadingSpinner.Rotation = loadingSpinner.Rotation + 5
     end)
     
-    -- Load script
-    spawn(function()
-        wait(0.8) -- Wait for animation
-        pcall(function()
-            local success, error = pcall(function()
-                loadstring(game:HttpGet(scriptData.url))()
-            end)
-            
-            if success then
-                button.BackgroundColor3 = Color3.new(0.4, 0.9, 0.4)
-                button.Text = "✅ Loaded!"
-            else
-                button.BackgroundColor3 = Color3.new(0.9, 0.4, 0.4)
-                button.Text = "❌ Error!"
-                print("Script Error:", error)
-            end
-        end)
-        
-        wait(2)
-        -- Reset button
-        button.BackgroundColor3 = originalColor
-        button.Text = originalText
-    end)
+    -- Hide after 2 seconds
+    wait(2)
+    loadingFrame.Visible = false
+    if spinConnection then
+        spinConnection:Disconnect()
+    end
 end
 
 local function createScriptButton(scriptData, position)
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0, 110, 0, 30)
-    button.Position = position
-    button.BackgroundColor3 = Color3.new(0.9, 0.95, 1)
-    button.Text = "🗃️ " .. scriptData.name
-    button.TextColor3 = Color3.new(0.2, 0.3, 0.6)
-    button.TextSize = 9
-    button.Font = Enum.Font.Gotham
-    button.TextWrapped = true
-    button.Parent = scriptsFrame
+    local scriptFrame = Instance.new("Frame")
+    scriptFrame.Name = scriptData.name:gsub("%s", "")
+    scriptFrame.Size = UDim2.new(0, 180, 0, 60)
+    scriptFrame.Position = position
+    scriptFrame.BackgroundColor3 = Color3.new(0.95, 0.95, 0.98)
+    scriptFrame.BorderSizePixel = 0
+    scriptFrame.Parent = scriptsContainer
     
-    local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 5)
-    buttonCorner.Parent = button
+    local frameCorner = Instance.new("UICorner")
+    frameCorner.CornerRadius = UDim.new(0, 8)
+    frameCorner.Parent = scriptFrame
     
-    -- Store button reference in script data
-    scriptData.button = button
+    -- Script Name
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, -10, 0, 25)
+    nameLabel.Position = UDim2.new(0, 5, 0, 5)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = scriptData.name
+    nameLabel.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+    nameLabel.TextSize = 12
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.Parent = scriptFrame
     
-    button.MouseButton1Click:Connect(function()
-        loadScript(scriptData)
+    -- Execute Button
+    local executeBtn = Instance.new("TextButton")
+    executeBtn.Size = UDim2.new(0, 80, 0, 25)
+    executeBtn.Position = UDim2.new(0, 5, 0, 30)
+    executeBtn.BackgroundColor3 = Color3.new(0.4, 0.8, 0.4)
+    executeBtn.Text = "▶ Execute"
+    executeBtn.TextColor3 = Color3.new(1, 1, 1)
+    executeBtn.TextSize = 10
+    executeBtn.Font = Enum.Font.Gotham
+    executeBtn.Parent = scriptFrame
+    
+    local executeCorner = Instance.new("UICorner")
+    executeCorner.CornerRadius = UDim.new(0, 5)
+    executeCorner.Parent = executeBtn
+    
+    -- Copy Button
+    local copyBtn = Instance.new("TextButton")
+    copyBtn.Size = UDim2.new(0, 80, 0, 25)
+    copyBtn.Position = UDim2.new(0, 90, 0, 30)
+    copyBtn.BackgroundColor3 = Color3.new(0.6, 0.6, 0.8)
+    copyBtn.Text = "📋 Copy"
+    copyBtn.TextColor3 = Color3.new(1, 1, 1)
+    copyBtn.TextSize = 10
+    copyBtn.Font = Enum.Font.Gotham
+    copyBtn.Parent = scriptFrame
+    
+    local copyCorner = Instance.new("UICorner")
+    copyCorner.CornerRadius = UDim.new(0, 5)
+    copyCorner.Parent = copyBtn
+    
+    -- Button Events
+    executeBtn.MouseButton1Click:Connect(function()
+        spawn(function()
+            showLoadingAnimation(scriptData.name)
+        end)
+        
+        pcall(function()
+            loadstring(scriptData.code)()
+        end)
+    end)
+    
+    copyBtn.MouseButton1Click:Connect(function()
+        -- Copy to clipboard (simulated feedback)
+        copyBtn.Text = "✅ Copied!"
+        copyBtn.BackgroundColor3 = Color3.new(0.4, 0.8, 0.4)
+        wait(1)
+        copyBtn.Text = "📋 Copy"
+        copyBtn.BackgroundColor3 = Color3.new(0.6, 0.6, 0.8)
     end)
     
     -- Hover effects
-    button.MouseEnter:Connect(function()
-        if not button.Text:find("Loading") and not button.Text:find("Loaded") and not button.Text:find("Error") then
-            button.BackgroundColor3 = Color3.new(0.8, 0.9, 1)
-        end
+    executeBtn.MouseEnter:Connect(function()
+        executeBtn.BackgroundColor3 = Color3.new(0.3, 0.7, 0.3)
     end)
     
-    button.MouseLeave:Connect(function()
-        if not button.Text:find("Loading") and not button.Text:find("Loaded") and not button.Text:find("Error") then
-            button.BackgroundColor3 = Color3.new(0.9, 0.95, 1)
-        end
+    executeBtn.MouseLeave:Connect(function()
+        executeBtn.BackgroundColor3 = Color3.new(0.4, 0.8, 0.4)
     end)
     
-    return button
+    copyBtn.MouseEnter:Connect(function()
+        copyBtn.BackgroundColor3 = Color3.new(0.5, 0.5, 0.7)
+    end)
+    
+    copyBtn.MouseLeave:Connect(function()
+        copyBtn.BackgroundColor3 = Color3.new(0.6, 0.6, 0.8)
+    end)
+    
+    return scriptFrame
 end
 
-local function displayScripts(filteredScripts)
-    -- Clear existing buttons
-    for _, child in pairs(scriptsFrame:GetChildren()) do
-        if child:IsA("TextButton") then
+local function updateScriptList(searchTerm)
+    -- Clear existing scripts
+    for _, child in pairs(scriptsContainer:GetChildren()) do
+        if child:IsA("Frame") then
             child:Destroy()
         end
     end
     
-    -- Create script buttons in grid (3 columns)
-    local columns = 3
-    local buttonWidth = 110
-    local buttonHeight = 35
-    local paddingX = 10
-    local paddingY = 5
+    searchTerm = searchTerm:lower()
+    local row, col = 0, 0
+    local totalHeight = 0
     
-    for i, script in ipairs(filteredScripts) do
-        local row = math.floor((i - 1) / columns)
-        local col = (i - 1) % columns
-        
-        local posX = col * (buttonWidth + paddingX) + 5
-        local posY = row * (buttonHeight + paddingY) + 5
-        
-        createScriptButton(script, UDim2.new(0, posX, 0, posY))
-    end
-    
-   -- Update canvas size
-    local totalRows = math.ceil(#filteredScripts / columns)
-    scriptsFrame.CanvasSize = UDim2.new(0, 0, 0, totalRows * (buttonHeight + paddingY) + 10)
-end
-
-local function searchScripts(query)
-    if query == "" then
-        displayScripts(scripts)
-        return
-    end
-    
-    local filtered = {}
-    query = query:lower()
-    
-    for _, script in ipairs(scripts) do
-        if script.name:lower():find(query) then
-            table.insert(filtered, script)
+    for _, scriptData in ipairs(scriptsData) do
+        if searchTerm == "" or scriptData.name:lower():find(searchTerm) then
+            local position = UDim2.new(0, col * 190, 0, row * 70)
+            createScriptButton(scriptData, position)
+            
+            col = col + 1
+            if col >= 2 then
+                col = 0
+                row = row + 1
+            end
+            totalHeight = (row + 1) * 70
         end
     end
     
-    displayScripts(filtered)
+    scriptsContainer.Size = UDim2.new(1, 0, 0, math.max(totalHeight, 400))
+    scriptContent.CanvasSize = UDim2.new(0, 0, 0, totalHeight + 50)
 end
+local function updatePlayerList()
     for _, child in pairs(playerList:GetChildren()) do
         if child:IsA("Frame") then
             child:Destroy()
@@ -739,18 +783,18 @@ end)
 for tabName, tabData in pairs(tabButtons) do
     tabData.button.MouseButton1Click:Connect(function()
         switchTab(tabName)
+        if tabName == "Script" then
+            updateScriptList("")
+        end
     end)
 end
 
 -- Search functionality
 searchBox.Changed:Connect(function(property)
     if property == "Text" then
-        searchScripts(searchBox.Text)
+        updateScriptList(searchBox.Text)
     end
 end)
-
--- Initialize scripts display
-displayScripts(scripts)
 
 -- Close/Toggle functionality
 closeBtn.MouseButton1Click:Connect(function()
