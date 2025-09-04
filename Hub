@@ -1,4 +1,44 @@
--- Mila UI Script for Roblox - Fixed Version
+-- Search bar for scripts
+local searchFrame = Instance.new("Frame")
+searchFrame.Name = "SearchFrame"
+searchFrame.Size = UDim2.new(1, -10, 0, 25)
+searchFrame.Position = UDim2.new(0, 5, 0, 40)
+searchFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+searchFrame.BorderSizePixel = 0
+searchFrame.Visible = false
+searchFrame.Parent = mainFrame
+
+local searchCorner = Instance.new("UICorner")
+searchCorner.CornerRadius = UDim.new(0, 6)
+searchCorner.Parent = searchFrame
+
+local searchBox = Instance.new("TextBox")
+searchBox.Name = "SearchBox"
+searchBox.Size = UDim2.new(1, -30, 1, -4)
+searchBox.Position = UDim2.new(0, 8, 0, 2)
+searchBox.BackgroundTransparency = 1
+searchBox.PlaceholderText = "🔍 Tìm kiếm script..."
+searchBox.Text = ""
+searchBox.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+searchBox.TextSize = 12
+searchBox.Font = Enum.Font.Gotham
+searchBox.TextXAlignment = Enum.TextXAlignment.Left
+searchBox.Parent = searchFrame
+
+local clearButton = Instance.new("TextButton")
+clearButton.Name = "ClearButton"
+clearButton.Size = UDim2.new(0, 20, 0, 20)
+clearButton.Position = UDim2.new(1, -22, 0, 2.5)
+clearButton.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
+clearButton.Text = "✕"
+clearButton.TextColor3 = Color3.new(0.5, 0.5, 0.5)
+clearButton.TextSize = 12
+clearButton.Font = Enum.Font.GothamBold
+clearButton.Parent = searchFrame
+
+local clearCorner = Instance.new("UICorner")
+clearCorner.CornerRadius = UDim.new(1, 0)
+clearCorner.Parent = clearButton-- Mila UI Script for Roblox - Fixed Version
 -- Tạo bởi: Mila
 -- Tính năng: Speed, Jump, Fly, Noclip, Teleport, InfiniteJump
 
@@ -239,105 +279,6 @@ scriptContent.CanvasSize = UDim2.new(0, 0, 0, 800)
 scriptContent.Visible = false
 scriptContent.Parent = mainFrame
 
--- Search bar for scripts
-local searchFrame = Instance.new("Frame")
-searchFrame.Name = "SearchFrame"
-searchFrame.Size = UDim2.new(1, -10, 0, 25)
-searchFrame.Position = UDim2.new(0, 5, 0, 40)
-searchFrame.BackgroundColor3 = Color3.new(1, 1, 1)
-searchFrame.BorderSizePixel = 0
-searchFrame.Visible = false
-searchFrame.Parent = mainFrame
-
-local searchCorner = Instance.new("UICorner")
-searchCorner.CornerRadius = UDim.new(0, 6)
-searchCorner.Parent = searchFrame
-
-local searchBox = Instance.new("TextBox")
-searchBox.Name = "SearchBox"
-searchBox.Size = UDim2.new(1, -30, 1, -4)
-searchBox.Position = UDim2.new(0, 8, 0, 2)
-searchBox.BackgroundTransparency = 1
-searchBox.PlaceholderText = "🔍 Tìm kiếm script..."
-searchBox.Text = ""
-searchBox.TextColor3 = Color3.new(0.2, 0.2, 0.2)
-searchBox.TextSize = 12
-searchBox.Font = Enum.Font.Gotham
-searchBox.TextXAlignment = Enum.TextXAlignment.Left
-searchBox.Parent = searchFrame
-
-local clearButton = Instance.new("TextButton")
-clearButton.Name = "ClearButton"
-clearButton.Size = UDim2.new(0, 20, 0, 20)
-clearButton.Position = UDim2.new(1, -22, 0, 2.5)
-clearButton.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
-clearButton.Text = "✕"
-clearButton.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-clearButton.TextSize = 12
-clearButton.Font = Enum.Font.GothamBold
-clearButton.Parent = searchFrame
-
-local clearCorner = Instance.new("UICorner")
-clearCorner.CornerRadius = UDim.new(1, 0)
-clearCorner.Parent = clearButton
-
--- Player Frame (Adjusted position)
-local playerFrame = Instance.new("Frame")
-playerFrame.Name = "PlayerFrame"
-playerFrame.Size = UDim2.new(0, 160, 0, 180)
-playerFrame.Position = UDim2.new(0.5, 165, 0.5, -90)
-playerFrame.BackgroundColor3 = Color3.new(0.95, 0.95, 0.95)
-playerFrame.BorderSizePixel = 0
-playerFrame.Visible = false
-playerFrame.Parent = screenGui
-
-local playerFrameCorner = Instance.new("UICorner")
-playerFrameCorner.CornerRadius = UDim.new(0, 12)
-playerFrameCorner.Parent = playerFrame
-
--- Player Frame Header
-local playerHeader = Instance.new("Frame")
-playerHeader.Size = UDim2.new(1, 0, 0, 30)
-playerHeader.BackgroundColor3 = Color3.new(1, 0.4, 0.7)
-playerHeader.BorderSizePixel = 0
-playerHeader.Parent = playerFrame
-
-local playerHeaderCorner = Instance.new("UICorner")
-playerHeaderCorner.CornerRadius = UDim.new(0, 12)
-playerHeaderCorner.Parent = playerHeader
-
-local playerHeaderBottom = Instance.new("Frame")
-playerHeaderBottom.Size = UDim2.new(1, 0, 0, 12)
-playerHeaderBottom.Position = UDim2.new(0, 0, 1, -12)
-playerHeaderBottom.BackgroundColor3 = Color3.new(1, 0.4, 0.7)
-playerHeaderBottom.BorderSizePixel = 0
-playerHeaderBottom.Parent = playerHeader
-
-local playerTitle = Instance.new("TextLabel")
-playerTitle.Size = UDim2.new(1, 0, 1, 0)
-playerTitle.BackgroundTransparency = 1
-playerTitle.Text = "📋 Player List"
-playerTitle.TextColor3 = Color3.new(1, 1, 1)
-playerTitle.TextSize = 14
-playerTitle.Font = Enum.Font.GothamBold
-playerTitle.Parent = playerHeader
-
-local playerList = Instance.new("ScrollingFrame")
-playerList.Name = "PlayerList"
-playerList.Size = UDim2.new(1, -10, 1, -40)
-playerList.Position = UDim2.new(0, 5, 0, 35)
-playerList.BackgroundColor3 = Color3.new(1, 1, 1)
-playerList.ScrollBarThickness = 3
-playerList.Parent = playerFrame
-
-local listCorner = Instance.new("UICorner")
-listCorner.CornerRadius = UDim.new(0, 8)
-listCorner.Parent = playerList
-
-local listLayout = Instance.new("UIListLayout")
-listLayout.Padding = UDim.new(0, 2)
-listLayout.Parent = playerList
-
 -- Button Creation Function with better text size
 local function createButton(parent, name, text, position, size, callback)
     local button = Instance.new("TextButton")
@@ -546,25 +487,18 @@ createButton(homeContent, "NoclipBtn", "👻 Noclip", UDim2.new(0, 10, 0, 70), U
     end
 end)
 
-createButton(homeContent, "FlyBtn", "🕊️ Fly", UDim2.new(0, 10, 0, 105), UDim2.new(0, 75, 0, 25), function()
+createButton(homeContent, "FlyBtn", "🕊️ Fly", UDim2.new(0, 95, 0, 70), UDim2.new(0, 75, 0, 25), function()
     toggleFly()
 end)
 
-createButton(homeContent, "PlayersBtn", "👥 Player List", UDim2.new(0, 95, 0, 105), UDim2.new(0, 75, 0, 25), function()
-    playerFrame.Visible = not playerFrame.Visible
-    if playerFrame.Visible then
-        updatePlayerList()
-    end
-end)
-
-createButton(homeContent, "ResetCamBtn", "📷 Reset Cam", UDim2.new(0, 10, 0, 140), UDim2.new(0, 75, 0, 25), function()
+createButton(homeContent, "ResetCamBtn", "📷 Reset Cam", UDim2.new(0, 10, 0, 105), UDim2.new(0, 75, 0, 25), function()
     if workspace.CurrentCamera and character and humanoid then
         workspace.CurrentCamera.CameraSubject = humanoid
         workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
     end
 end)
 
-createButton(homeContent, "ResetBtn", "🔄 Reset All", UDim2.new(0, 95, 0, 140), UDim2.new(0, 75, 0, 25), function()
+createButton(homeContent, "ResetBtn", "🔄 Reset All", UDim2.new(0, 95, 0, 105), UDim2.new(0, 75, 0, 25), function()
     -- Reset speed and jump
     if humanoid then
         humanoid.WalkSpeed = originalWalkSpeed
@@ -596,9 +530,6 @@ createButton(homeContent, "ResetBtn", "🔄 Reset All", UDim2.new(0, 95, 0, 140)
     -- Reset UI inputs
     speedInput.Text = ""
     jumpInput.Text = ""
-    
-    -- Hide player frame
-    playerFrame.Visible = false
     
     -- Reset camera
     if workspace.CurrentCamera and character and humanoid then
@@ -750,47 +681,6 @@ end)
 -- Initialize scripts display
 filterScripts("")
 
--- Player List Functions
-function updatePlayerList()
-    -- Clear existing players
-    for _, child in pairs(playerList:GetChildren()) do
-        if child:IsA("Frame") then
-            child:Destroy()
-        end
-    end
-    
-    local playerCount = 0
-    for _, targetPlayer in pairs(Players:GetPlayers()) do
-        if targetPlayer ~= player then
-            playerCount = playerCount + 1
-            
-            local playerContainer = Instance.new("Frame")
-            playerContainer.Size = UDim2.new(1, 0, 0, 25) -- Reduced height further
-            playerContainer.BackgroundColor3 = Color3.new(0.98, 0.98, 0.98)
-            playerContainer.Parent = playerList
-            
-            local containerCorner = Instance.new("UICorner")
-            containerCorner.CornerRadius = UDim.new(0, 4)
-            containerCorner.Parent = playerContainer
-            
-            local playerName = Instance.new("TextLabel")
-            playerName.Size = UDim2.new(1, -10, 1, 0)
-            playerName.Position = UDim2.new(0, 5, 0, 0)
-            playerName.BackgroundTransparency = 1
-            playerName.Text = "👤 " .. targetPlayer.Name
-            playerName.TextSize = 11
-            playerName.Font = Enum.Font.GothamBold
-            playerName.TextColor3 = Color3.new(0.2, 0.2, 0.2)
-            playerName.TextXAlignment = Enum.TextXAlignment.Left
-            playerName.TextYAlignment = Enum.TextYAlignment.Center
-            playerName.Parent = playerContainer
-        end
-    end
-    
-    playerList.CanvasSize = UDim2.new(0, 0, 0, playerCount * 27) -- Adjusted for smaller height
-end
-end
-
 -- Tab Switching
 local function switchTab(tabName)
     if tabName == "Home" then
@@ -824,7 +714,6 @@ end)
 closeButton.MouseButton1Click:Connect(function()
     mainFrame.Visible = false
     toggleButton.Visible = true
-    playerFrame.Visible = false
 end)
 
 toggleButton.MouseButton1Click:Connect(function()
@@ -839,7 +728,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if mainFrame.Visible then
             mainFrame.Visible = false
             toggleButton.Visible = true
-            playerFrame.Visible = false
         else
             mainFrame.Visible = true
             toggleButton.Visible = false
@@ -906,8 +794,3 @@ end
 print("Mila UI đã được tải thành công! 💖")
 print("Nhấn Right Shift để bật/tắt UI")
 print("Phím điều khiển Fly:")
-print("- WASD: Di chuyển")
-print("- Space: Bay lên")
-print("- Left Ctrl: Bay xuống") 
-print("- Left Shift: Tăng tốc độ bay")
-print("Player List chỉ hiển thị danh sách, không có tính năng tương tác")
