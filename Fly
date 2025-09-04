@@ -322,7 +322,7 @@ getKeyButton.MouseButton1Click:Connect(function()
     createTween(getKeyButton, TweenInfo.new(0.1), {Size = UDim2.new(0, 80, 0, 30)})
     
     -- Copy link vào clipboard (nếu có thể) hoặc hiển thị thông báo
-    local linkToCopy = https://link4m.co/st?api=68b983f02d18506b8c225549&url=https://textbin.net/h416t9mpj9"
+    local linkToCopy = "https://link4m.co/st?api=68b983f02d18506b8c225549&url=https://textbin.net/h416t9mpj9"
     
     showNotification("Get Key Link: " .. linkToCopy, Color3.fromRGB(33, 150, 243))
     
