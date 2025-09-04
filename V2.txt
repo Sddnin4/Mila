@@ -1,4 +1,3 @@
-([[This file was protected with MoonSec V3]]):gsub('.+', (function(a) _AhxXLfKbleYl = a; end)); 
 -- Mila UI Script for Roblox (Tab Design)
 -- Tạo bởi: Mila
 -- Tính năng: Speed, Jump, Fly, Noclip, Teleport, Infinite Jump
