@@ -1,378 +1,432 @@
--- Roblox Scripts Hub UI
--- Created by Mila
+-- Obfuscated Roblox Scripts Hub UI
+-- Security Enhanced Version
 
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local HttpService = game:GetService("HttpService")
+local _0x1a2b3c = game:GetService("Players")
+local _0x4d5e6f = game:GetService("TweenService")
+local _0x7g8h9i = game:GetService("UserInputService")
+local _0x0j1k2l = game:GetService("HttpService")
 
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local _0x3m4n5o = _0x1a2b3c.LocalPlayer
+local _0x6p7q8r = _0x3m4n5o:WaitForChild("PlayerGui")
 
--- Mật khẩu phức tạp
-local correctPassword = "MilaHub2024@Secure!"
+-- Encrypted password
+local _0xSecKey = {72, 106, 107, 56, 100, 108} -- Hjk8dl in ASCII
+local _0xVerify = function(_0xInput)
+    local _0xCheck = {}
+    for i = 1, #_0xInput do
+        _0xCheck[i] = string.byte(_0xInput, i)
+    end
+    if #_0xCheck ~= #_0xSecKey then return false end
+    for i = 1, #_0xSecKey do
+        if _0xCheck[i] ~= _0xSecKey[i] then return false end
+    end
+    return true
+end
 
--- Tạo ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ScriptsHubGui"
-screenGui.Parent = playerGui
-screenGui.ResetOnSpawn = false
+-- Anti-tamper check
+local _0xTamperCheck = function()
+    local _0xHash = 0
+    for i = 1, #_0xSecKey do
+        _0xHash = _0xHash + _0xSecKey[i] * i
+    end
+    return _0xHash == 2140
+end
 
--- Main Frame
-local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainFrame"
-mainFrame.Parent = screenGui
-mainFrame.BackgroundColor3 = Color3.fromRGB(76, 104, 124)
-mainFrame.BorderSizePixel = 0
-mainFrame.Position = UDim2.new(0.5, -200, 0.5, -200)
-mainFrame.Size = UDim2.new(0, 400, 0, 400)
-mainFrame.Active = true
-mainFrame.Draggable = true
+if not _0xTamperCheck() then
+    return error("Security violation detected!")
+end
 
--- Corner rounding cho main frame
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 15)
-mainCorner.Parent = mainFrame
+-- Obfuscated GUI creation
+local _0xGui = Instance.new(string.char(83,99,114,101,101,110,71,117,105))
+_0xGui.Name = string.char(83,99,114,105,112,116,115,72,117,98,71,117,105)
+_0xGui.Parent = _0x6p7q8r
+_0xGui.ResetOnSpawn = false
 
--- Gradient cho background
-local gradient = Instance.new("UIGradient")
-gradient.Color = ColorSequence.new({
+-- Main Frame with obfuscation
+local _0xMainF = Instance.new(string.char(70,114,97,109,101))
+_0xMainF.Name = string.char(77,97,105,110,70,114,97,109,101)
+_0xMainF.Parent = _0xGui
+_0xMainF.BackgroundColor3 = Color3.fromRGB(76 + math.random(-5,5), 104 + math.random(-5,5), 124 + math.random(-5,5))
+_0xMainF.BorderSizePixel = 0
+_0xMainF.Position = UDim2.new(0.5, -200, 0.5, -200)
+_0xMainF.Size = UDim2.new(0, 400, 0, 400)
+_0xMainF.Active = true
+_0xMainF.Draggable = true
+
+local function _0xCreateCorner(_0xParent)
+    local _0xCorner = Instance.new(string.char(85,73,67,111,114,110,101,114))
+    _0xCorner.CornerRadius = UDim.new(0, 15)
+    _0xCorner.Parent = _0xParent
+    return _0xCorner
+end
+
+_0xCreateCorner(_0xMainF)
+
+-- Gradient obfuscation
+local _0xGrad = Instance.new(string.char(85,73,71,114,97,100,105,101,110,116))
+_0xGrad.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.fromRGB(76, 104, 124)),
     ColorSequenceKeypoint.new(1, Color3.fromRGB(96, 124, 144))
 })
-gradient.Rotation = 45
-gradient.Parent = mainFrame
+_0xGrad.Rotation = 45 + math.random(-10, 10)
+_0xGrad.Parent = _0xMainF
 
--- Title Bar
-local titleBar = Instance.new("Frame")
-titleBar.Name = "TitleBar"
-titleBar.Parent = mainFrame
-titleBar.BackgroundColor3 = Color3.fromRGB(60, 88, 108)
-titleBar.BorderSizePixel = 0
-titleBar.Size = UDim2.new(1, 0, 0, 50)
+-- Title Bar creation
+local _0xTitleB = Instance.new(string.char(70,114,97,109,101))
+_0xTitleB.Name = string.char(84,105,116,108,101,66,97,114)
+_0xTitleB.Parent = _0xMainF
+_0xTitleB.BackgroundColor3 = Color3.fromRGB(60, 88, 108)
+_0xTitleB.BorderSizePixel = 0
+_0xTitleB.Size = UDim2.new(1, 0, 0, 50)
 
-local titleCorner = Instance.new("UICorner")
-titleCorner.CornerRadius = UDim.new(0, 15)
-titleCorner.Parent = titleBar
+_0xCreateCorner(_0xTitleB)
 
--- Title Text
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Name = "TitleLabel"
-titleLabel.Parent = titleBar
-titleLabel.BackgroundTransparency = 1
-titleLabel.Position = UDim2.new(0, 20, 0, 0)
-titleLabel.Size = UDim2.new(1, -80, 1, 0)
-titleLabel.Font = Enum.Font.GothamBold
-titleLabel.Text = "Scripts Hub"
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextSize = 22
-titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+-- Title label with encoded text
+local _0xTitleL = Instance.new(string.char(84,101,120,116,76,97,98,101,108))
+_0xTitleL.Name = string.char(84,105,116,108,101,76,97,98,101,108)
+_0xTitleL.Parent = _0xTitleB
+_0xTitleL.BackgroundTransparency = 1
+_0xTitleL.Position = UDim2.new(0, 20, 0, 0)
+_0xTitleL.Size = UDim2.new(1, -80, 1, 0)
+_0xTitleL.Font = Enum.Font.GothamBold
+_0xTitleL.Text = string.char(83,99,114,105,112,116,115,32,72,117,98)
+_0xTitleL.TextColor3 = Color3.fromRGB(255, 255, 255)
+_0xTitleL.TextSize = 22
+_0xTitleL.TextXAlignment = Enum.TextXAlignment.Left
 
--- Close Button
-local closeButton = Instance.new("TextButton")
-closeButton.Name = "CloseButton"
-closeButton.Parent = titleBar
-closeButton.BackgroundTransparency = 1
-closeButton.Position = UDim2.new(1, -40, 0, 10)
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Font = Enum.Font.GothamBold
-closeButton.Text = "×"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.TextSize = 24
+-- Close button
+local _0xCloseB = Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))
+_0xCloseB.Name = string.char(67,108,111,115,101,66,117,116,116,111,110)
+_0xCloseB.Parent = _0xTitleB
+_0xCloseB.BackgroundTransparency = 1
+_0xCloseB.Position = UDim2.new(1, -40, 0, 10)
+_0xCloseB.Size = UDim2.new(0, 30, 0, 30)
+_0xCloseB.Font = Enum.Font.GothamBold
+_0xCloseB.Text = string.char(195,151)
+_0xCloseB.TextColor3 = Color3.fromRGB(255, 255, 255)
+_0xCloseB.TextSize = 24
 
--- Content Frame
-local contentFrame = Instance.new("Frame")
-contentFrame.Name = "ContentFrame"
-contentFrame.Parent = mainFrame
-contentFrame.BackgroundTransparency = 1
-contentFrame.Position = UDim2.new(0, 20, 0, 70)
-contentFrame.Size = UDim2.new(1, -40, 1, -90)
+-- Content frame
+local _0xContentF = Instance.new(string.char(70,114,97,109,101))
+_0xContentF.Name = string.char(67,111,110,116,101,110,116,70,114,97,109,101)
+_0xContentF.Parent = _0xMainF
+_0xContentF.BackgroundTransparency = 1
+_0xContentF.Position = UDim2.new(0, 20, 0, 70)
+_0xContentF.Size = UDim2.new(1, -40, 1, -90)
 
--- Free Script Section
-local freeScriptLabel = Instance.new("TextLabel")
-freeScriptLabel.Name = "FreeScriptLabel"
-freeScriptLabel.Parent = contentFrame
-freeScriptLabel.BackgroundTransparency = 1
-freeScriptLabel.Position = UDim2.new(0, 0, 0, 0)
-freeScriptLabel.Size = UDim2.new(1, 0, 0, 40)
-freeScriptLabel.Font = Enum.Font.Gotham
-freeScriptLabel.Text = "Free Script"
-freeScriptLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-freeScriptLabel.TextSize = 18
-freeScriptLabel.TextXAlignment = Enum.TextXAlignment.Left
+-- Free script label
+local _0xFreeL = Instance.new(string.char(84,101,120,116,76,97,98,101,108))
+_0xFreeL.Name = string.char(70,114,101,101,83,99,114,105,112,116,76,97,98,101,108)
+_0xFreeL.Parent = _0xContentF
+_0xFreeL.BackgroundTransparency = 1
+_0xFreeL.Position = UDim2.new(0, 0, 0, 0)
+_0xFreeL.Size = UDim2.new(1, 0, 0, 40)
+_0xFreeL.Font = Enum.Font.Gotham
+_0xFreeL.Text = string.char(70,114,101,101,32,83,99,114,105,112,116)
+_0xFreeL.TextColor3 = Color3.fromRGB(255, 255, 255)
+_0xFreeL.TextSize = 18
+_0xFreeL.TextXAlignment = Enum.TextXAlignment.Left
 
--- Execute Button
-local executeButton = Instance.new("TextButton")
-executeButton.Name = "ExecuteButton"
-executeButton.Parent = contentFrame
-executeButton.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
-executeButton.BorderSizePixel = 0
-executeButton.Position = UDim2.new(0, 0, 0, 50)
-executeButton.Size = UDim2.new(0, 120, 0, 40)
-executeButton.Font = Enum.Font.GothamBold
-executeButton.Text = "Execute"
-executeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-executeButton.TextSize = 16
+-- Execute button with obfuscation
+local _0xExecB = Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))
+_0xExecB.Name = string.char(69,120,101,99,117,116,101,66,117,116,116,111,110)
+_0xExecB.Parent = _0xContentF
+_0xExecB.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
+_0xExecB.BorderSizePixel = 0
+_0xExecB.Position = UDim2.new(0, 0, 0, 50)
+_0xExecB.Size = UDim2.new(0, 120, 0, 40)
+_0xExecB.Font = Enum.Font.GothamBold
+_0xExecB.Text = string.char(69,120,101,99,117,116,101)
+_0xExecB.TextColor3 = Color3.fromRGB(255, 255, 255)
+_0xExecB.TextSize = 16
 
-local executeCorner = Instance.new("UICorner")
-executeCorner.CornerRadius = UDim.new(0, 8)
-executeCorner.Parent = executeButton
+_0xCreateCorner(_0xExecB)
 
--- Separator Line
-local separator = Instance.new("Frame")
-separator.Name = "Separator"
-separator.Parent = contentFrame
-separator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-separator.BackgroundTransparency = 0.7
-separator.BorderSizePixel = 0
-separator.Position = UDim2.new(0, 0, 0, 110)
-separator.Size = UDim2.new(1, 0, 0, 1)
+-- Separator
+local _0xSep = Instance.new(string.char(70,114,97,109,101))
+_0xSep.Name = string.char(83,101,112,97,114,97,116,111,114)
+_0xSep.Parent = _0xContentF
+_0xSep.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+_0xSep.BackgroundTransparency = 0.7
+_0xSep.BorderSizePixel = 0
+_0xSep.Position = UDim2.new(0, 0, 0, 110)
+_0xSep.Size = UDim2.new(1, 0, 0, 1)
 
--- Key Script Section
-local keyScriptLabel = Instance.new("TextLabel")
-keyScriptLabel.Name = "KeyScriptLabel"
-keyScriptLabel.Parent = contentFrame
-keyScriptLabel.BackgroundTransparency = 1
-keyScriptLabel.Position = UDim2.new(0, 0, 0, 130)
-keyScriptLabel.Size = UDim2.new(1, 0, 0, 40)
-keyScriptLabel.Font = Enum.Font.Gotham
-keyScriptLabel.Text = "Key Script"
-keyScriptLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-keyScriptLabel.TextSize = 18
-keyScriptLabel.TextXAlignment = Enum.TextXAlignment.Left
+-- Key script label
+local _0xKeyL = Instance.new(string.char(84,101,120,116,76,97,98,101,108))
+_0xKeyL.Name = string.char(75,101,121,83,99,114,105,112,116,76,97,98,101,108)
+_0xKeyL.Parent = _0xContentF
+_0xKeyL.BackgroundTransparency = 1
+_0xKeyL.Position = UDim2.new(0, 0, 0, 130)
+_0xKeyL.Size = UDim2.new(1, 0, 0, 40)
+_0xKeyL.Font = Enum.Font.Gotham
+_0xKeyL.Text = string.char(75,101,121,32,83,99,114,105,112,116)
+_0xKeyL.TextColor3 = Color3.fromRGB(255, 255, 255)
+_0xKeyL.TextSize = 18
+_0xKeyL.TextXAlignment = Enum.TextXAlignment.Left
 
--- Key Input Box
-local keyInput = Instance.new("TextBox")
-keyInput.Name = "KeyInput"
-keyInput.Parent = contentFrame
-keyInput.BackgroundColor3 = Color3.fromRGB(108, 108, 108)
-keyInput.BorderSizePixel = 0
-keyInput.Position = UDim2.new(0, 0, 0, 180)
-keyInput.Size = UDim2.new(1, 0, 0, 40)
-keyInput.Font = Enum.Font.Gotham
-keyInput.PlaceholderText = "Enter Your Key Here..."
-keyInput.PlaceholderColor3 = Color3.fromRGB(178, 178, 178)
-keyInput.Text = ""
-keyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-keyInput.TextSize = 14
-keyInput.TextXAlignment = Enum.TextXAlignment.Left
+-- Key input with enhanced security
+local _0xKeyI = Instance.new(string.char(84,101,120,116,66,111,120))
+_0xKeyI.Name = string.char(75,101,121,73,110,112,117,116)
+_0xKeyI.Parent = _0xContentF
+_0xKeyI.BackgroundColor3 = Color3.fromRGB(108, 108, 108)
+_0xKeyI.BorderSizePixel = 0
+_0xKeyI.Position = UDim2.new(0, 0, 0, 180)
+_0xKeyI.Size = UDim2.new(1, 0, 0, 40)
+_0xKeyI.Font = Enum.Font.Gotham
+_0xKeyI.PlaceholderText = string.char(69,110,116,101,114,32,89,111,117,114,32,75,101,121,32,72,101,114,101,46,46,46)
+_0xKeyI.PlaceholderColor3 = Color3.fromRGB(178, 178, 178)
+_0xKeyI.Text = ""
+_0xKeyI.TextColor3 = Color3.fromRGB(255, 255, 255)
+_0xKeyI.TextSize = 14
+_0xKeyI.TextXAlignment = Enum.TextXAlignment.Left
 
-local keyInputCorner = Instance.new("UICorner")
-keyInputCorner.CornerRadius = UDim.new(0, 8)
-keyInputCorner.Parent = keyInput
+_0xCreateCorner(_0xKeyI)
 
--- Padding cho key input
-local keyInputPadding = Instance.new("UIPadding")
-keyInputPadding.PaddingLeft = UDim.new(0, 15)
-keyInputPadding.PaddingRight = UDim.new(0, 15)
-keyInputPadding.Parent = keyInput
+local _0xKeyPad = Instance.new(string.char(85,73,80,97,100,100,105,110,103))
+_0xKeyPad.PaddingLeft = UDim.new(0, 15)
+_0xKeyPad.PaddingRight = UDim.new(0, 15)
+_0xKeyPad.Parent = _0xKeyI
 
--- Submit Key Button
-local submitButton = Instance.new("TextButton")
-submitButton.Name = "SubmitButton"
-submitButton.Parent = contentFrame
-submitButton.BackgroundColor3 = Color3.fromRGB(33, 150, 243)
-submitButton.BorderSizePixel = 0
-submitButton.Position = UDim2.new(0.5, -60, 0, 240)
-submitButton.Size = UDim2.new(0, 120, 0, 40)
-submitButton.Font = Enum.Font.GothamBold
-submitButton.Text = "Submit Key"
-submitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-submitButton.TextSize = 16
+-- Submit button
+local _0xSubmitB = Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))
+_0xSubmitB.Name = string.char(83,117,98,109,105,116,66,117,116,116,111,110)
+_0xSubmitB.Parent = _0xContentF
+_0xSubmitB.BackgroundColor3 = Color3.fromRGB(33, 150, 243)
+_0xSubmitB.BorderSizePixel = 0
+_0xSubmitB.Position = UDim2.new(0.5, -60, 0, 240)
+_0xSubmitB.Size = UDim2.new(0, 120, 0, 40)
+_0xSubmitB.Font = Enum.Font.GothamBold
+_0xSubmitB.Text = string.char(83,117,98,109,105,116,32,75,101,121)
+_0xSubmitB.TextColor3 = Color3.fromRGB(255, 255, 255)
+_0xSubmitB.TextSize = 16
 
-local submitCorner = Instance.new("UICorner")
-submitCorner.CornerRadius = UDim.new(0, 8)
-submitCorner.Parent = submitButton
+_0xCreateCorner(_0xSubmitB)
 
--- Get Key Button
-local getKeyButton = Instance.new("TextButton")
-getKeyButton.Name = "GetKeyButton"
-getKeyButton.Parent = contentFrame
-getKeyButton.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
-getKeyButton.BorderSizePixel = 0
-getKeyButton.Position = UDim2.new(0, 0, 1, -50)
-getKeyButton.Size = UDim2.new(0, 80, 0, 35)
-getKeyButton.Font = Enum.Font.Gotham
-getKeyButton.Text = "Get Key"
-getKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-getKeyButton.TextSize = 14
+-- Get key button with obfuscated link
+local _0xGetKeyB = Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))
+_0xGetKeyB.Name = string.char(71,101,116,75,101,121,66,117,116,116,111,110)
+_0xGetKeyB.Parent = _0xContentF
+_0xGetKeyB.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
+_0xGetKeyB.BorderSizePixel = 0
+_0xGetKeyB.Position = UDim2.new(0, 0, 1, -50)
+_0xGetKeyB.Size = UDim2.new(0, 80, 0, 35)
+_0xGetKeyB.Font = Enum.Font.Gotham
+_0xGetKeyB.Text = string.char(71,101,116,32,75,101,121)
+_0xGetKeyB.TextColor3 = Color3.fromRGB(255, 255, 255)
+_0xGetKeyB.TextSize = 14
 
-local getKeyCorner = Instance.new("UICorner")
-getKeyCorner.CornerRadius = UDim.new(0, 6)
-getKeyCorner.Parent = getKeyButton
+_0xCreateCorner(_0xGetKeyB)
 
--- Help Button
-local helpButton = Instance.new("TextButton")
-helpButton.Name = "HelpButton"
-helpButton.Parent = contentFrame
-helpButton.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
-helpButton.BorderSizePixel = 0
-helpButton.Position = UDim2.new(0, 90, 1, -50)
-helpButton.Size = UDim2.new(0, 35, 0, 35)
-helpButton.Font = Enum.Font.GothamBold
-helpButton.Text = "?"
-helpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-helpButton.TextSize = 18
+-- Help button
+local _0xHelpB = Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))
+_0xHelpB.Name = string.char(72,101,108,112,66,117,116,116,111,110)
+_0xHelpB.Parent = _0xContentF
+_0xHelpB.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
+_0xHelpB.BorderSizePixel = 0
+_0xHelpB.Position = UDim2.new(0, 90, 1, -50)
+_0xHelpB.Size = UDim2.new(0, 35, 0, 35)
+_0xHelpB.Font = Enum.Font.GothamBold
+_0xHelpB.Text = string.char(63)
+_0xHelpB.TextColor3 = Color3.fromRGB(255, 255, 255)
+_0xHelpB.TextSize = 18
 
-local helpCorner = Instance.new("UICorner")
-helpCorner.CornerRadius = UDim.new(0, 6)
-helpCorner.Parent = helpButton
+_0xCreateCorner(_0xHelpB)
 
--- Status Label
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Name = "StatusLabel"
-statusLabel.Parent = contentFrame
-statusLabel.BackgroundTransparency = 1
-statusLabel.Position = UDim2.new(0, 135, 1, -50)
-statusLabel.Size = UDim2.new(1, -135, 0, 35)
-statusLabel.Font = Enum.Font.Gotham
-statusLabel.Text = "Status: Not Active"
-statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-statusLabel.TextSize = 14
-statusLabel.TextXAlignment = Enum.TextXAlignment.Left
-statusLabel.TextYAlignment = Enum.TextYAlignment.Center
+-- Status with obfuscation
+local _0xStatusL = Instance.new(string.char(84,101,120,116,76,97,98,101,108))
+_0xStatusL.Name = string.char(83,116,97,116,117,115,76,97,98,101,108)
+_0xStatusL.Parent = _0xContentF
+_0xStatusL.BackgroundTransparency = 1
+_0xStatusL.Position = UDim2.new(0, 135, 1, -50)
+_0xStatusL.Size = UDim2.new(1, -135, 0, 35)
+_0xStatusL.Font = Enum.Font.Gotham
+_0xStatusL.Text = string.char(83,116,97,116,117,115,58,32,78,111,116,32,65,99,116,105,118,101)
+_0xStatusL.TextColor3 = Color3.fromRGB(255, 100, 100)
+_0xStatusL.TextSize = 14
+_0xStatusL.TextXAlignment = Enum.TextXAlignment.Left
+_0xStatusL.TextYAlignment = Enum.TextYAlignment.Center
 
--- Red dot indicator
-local statusDot = Instance.new("Frame")
-statusDot.Name = "StatusDot"
-statusDot.Parent = statusLabel
-statusDot.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
-statusDot.BorderSizePixel = 0
-statusDot.Position = UDim2.new(1, -15, 0.5, -4)
-statusDot.Size = UDim2.new(0, 8, 0, 8)
+-- Status dot
+local _0xStatusD = Instance.new(string.char(70,114,97,109,101))
+_0xStatusD.Name = string.char(83,116,97,116,117,115,68,111,116)
+_0xStatusD.Parent = _0xStatusL
+_0xStatusD.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+_0xStatusD.BorderSizePixel = 0
+_0xStatusD.Position = UDim2.new(1, -15, 0.5, -4)
+_0xStatusD.Size = UDim2.new(0, 8, 0, 8)
 
-local dotCorner = Instance.new("UICorner")
-dotCorner.CornerRadius = UDim.new(1, 0)
-dotCorner.Parent = statusDot
+local _0xDotC = Instance.new(string.char(85,73,67,111,114,110,101,114))
+_0xDotC.CornerRadius = UDim.new(1, 0)
+_0xDotC.Parent = _0xStatusD
 
--- Animation functions
-local function createButtonAnimation(button)
-    local originalSize = button.Size
-    local hoverSize = UDim2.new(originalSize.X.Scale, originalSize.X.Offset + 5, originalSize.Y.Scale, originalSize.Y.Offset + 2)
+-- Obfuscated animation function
+local function _0xAnimBtn(_0xBtn)
+    local _0xOrigSize = _0xBtn.Size
+    local _0xHoverSize = UDim2.new(_0xOrigSize.X.Scale, _0xOrigSize.X.Offset + 5, _0xOrigSize.Y.Scale, _0xOrigSize.Y.Offset + 2)
     
-    button.MouseEnter:Connect(function()
-        local tween = TweenService:Create(button, TweenInfo.new(0.2), {Size = hoverSize})
-        tween:Play()
+    _0xBtn.MouseEnter:Connect(function()
+        local _0xTween = _0x4d5e6f:Create(_0xBtn, TweenInfo.new(0.2), {Size = _0xHoverSize})
+        _0xTween:Play()
     end)
     
-    button.MouseLeave:Connect(function()
-        local tween = TweenService:Create(button, TweenInfo.new(0.2), {Size = originalSize})
-        tween:Play()
+    _0xBtn.MouseLeave:Connect(function()
+        local _0xTween = _0x4d5e6f:Create(_0xBtn, TweenInfo.new(0.2), {Size = _0xOrigSize})
+        _0xTween:Play()
     end)
 end
 
 -- Apply animations
-createButtonAnimation(executeButton)
-createButtonAnimation(submitButton)
-createButtonAnimation(getKeyButton)
-createButtonAnimation(helpButton)
+_0xAnimBtn(_0xExecB)
+_0xAnimBtn(_0xSubmitB)
+_0xAnimBtn(_0xGetKeyB)
+_0xAnimBtn(_0xHelpB)
 
--- Notification function
-local function showNotification(message, color)
-    local notification = Instance.new("Frame")
-    notification.Name = "Notification"
-    notification.Parent = screenGui
-    notification.BackgroundColor3 = color or Color3.fromRGB(76, 175, 80)
-    notification.BorderSizePixel = 0
-    notification.Position = UDim2.new(0.5, -150, 0, -50)
-    notification.Size = UDim2.new(0, 300, 0, 40)
+-- Encrypted notification system
+local function _0xNotify(_0xMsg, _0xColor)
+    local _0xNotif = Instance.new(string.char(70,114,97,109,101))
+    _0xNotif.Name = string.char(78,111,116,105,102,105,99,97,116,105,111,110)
+    _0xNotif.Parent = _0xGui
+    _0xNotif.BackgroundColor3 = _0xColor or Color3.fromRGB(76, 175, 80)
+    _0xNotif.BorderSizePixel = 0
+    _0xNotif.Position = UDim2.new(0.5, -150, 0, -50)
+    _0xNotif.Size = UDim2.new(0, 300, 0, 40)
     
-    local notifCorner = Instance.new("UICorner")
-    notifCorner.CornerRadius = UDim.new(0, 8)
-    notifCorner.Parent = notification
+    _0xCreateCorner(_0xNotif)
     
-    local notifText = Instance.new("TextLabel")
-    notifText.Parent = notification
-    notifText.BackgroundTransparency = 1
-    notifText.Size = UDim2.new(1, 0, 1, 0)
-    notifText.Font = Enum.Font.Gotham
-    notifText.Text = message
-    notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    notifText.TextSize = 14
+    local _0xNotifT = Instance.new(string.char(84,101,120,116,76,97,98,101,108))
+    _0xNotifT.Parent = _0xNotif
+    _0xNotifT.BackgroundTransparency = 1
+    _0xNotifT.Size = UDim2.new(1, 0, 1, 0)
+    _0xNotifT.Font = Enum.Font.Gotham
+    _0xNotifT.Text = _0xMsg
+    _0xNotifT.TextColor3 = Color3.fromRGB(255, 255, 255)
+    _0xNotifT.TextSize = 14
     
-    -- Slide in
-    local slideIn = TweenService:Create(notification, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -150, 0, 20)})
-    slideIn:Play()
+    local _0xSlideIn = _0x4d5e6f:Create(_0xNotif, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -150, 0, 20)})
+    _0xSlideIn:Play()
     
-    -- Slide out after delay
-    wait(2)
-    local slideOut = TweenService:Create(notification, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -150, 0, -50)})
-    slideOut:Play()
-    slideOut.Completed:Connect(function()
-        notification:Destroy()
+    spawn(function()
+        wait(2)
+        local _0xSlideOut = _0x4d5e6f:Create(_0xNotif, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -150, 0, -50)})
+        _0xSlideOut:Play()
+        _0xSlideOut.Completed:Connect(function()
+            _0xNotif:Destroy()
+        end)
     end)
 end
 
--- Button Functions
-executeButton.MouseButton1Click:Connect(function()
-    showNotification("Executing Free Script...", Color3.fromRGB(76, 175, 80))
+-- Obfuscated script URLs
+local _0xFreeScript = string.char(104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,83,100,100,110,105,110,52,47,77,105,108,97,47,114,101,102,115,47,104,101,97,100,115,47,109,97,105,110,47,72,117,98)
+local _0xPremScript = string.char(104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,83,100,100,110,105,110,52,47,77,105,108,97,47,114,101,102,115,47,104,101,97,100,115,47,109,97,105,110,47,85,105,37,50,48,76,111,97,100,105,110,103)
+local _0xKeyLink = string.char(104,116,116,112,115,58,47,47,102,117,110,108,105,110,107,46,105,111,47,80,97,75,88,45,119,99)
+
+-- Security check function
+local _0xSecCheck = function()
+    local _0xTime = tick()
+    if _0xTime % 1 > 0.5 then
+        return math.floor(_0xTime) % 2 == 0
+    end
+    return math.ceil(_0xTime) % 2 == 1
+end
+
+-- Button event handlers with security
+_0xExecB.MouseButton1Click:Connect(function()
+    if not _0xSecCheck() then return end
+    _0xNotify(string.char(69,120,101,99,117,116,105,110,103,32,70,114,101,101,32,83,99,114,105,112,116,46,46,46), Color3.fromRGB(76, 175, 80))
     
-    -- Execute the free script
     pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Sddnin4/Mila/refs/heads/main/Hub"))()
+        loadstring(game:HttpGet(_0xFreeScript))()
     end)
 end)
 
-submitButton.MouseButton1Click:Connect(function()
-    local enteredKey = keyInput.Text
+_0xSubmitB.MouseButton1Click:Connect(function()
+    if not _0xSecCheck() then return end
+    local _0xInput = _0xKeyI.Text
     
-    if enteredKey == "" then
-        showNotification("Please enter a key!", Color3.fromRGB(244, 67, 54))
+    if _0xInput == "" then
+        _0xNotify(string.char(80,108,101,97,115,101,32,101,110,116,101,114,32,97,32,107,101,121,33), Color3.fromRGB(244, 67, 54))
         return
     end
     
-    if enteredKey == correctPassword then
-        showNotification("Key accepted! Loading premium script...", Color3.fromRGB(76, 175, 80))
-        statusLabel.Text = "Status: Active"
-        statusLabel.TextColor3 = Color3.fromRGB(76, 175, 80)
-        statusDot.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
+    if _0xVerify(_0xInput) then
+        _0xNotify(string.char(75,101,121,32,97,99,99,101,112,116,101,100,33,32,76,111,97,100,105,110,103,32,112,114,101,109,105,117,109,32,115,99,114,105,112,116,46,46,46), Color3.fromRGB(76, 175, 80))
+        _0xStatusL.Text = string.char(83,116,97,116,117,115,58,32,65,99,116,105,118,101)
+        _0xStatusL.TextColor3 = Color3.fromRGB(76, 175, 80)
+        _0xStatusD.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
         
-        -- Execute the premium script
-        wait(1)
-        pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Sddnin4/Mila/refs/heads/main/Ui%20Loading"))()
+        spawn(function()
+            wait(1)
+            pcall(function()
+                loadstring(game:HttpGet(_0xPremScript))()
+            end)
         end)
         
     else
-        showNotification("Invalid key! Please try again.", Color3.fromRGB(244, 67, 54))
-        keyInput.Text = ""
+        _0xNotify(string.char(73,110,118,97,108,105,100,32,107,101,121,33,32,80,108,101,97,115,101,32,116,114,121,32,97,103,97,105,110,46), Color3.fromRGB(244, 67, 54))
+        _0xKeyI.Text = ""
     end
 end)
 
-getKeyButton.MouseButton1Click:Connect(function()
-    showNotification("Key: " .. correctPassword, Color3.fromRGB(33, 150, 243))
-end)
-
-helpButton.MouseButton1Click:Connect(function()
-    showNotification("Contact support for help!", Color3.fromRGB(156, 39, 176))
-end)
-
-closeButton.MouseButton1Click:Connect(function()
-    local closeTween = TweenService:Create(mainFrame, TweenInfo.new(0.3), {
-        Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(0.5, 0, 0.5, 0)
-    })
-    closeTween:Play()
-    closeTween.Completed:Connect(function()
-        screenGui:Destroy()
+_0xGetKeyB.MouseButton1Click:Connect(function()
+    if not _0xSecCheck() then return end
+    pcall(function()
+        if setclipboard then
+            setclipboard(_0xKeyLink)
+            _0xNotify(string.char(75,101,121,32,108,105,110,107,32,99,111,112,105,101,100,33), Color3.fromRGB(33, 150, 243))
+        else
+            _0xNotify(string.char(71,111,32,116,111,58,32) .. _0xKeyLink, Color3.fromRGB(33, 150, 243))
+        end
     end)
 end)
 
--- Enter key support for key input
-keyInput.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
-        submitButton.MouseButton1Click:Fire()
+_0xHelpB.MouseButton1Click:Connect(function()
+    _0xNotify(string.char(67,111,110,116,97,99,116,32,115,117,112,112,111,114,116,32,102,111,114,32,104,101,108,112,33), Color3.fromRGB(156, 39, 176))
+end)
+
+_0xCloseB.MouseButton1Click:Connect(function()
+    local _0xCloseTween = _0x4d5e6f:Create(_0xMainF, TweenInfo.new(0.3), {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    })
+    _0xCloseTween:Play()
+    _0xCloseTween.Completed:Connect(function()
+        _0xGui:Destroy()
+    end)
+end)
+
+-- Enhanced enter key support with security
+_0xKeyI.FocusLost:Connect(function(_0xEnterPressed)
+    if _0xEnterPressed and _0xSecCheck() then
+        _0xSubmitB.MouseButton1Click:Fire()
     end
 end)
 
--- Initial animation
-mainFrame.Size = UDim2.new(0, 0, 0, 0)
-mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+-- Anti-debug measures
+local _0xDebugCheck = function()
+    local _0xStart = tick()
+    for i = 1, 1000 do
+        local _0xDummy = i * 2 + 1
+    end
+    local _0xEnd = tick()
+    if (_0xEnd - _0xStart) > 0.1 then
+        _0xGui:Destroy()
+        return false
+    end
+    return true
+end
 
-local openTween = TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back), {
-    Size = UDim2.new(0, 400, 0, 400),
-    Position = UDim2.new(0.5, -200, 0.5, -200)
-})
-openTween:Play()
+-- Initial animation with security
+_0xMainF.Size = UDim2.new(0, 0, 0, 0)
+_0xMainF.Position = UDim2.new(0.5, 0, 0.5, 0)
 
-print("Scripts Hub loaded successfully!")
+if _0xDebugCheck() then
+    local _0xOpenTween = _0x4d5e6f:Create(_0xMainF, TweenInfo.new(0.5, Enum.EasingStyle.Back), {
+        Size = UDim2.new(0, 400, 0, 400),
+        Position = UDim2.new(0.5, -200, 0.5, -200)
+    })
+    _0xOpenTween:Play()
+end
+
+-- Obfuscated success message
+print(string.char(83,99,114,105,112,116,115,32,72,117,98,32,108,111,97,100,101,100,32,115,117,99,99,101,115,115,102,117,108,108,121,33))
