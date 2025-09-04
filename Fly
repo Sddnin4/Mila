@@ -1,355 +1,382 @@
--- Obfuscated Scripts Hub UI
-local a1,a2,a3,a4=game:GetService("Players"),game:GetService("TweenService"),game:GetService("UserInputService"),game:GetService("HttpService")
-local b1,b2=a1.LocalPlayer,a1.LocalPlayer:WaitForChild("PlayerGui")
+-- Scripts Hub UI for Roblox
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
 
-local function c2(s)
-    local r=""
-    for i=1,#s do 
-        r=r..string.char(string.byte(s,i)-1)
-    end 
-    return r 
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Kiểm tra nếu GUI đã tồn tại thì xóa
+if playerGui:FindFirstChild("ScriptsHubGui") then
+    playerGui.ScriptsHubGui:Destroy()
 end
 
-local d1="ScriptsHubGui"
-if b2:FindFirstChild(d1)then b2[d1]:Destroy()end
+-- Tạo ScreenGui chính
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ScriptsHubGui"
+screenGui.Parent = playerGui
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-local e1=Instance.new("ScreenGui")
-e1.Name=d1 
-e1.Parent=b2 
-e1.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+-- Frame chính
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 400, 0, 350)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -175)
+mainFrame.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
 
-local f1=Instance.new("Frame")
-f1.Name="MainFrame"
-f1.Size=UDim2.new(0,400,0,350)
-f1.Position=UDim2.new(0.5,-200,0.5,-175)
-f1.BackgroundColor3=Color3.fromRGB(70,130,180)
-f1.BorderSizePixel=0 
-f1.Parent=e1
+-- Bo góc cho frame chính
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 12)
+mainCorner.Parent = mainFrame
 
-local g1=Instance.new("UICorner")
-g1.CornerRadius=UDim.new(0,12)
-g1.Parent=f1
+-- Header
+local header = Instance.new("Frame")
+header.Name = "Header"
+header.Size = UDim2.new(1, 0, 0, 50)
+header.Position = UDim2.new(0, 0, 0, 0)
+header.BackgroundColor3 = Color3.fromRGB(60, 110, 160)
+header.BorderSizePixel = 0
+header.Parent = mainFrame
 
-local h1=Instance.new("Frame")
-h1.Name="Header"
-h1.Size=UDim2.new(1,0,0,50)
-h1.Position=UDim2.new(0,0,0,0)
-h1.BackgroundColor3=Color3.fromRGB(60,110,160)
-h1.BorderSizePixel=0 
-h1.Parent=f1
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 12)
+headerCorner.Parent = header
 
-local i1=Instance.new("UICorner")
-i1.CornerRadius=UDim.new(0,12)
-i1.Parent=h1
+-- Title
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "Title"
+titleLabel.Size = UDim2.new(1, -50, 1, 0)
+titleLabel.Position = UDim2.new(0, 15, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Scripts Hub"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextScaled = true
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Parent = header
 
-local j1=Instance.new("TextLabel")
-j1.Name="Title"
-j1.Size=UDim2.new(1,-50,1,0)
-j1.Position=UDim2.new(0,15,0,0)
-j1.BackgroundTransparency=1 
-j1.Text="Scripts Hub"
-j1.TextColor3=Color3.fromRGB(255,255,255)
-j1.TextScaled=true 
-j1.Font=Enum.Font.GothamBold 
-j1.Parent=h1
+-- Close Button
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -40, 0, 10)
+closeButton.BackgroundTransparency = 1
+closeButton.Text = "✕"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextScaled = true
+closeButton.Font = Enum.Font.GothamBold
+closeButton.Parent = header
 
-local k1=Instance.new("TextButton")
-k1.Name="CloseButton"
-k1.Size=UDim2.new(0,30,0,30)
-k1.Position=UDim2.new(1,-40,0,10)
-k1.BackgroundTransparency=1 
-k1.Text="✕"
-k1.TextColor3=Color3.fromRGB(255,255,255)
-k1.TextScaled=true 
-k1.Font=Enum.Font.GothamBold 
-k1.Parent=h1
+-- Content Frame
+local contentFrame = Instance.new("Frame")
+contentFrame.Name = "Content"
+contentFrame.Size = UDim2.new(1, -20, 1, -70)
+contentFrame.Position = UDim2.new(0, 10, 0, 60)
+contentFrame.BackgroundColor3 = Color3.fromRGB(50, 60, 80)
+contentFrame.BorderSizePixel = 0
+contentFrame.Parent = mainFrame
 
-local l1=Instance.new("Frame")
-l1.Name="Content"
-l1.Size=UDim2.new(1,-20,1,-70)
-l1.Position=UDim2.new(0,10,0,60)
-l1.BackgroundColor3=Color3.fromRGB(50,60,80)
-l1.BorderSizePixel=0 
-l1.Parent=f1
+local contentCorner = Instance.new("UICorner")
+contentCorner.CornerRadius = UDim.new(0, 8)
+contentCorner.Parent = contentFrame
 
-local m1=Instance.new("UICorner")
-m1.CornerRadius=UDim.new(0,8)
-m1.Parent=l1
+-- Free Script Section
+local freeScriptLabel = Instance.new("TextLabel")
+freeScriptLabel.Name = "FreeScriptLabel"
+freeScriptLabel.Size = UDim2.new(1, 0, 0, 30)
+freeScriptLabel.Position = UDim2.new(0, 0, 0, 10)
+freeScriptLabel.BackgroundTransparency = 1
+freeScriptLabel.Text = "Free Script"
+freeScriptLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+freeScriptLabel.TextScaled = true
+freeScriptLabel.Font = Enum.Font.Gotham
+freeScriptLabel.Parent = contentFrame
 
-local n1=Instance.new("TextLabel")
-n1.Name="FreeScriptLabel"
-n1.Size=UDim2.new(1,0,0,30)
-n1.Position=UDim2.new(0,0,0,10)
-n1.BackgroundTransparency=1 
-n1.Text="Free Script"
-n1.TextColor3=Color3.fromRGB(255,255,255)
-n1.TextScaled=true 
-n1.Font=Enum.Font.Gotham 
-n1.Parent=l1
+-- Execute Button
+local executeButton = Instance.new("TextButton")
+executeButton.Name = "ExecuteButton"
+executeButton.Size = UDim2.new(0, 120, 0, 35)
+executeButton.Position = UDim2.new(0, 20, 0, 50)
+executeButton.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
+executeButton.BorderSizePixel = 0
+executeButton.Text = "Execute"
+executeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+executeButton.TextScaled = true
+executeButton.Font = Enum.Font.GothamBold
+executeButton.Parent = contentFrame
 
-local o1=Instance.new("TextButton")
-o1.Name="ExecuteButton"
-o1.Size=UDim2.new(0,120,0,35)
-o1.Position=UDim2.new(0,20,0,50)
-o1.BackgroundColor3=Color3.fromRGB(76,175,80)
-o1.BorderSizePixel=0 
-o1.Text="Execute"
-o1.TextColor3=Color3.fromRGB(255,255,255)
-o1.TextScaled=true 
-o1.Font=Enum.Font.GothamBold 
-o1.Parent=l1
+local executeCorner = Instance.new("UICorner")
+executeCorner.CornerRadius = UDim.new(0, 8)
+executeCorner.Parent = executeButton
 
-local p1=Instance.new("UICorner")
-p1.CornerRadius=UDim.new(0,8)
-p1.Parent=o1
+-- Separator Line
+local separatorLine = Instance.new("Frame")
+separatorLine.Name = "Separator"
+separatorLine.Size = UDim2.new(1, -20, 0, 2)
+separatorLine.Position = UDim2.new(0, 10, 0, 100)
+separatorLine.BackgroundColor3 = Color3.fromRGB(80, 90, 110)
+separatorLine.BorderSizePixel = 0
+separatorLine.Parent = contentFrame
 
-local q1=Instance.new("Frame")
-q1.Name="Separator"
-q1.Size=UDim2.new(1,-20,0,2)
-q1.Position=UDim2.new(0,10,0,100)
-q1.BackgroundColor3=Color3.fromRGB(80,90,110)
-q1.BorderSizePixel=0 
-q1.Parent=l1
+-- Key Script Section
+local keyScriptLabel = Instance.new("TextLabel")
+keyScriptLabel.Name = "KeyScriptLabel"
+keyScriptLabel.Size = UDim2.new(1, 0, 0, 30)
+keyScriptLabel.Position = UDim2.new(0, 0, 0, 115)
+keyScriptLabel.BackgroundTransparency = 1
+keyScriptLabel.Text = "Key Script"
+keyScriptLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+keyScriptLabel.TextScaled = true
+keyScriptLabel.Font = Enum.Font.Gotham
+keyScriptLabel.Parent = contentFrame
 
-local r1=Instance.new("TextLabel")
-r1.Name="KeyScriptLabel"
-r1.Size=UDim2.new(1,0,0,30)
-r1.Position=UDim2.new(0,0,0,115)
-r1.BackgroundTransparency=1 
-r1.Text="Key Script"
-r1.TextColor3=Color3.fromRGB(255,255,255)
-r1.TextScaled=true 
-r1.Font=Enum.Font.Gotham 
-r1.Parent=l1
+-- Key Input TextBox
+local keyInput = Instance.new("TextBox")
+keyInput.Name = "KeyInput"
+keyInput.Size = UDim2.new(1, -40, 0, 35)
+keyInput.Position = UDim2.new(0, 20, 0, 150)
+keyInput.BackgroundColor3 = Color3.fromRGB(70, 80, 100)
+keyInput.BorderSizePixel = 0
+keyInput.Text = ""
+keyInput.PlaceholderText = "Enter Your Key Here..."
+keyInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+keyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+keyInput.TextScaled = true
+keyInput.Font = Enum.Font.Gotham
+keyInput.Parent = contentFrame
 
-local s1=Instance.new("TextBox")
-s1.Name="KeyInput"
-s1.Size=UDim2.new(1,-40,0,35)
-s1.Position=UDim2.new(0,20,0,150)
-s1.BackgroundColor3=Color3.fromRGB(70,80,100)
-s1.BorderSizePixel=0 
-s1.Text=""
-s1.PlaceholderText="Enter Your Key Here..."
-s1.PlaceholderColor3=Color3.fromRGB(150,150,150)
-s1.TextColor3=Color3.fromRGB(255,255,255)
-s1.TextScaled=true 
-s1.Font=Enum.Font.Gotham 
-s1.Parent=l1
+local keyInputCorner = Instance.new("UICorner")
+keyInputCorner.CornerRadius = UDim.new(0, 8)
+keyInputCorner.Parent = keyInput
 
-local t1=Instance.new("UICorner")
-t1.CornerRadius=UDim.new(0,8)
-t1.Parent=s1
+-- Submit Key Button
+local submitButton = Instance.new("TextButton")
+submitButton.Name = "SubmitButton"
+submitButton.Size = UDim2.new(0, 150, 0, 35)
+submitButton.Position = UDim2.new(0.5, -75, 0, 195)
+submitButton.BackgroundColor3 = Color3.fromRGB(33, 150, 243)
+submitButton.BorderSizePixel = 0
+submitButton.Text = "Submit Key"
+submitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+submitButton.TextScaled = true
+submitButton.Font = Enum.Font.GothamBold
+submitButton.Parent = contentFrame
 
-local u1=Instance.new("TextButton")
-u1.Name="SubmitButton"
-u1.Size=UDim2.new(0,150,0,35)
-u1.Position=UDim2.new(0.5,-75,0,195)
-u1.BackgroundColor3=Color3.fromRGB(33,150,243)
-u1.BorderSizePixel=0 
-u1.Text="Submit Key"
-u1.TextColor3=Color3.fromRGB(255,255,255)
-u1.TextScaled=true 
-u1.Font=Enum.Font.GothamBold 
-u1.Parent=l1
+local submitCorner = Instance.new("UICorner")
+submitCorner.CornerRadius = UDim.new(0, 8)
+submitCorner.Parent = submitButton
 
-local v1=Instance.new("UICorner")
-v1.CornerRadius=UDim.new(0,8)
-v1.Parent=u1
+-- Get Key Button
+local getKeyButton = Instance.new("TextButton")
+getKeyButton.Name = "GetKeyButton"
+getKeyButton.Size = UDim2.new(0, 80, 0, 30)
+getKeyButton.Position = UDim2.new(0, 20, 0, 240)
+getKeyButton.BackgroundColor3 = Color3.fromRGB(60, 70, 90)
+getKeyButton.BorderSizePixel = 0
+getKeyButton.Text = "Get Key"
+getKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+getKeyButton.TextScaled = true
+getKeyButton.Font = Enum.Font.Gotham
+getKeyButton.Parent = contentFrame
 
-local w1=Instance.new("TextButton")
-w1.Name="GetKeyButton"
-w1.Size=UDim2.new(0,80,0,30)
-w1.Position=UDim2.new(0,20,0,240)
-w1.BackgroundColor3=Color3.fromRGB(60,70,90)
-w1.BorderSizePixel=0 
-w1.Text="Get Key"
-w1.TextColor3=Color3.fromRGB(255,255,255)
-w1.TextScaled=true 
-w1.Font=Enum.Font.Gotham 
-w1.Parent=l1
+local getKeyCorner = Instance.new("UICorner")
+getKeyCorner.CornerRadius = UDim.new(0, 6)
+getKeyCorner.Parent = getKeyButton
 
-local x1=Instance.new("UICorner")
-x1.CornerRadius=UDim.new(0,6)
-x1.Parent=w1
+-- Help Button (?)
+local helpButton = Instance.new("TextButton")
+helpButton.Name = "HelpButton"
+helpButton.Size = UDim2.new(0, 30, 0, 30)
+helpButton.Position = UDim2.new(0, 110, 0, 240)
+helpButton.BackgroundColor3 = Color3.fromRGB(60, 70, 90)
+helpButton.BorderSizePixel = 0
+helpButton.Text = "?"
+helpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+helpButton.TextScaled = true
+helpButton.Font = Enum.Font.GothamBold
+helpButton.Parent = contentFrame
 
-local y1=Instance.new("TextButton")
-y1.Name="HelpButton"
-y1.Size=UDim2.new(0,30,0,30)
-y1.Position=UDim2.new(0,110,0,240)
-y1.BackgroundColor3=Color3.fromRGB(60,70,90)
-y1.BorderSizePixel=0 
-y1.Text="?"
-y1.TextColor3=Color3.fromRGB(255,255,255)
-y1.TextScaled=true 
-y1.Font=Enum.Font.GothamBold 
-y1.Parent=l1
+local helpCorner = Instance.new("UICorner")
+helpCorner.CornerRadius = UDim.new(0, 6)
+helpCorner.Parent = helpButton
 
-local z1=Instance.new("UICorner")
-z1.CornerRadius=UDim.new(0,6)
-z1.Parent=y1
+-- Status Label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Name = "StatusLabel"
+statusLabel.Size = UDim2.new(0, 120, 0, 30)
+statusLabel.Position = UDim2.new(1, -140, 0, 240)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Status: Not Active"
+statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+statusLabel.TextScaled = true
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.Parent = contentFrame
 
-local aa1=Instance.new("TextLabel")
-aa1.Name="StatusLabel"
-aa1.Size=UDim2.new(0,120,0,30)
-aa1.Position=UDim2.new(1,-140,0,240)
-aa1.BackgroundTransparency=1 
-aa1.Text="Status: Not Active"
-aa1.TextColor3=Color3.fromRGB(255,100,100)
-aa1.TextScaled=true 
-aa1.Font=Enum.Font.Gotham 
-aa1.Parent=l1
+-- Status Indicator (Red Dot)
+local statusDot = Instance.new("Frame")
+statusDot.Name = "StatusDot"
+statusDot.Size = UDim2.new(0, 8, 0, 8)
+statusDot.Position = UDim2.new(1, -15, 0.5, -4)
+statusDot.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+statusDot.BorderSizePixel = 0
+statusDot.Parent = statusLabel
 
-local bb1=Instance.new("Frame")
-bb1.Name="StatusDot"
-bb1.Size=UDim2.new(0,8,0,8)
-bb1.Position=UDim2.new(1,-15,0.5,-4)
-bb1.BackgroundColor3=Color3.fromRGB(255,100,100)
-bb1.BorderSizePixel=0 
-bb1.Parent=aa1
+local dotCorner = Instance.new("UICorner")
+dotCorner.CornerRadius = UDim.new(1, 0)
+dotCorner.Parent = statusDot
 
-local cc1=Instance.new("UICorner")
-cc1.CornerRadius=UDim.new(1,0)
-cc1.Parent=bb1
-
-local function dd1(obj,info,props)
-    local tw=a2:Create(obj,info,props)
-    tw:Play()
-    return tw 
+-- Functions
+local function createTween(object, info, properties)
+    local tween = TweenService:Create(object, info, properties)
+    tween:Play()
+    return tween
 end
 
-local function ee1(msg,col)
-    local nt=Instance.new("Frame")
-    nt.Size=UDim2.new(0,300,0,50)
-    nt.Position=UDim2.new(0.5,-150,0,-60)
-    nt.BackgroundColor3=col or Color3.fromRGB(76,175,80)
-    nt.Parent=e1 
+local function showNotification(message, color)
+    local notif = Instance.new("Frame")
+    notif.Size = UDim2.new(0, 300, 0, 50)
+    notif.Position = UDim2.new(0.5, -150, 0, -60)
+    notif.BackgroundColor3 = color or Color3.fromRGB(76, 175, 80)
+    notif.Parent = screenGui
     
-    local nc=Instance.new("UICorner")
-    nc.CornerRadius=UDim.new(0,8)
-    nc.Parent=nt 
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 8)
+    notifCorner.Parent = notif
     
-    local nt2=Instance.new("TextLabel")
-    nt2.Size=UDim2.new(1,-10,1,0)
-    nt2.Position=UDim2.new(0,5,0,0)
-    nt2.BackgroundTransparency=1 
-    nt2.Text=msg 
-    nt2.TextColor3=Color3.fromRGB(255,255,255)
-    nt2.TextScaled=true 
-    nt2.Font=Enum.Font.Gotham 
-    nt2.Parent=nt 
+    local notifText = Instance.new("TextLabel")
+    notifText.Size = UDim2.new(1, -10, 1, 0)
+    notifText.Position = UDim2.new(0, 5, 0, 0)
+    notifText.BackgroundTransparency = 1
+    notifText.Text = message
+    notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    notifText.TextScaled = true
+    notifText.Font = Enum.Font.Gotham
+    notifText.Parent = notif
     
-    dd1(nt,TweenInfo.new(0.3),{Position=UDim2.new(0.5,-150,0,20)})
+    -- Animate notification
+    createTween(notif, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -150, 0, 20)})
+    
     wait(3)
-    dd1(nt,TweenInfo.new(0.3),{Position=UDim2.new(0.5,-150,0,-60)})
+    createTween(notif, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -150, 0, -60)})
     wait(0.3)
-    nt:Destroy()
+    notif:Destroy()
 end
 
-local ff1,gg1,hh1,ii1,jj1
-local kk1,ll1,mm1
-
-ff1 = function()
-    dd1(o1,TweenInfo.new(0.1),{Size=UDim2.new(0,115,0,32)})
+-- Button Events
+executeButton.MouseButton1Click:Connect(function()
+    createTween(executeButton, TweenInfo.new(0.1), {Size = UDim2.new(0, 115, 0, 32)})
     wait(0.1)
-    dd1(o1,TweenInfo.new(0.1),{Size=UDim2.new(0,120,0,35)})
+    createTween(executeButton, TweenInfo.new(0.1), {Size = UDim2.new(0, 120, 0, 35)})
     
-    local s,e = pcall(function()
+    -- Chạy Free Script
+    local success, error = pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Sddnin4/Mila/refs/heads/main/Hub"))()
     end)
     
-    if s then 
-        ee1("Free Script Executed Successfully!",Color3.fromRGB(76,175,80))
-    else 
-        ee1("Failed to execute Free Script!",Color3.fromRGB(244,67,54))
-    end 
-end
+    if success then
+        showNotification("Free Script Executed Successfully!", Color3.fromRGB(76, 175, 80))
+    else
+        showNotification("Failed to execute Free Script!", Color3.fromRGB(244, 67, 54))
+    end
+end)
 
-gg1 = function()
-    dd1(u1,TweenInfo.new(0.1),{Size=UDim2.new(0,145,0,32)})
+submitButton.MouseButton1Click:Connect(function()
+    createTween(submitButton, TweenInfo.new(0.1), {Size = UDim2.new(0, 145, 0, 32)})
     wait(0.1)
-    dd1(u1,TweenInfo.new(0.1),{Size=UDim2.new(0,150,0,35)})
+    createTween(submitButton, TweenInfo.new(0.1), {Size = UDim2.new(0, 150, 0, 35)})
     
-    local ik = s1.Text 
-    local ck = "Hjk8dl"
+    local inputKey = keyInput.Text
+    local correctKey = "Hjk8dl"
     
-    if ik == ck then 
-        aa1.Text = "Status: Active"
-        aa1.TextColor3 = Color3.fromRGB(76,175,80)
-        bb1.BackgroundColor3 = Color3.fromRGB(76,175,80)
-        ee1("Key Accepted! Loading...",Color3.fromRGB(76,175,80))
+    if inputKey == correctKey then
+        -- Key đúng - cập nhật status và chạy script
+        statusLabel.Text = "Status: Active"
+        statusLabel.TextColor3 = Color3.fromRGB(76, 175, 80)
+        statusDot.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
         
-        local s,e = pcall(function()
+        showNotification("Key Accepted! Loading...", Color3.fromRGB(76, 175, 80))
+        
+        -- Chạy UI Loading Script
+        local success, error = pcall(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/Sddnin4/Mila/refs/heads/main/Ui%20Loading"))()
         end)
         
-        if s then 
+        if success then
             wait(1)
-            e1:Destroy()
-        else 
-            ee1("Failed to load UI!",Color3.fromRGB(244,67,54))
-        end 
-    else 
-        ee1("Invalid Key! Please try again.",Color3.fromRGB(244,67,54))
-        s1.Text = ""
-    end 
-end
+            screenGui:Destroy() -- Đóng Scripts Hub sau khi load thành công
+        else
+            showNotification("Failed to load UI!", Color3.fromRGB(244, 67, 54))
+        end
+    else
+        -- Key sai
+        showNotification("Invalid Key! Please try again.", Color3.fromRGB(244, 67, 54))
+        keyInput.Text = ""
+    end
+end)
 
-hh1 = function()
-    dd1(w1,TweenInfo.new(0.1),{Size=UDim2.new(0,77,0,28)})
+getKeyButton.MouseButton1Click:Connect(function()
+    createTween(getKeyButton, TweenInfo.new(0.1), {Size = UDim2.new(0, 77, 0, 28)})
     wait(0.1)
-    dd1(w1,TweenInfo.new(0.1),{Size=UDim2.new(0,80,0,30)})
+    createTween(getKeyButton, TweenInfo.new(0.1), {Size = UDim2.new(0, 80, 0, 30)})
     
-    local ltc = "https://funlink.io/PaKX-wc"
-    ee1("Get Key Link: "..ltc,Color3.fromRGB(33,150,243))
+    -- Copy link vào clipboard (nếu có thể) hoặc hiển thị thông báo
+    local linkToCopy = "https://funlink.io/PaKX-wc"
     
-    if setclipboard then 
-        setclipboard(ltc)
-        ee1("Link copied to clipboard!",Color3.fromRGB(76,175,80))
-    end 
-end
+    showNotification("Get Key Link: " .. linkToCopy, Color3.fromRGB(33, 150, 243))
+    
+    -- Nếu có thể copy vào clipboard
+    if setclipboard then
+        setclipboard(linkToCopy)
+        showNotification("Link copied to clipboard!", Color3.fromRGB(76, 175, 80))
+    end
+end)
 
-ii1 = function()
-    dd1(y1,TweenInfo.new(0.1),{Size=UDim2.new(0,28,0,28)})
+helpButton.MouseButton1Click:Connect(function()
+    createTween(helpButton, TweenInfo.new(0.1), {Size = UDim2.new(0, 28, 0, 28)})
     wait(0.1)
-    dd1(y1,TweenInfo.new(0.1),{Size=UDim2.new(0,30,0,30)})
-    ee1("Click 'Get Key' to get the access key!",Color3.fromRGB(255,193,7))
-end
+    createTween(helpButton, TweenInfo.new(0.1), {Size = UDim2.new(0, 30, 0, 30)})
+    
+    showNotification("Click 'Get Key' to get the access key!", Color3.fromRGB(255, 193, 7))
+end)
 
-jj1 = function()
-    dd1(f1,TweenInfo.new(0.3),{Size=UDim2.new(0,0,0,0),Position=UDim2.new(0.5,0,0.5,0)})
+closeButton.MouseButton1Click:Connect(function()
+    createTween(mainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)})
     wait(0.3)
-    e1:Destroy()
-end
-
-o1.MouseButton1Click:Connect(ff1)
-u1.MouseButton1Click:Connect(gg1)
-w1.MouseButton1Click:Connect(hh1)
-y1.MouseButton1Click:Connect(ii1)
-k1.MouseButton1Click:Connect(jj1)
-
-kk1,ll1,mm1 = false,nil,nil 
-
-h1.InputBegan:Connect(function(inp)
-    if inp.UserInputType == Enum.UserInputType.MouseButton1 then 
-        kk1 = true 
-        ll1 = inp.Position 
-        mm1 = f1.Position 
-    end 
+    screenGui:Destroy()
 end)
 
-a3.InputChanged:Connect(function(inp)
-    if kk1 and inp.UserInputType == Enum.UserInputType.MouseMovement then 
-        local dlt = inp.Position - ll1 
-        f1.Position = UDim2.new(mm1.X.Scale,mm1.X.Offset + dlt.X,mm1.Y.Scale,mm1.Y.Offset + dlt.Y)
-    end 
+-- Drag functionality
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+    end
 end)
 
-a3.InputEnded:Connect(function(inp)
-    if inp.UserInputType == Enum.UserInputType.MouseButton1 then 
-        kk1 = false 
-    end 
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
 end)
 
-f1.Size = UDim2.new(0,0,0,0)
-f1.Position = UDim2.new(0.5,0,0.5,0)
-dd1(f1,TweenInfo.new(0.5,Enum.EasingStyle.Back),{Size=UDim2.new(0,400,0,350),Position=UDim2.new(0.5,-200,0.5,-175)})
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+-- Entrance animation
+mainFrame.Size = UDim2.new(0, 0, 0, 0)
+mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+createTween(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back), {
+    Size = UDim2.new(0, 400, 0, 350),
+    Position = UDim2.new(0.5, -200, 0.5, -175)
+})
