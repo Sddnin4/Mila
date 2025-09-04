@@ -184,58 +184,48 @@ homeContent.ScrollBarThickness = 6
 homeContent.CanvasSize = UDim2.new(0, 0, 0, 300)
 homeContent.Parent = contentArea
 
--- Other Tab Contents (placeholder)
-local scriptContent = Instance.new("ScrollingFrame")
+-- Script Tab Content
+local scriptContent = Instance.new("Frame")
 scriptContent.Name = "ScriptContent"
 scriptContent.Size = UDim2.new(1, 0, 1, 0)
 scriptContent.BackgroundTransparency = 1
-scriptContent.ScrollBarThickness = 6
-scriptContent.CanvasSize = UDim2.new(0, 0, 0, 650)
 scriptContent.Visible = false
 scriptContent.Parent = contentArea
 
--- Search Box inside Script Tab
+-- Search Box
 local searchFrame = Instance.new("Frame")
-searchFrame.Size = UDim2.new(1, -20, 0, 35)
-searchFrame.Position = UDim2.new(0, 10, 0, 10)
-searchFrame.BackgroundColor3 = Color3.new(1, 1, 1)
-searchFrame.BorderSizePixel = 0
+searchFrame.Size = UDim2.new(1, 0, 0, 25)
+searchFrame.Position = UDim2.new(0, 0, 0, 5)
+searchFrame.BackgroundTransparency = 1
 searchFrame.Parent = scriptContent
 
-local searchCorner = Instance.new("UICorner")
-searchCorner.CornerRadius = UDim.new(0, 8)
-searchCorner.Parent = searchFrame
-
 local searchBox = Instance.new("TextBox")
-searchBox.Size = UDim2.new(1, -40, 1, -10)
-searchBox.Position = UDim2.new(0, 10, 0, 5)
-searchBox.BackgroundTransparency = 1
+searchBox.Size = UDim2.new(1, -10, 1, 0)
+searchBox.Position = UDim2.new(0, 5, 0, 0)
+searchBox.BackgroundColor3 = Color3.new(1, 1, 1)
 searchBox.Text = ""
 searchBox.PlaceholderText = "🔍 Search scripts..."
-searchBox.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+searchBox.TextColor3 = Color3.new(0.3, 0.3, 0.3)
 searchBox.PlaceholderColor3 = Color3.new(0.6, 0.6, 0.6)
-searchBox.TextSize = 12
+searchBox.TextSize = 10
 searchBox.Font = Enum.Font.Gotham
-searchBox.TextXAlignment = Enum.TextXAlignment.Left
 searchBox.Parent = searchFrame
 
--- Clear Search Button
-local clearButton = Instance.new("TextButton")
-clearButton.Size = UDim2.new(0, 25, 0, 25)
-clearButton.Position = UDim2.new(1, -30, 0, 5)
-clearButton.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
-clearButton.Text = "✕"
-clearButton.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-clearButton.TextSize = 12
-clearButton.Font = Enum.Font.Gotham
-clearButton.Parent = searchFrame
+local searchCorner = Instance.new("UICorner")
+searchCorner.CornerRadius = UDim.new(0, 5)
+searchCorner.Parent = searchBox
 
-local clearCorner = Instance.new("UICorner")
-clearCorner.CornerRadius = UDim.new(1, 0)
-clearCorner.Parent = clearButton
+-- Scripts List
+local scriptsFrame = Instance.new("ScrollingFrame")
+scriptsFrame.Size = UDim2.new(1, 0, 1, -35)
+scriptsFrame.Position = UDim2.new(0, 0, 0, 35)
+scriptsFrame.BackgroundTransparency = 1
+scriptsFrame.ScrollBarThickness = 6
+scriptsFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scriptsFrame.Parent = scriptContent
 
--- Script List Data
-local scriptList = {
+-- Script Database
+local scripts = {
     {name = "Infinity Yield", url = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"},
     {name = "Airflow", url = "https://api.luarmor.net/files/v3/loaders/255ac567ced3dcb9e69aa7e44c423f19.lua"},
     {name = "H4X", url = "https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua"},
@@ -252,148 +242,6 @@ local scriptList = {
     {name = "Lunor", url = "https://lunor.dev/loader"},
     {name = "ThunderZ", url = "https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua"}
 }
-
-local allScriptFrames = {}
-
--- Create Script Buttons
-local function createScriptButton(scriptData, position, parent)
-    parent = parent or scriptContent
-    
-    local scriptFrame = Instance.new("Frame")
-    scriptFrame.Size = UDim2.new(1, -20, 0, 35)
-    scriptFrame.Position = position
-    scriptFrame.BackgroundColor3 = Color3.new(0.95, 0.96, 0.98)
-    scriptFrame.BorderSizePixel = 0
-    scriptFrame.Parent = parent
-    
-    local frameCorner = Instance.new("UICorner")
-    frameCorner.CornerRadius = UDim.new(0, 8)
-    frameCorner.Parent = scriptFrame
-    
-    local scriptButton = Instance.new("TextButton")
-    scriptButton.Size = UDim2.new(1, -10, 1, -10)
-    scriptButton.Position = UDim2.new(0, 5, 0, 5)
-    scriptButton.BackgroundTransparency = 1
-    scriptButton.Text = "🚀 " .. scriptData.name
-    scriptButton.TextColor3 = Color3.new(0.2, 0.3, 0.6)
-    scriptButton.TextSize = 12
-    scriptButton.Font = Enum.Font.GothamBold
-    scriptButton.TextXAlignment = Enum.TextXAlignment.Left
-    scriptButton.Parent = scriptFrame
-    
-    local statusLabel = Instance.new("TextLabel")
-    statusLabel.Size = UDim2.new(0, 80, 1, 0)
-    statusLabel.Position = UDim2.new(1, -85, 0, 0)
-    statusLabel.BackgroundTransparency = 1
-    statusLabel.Text = "Ready"
-    statusLabel.TextColor3 = Color3.new(0.4, 0.7, 0.4)
-    statusLabel.TextSize = 10
-    statusLabel.Font = Enum.Font.Gotham
-    statusLabel.Visible = false
-    statusLabel.Parent = scriptFrame
-    
-    -- Store reference for search
-    scriptFrame.ScriptData = scriptData
-    table.insert(allScriptFrames, scriptFrame)
-    
-    -- Loading animation
-    local function animateLoading()
-        statusLabel.Visible = true
-        statusLabel.Text = "Loading..."
-        statusLabel.TextColor3 = Color3.new(0.8, 0.6, 0.2)
-        
-        -- Animate frame color
-        local tween = TweenService:Create(scriptFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-            BackgroundColor3 = Color3.new(0.9, 0.93, 1)
-        })
-        tween:Play()
-        
-        -- Success animation
-        wait(0.5)
-        statusLabel.Text = "Success!"
-        statusLabel.TextColor3 = Color3.new(0.2, 0.8, 0.2)
-        
-        local successTween = TweenService:Create(scriptFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-            BackgroundColor3 = Color3.new(0.9, 1, 0.9)
-        })
-        successTween:Play()
-        
-        -- Reset after 2 seconds
-        wait(2)
-        statusLabel.Visible = false
-        local resetTween = TweenService:Create(scriptFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-            BackgroundColor3 = Color3.new(0.95, 0.96, 0.98)
-        })
-        resetTween:Play()
-    end
-    
-    scriptButton.MouseButton1Click:Connect(function()
-        spawn(function()
-            animateLoading()
-            pcall(function()
-                if scriptData.name == "R15 Emote" then
-                    loadstring(game:HttpGetAsync(scriptData.url))()
-                else
-                    loadstring(game:HttpGet(scriptData.url))()
-                end
-            end)
-        end)
-    end)
-    
-    -- Hover effect
-    scriptButton.MouseEnter:Connect(function()
-        local hoverTween = TweenService:Create(scriptFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
-            BackgroundColor3 = Color3.new(0.9, 0.93, 1)
-        })
-        hoverTween:Play()
-    end)
-    
-    scriptButton.MouseLeave:Connect(function()
-        if not statusLabel.Visible then
-            local leaveTween = TweenService:Create(scriptFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
-                BackgroundColor3 = Color3.new(0.95, 0.96, 0.98)
-            })
-            leaveTween:Play()
-        end
-    end)
-    
-    return scriptFrame
-end
-
--- Create all script buttons initially
-for i, scriptData in ipairs(scriptList) do
-    createScriptButton(scriptData, UDim2.new(0, 10, 0, (i-1) * 40 + 55))
-end
-
--- Search Function
-local function performSearch()
-    local query = string.lower(searchBox.Text)
-    local visibleCount = 0
-    
-    for _, frame in pairs(allScriptFrames) do
-        local scriptName = string.lower(frame.ScriptData.name)
-        if query == "" or string.find(scriptName, query) then
-            frame.Visible = true
-            frame.Position = UDim2.new(0, 10, 0, visibleCount * 40 + 55)
-            visibleCount = visibleCount + 1
-        else
-            frame.Visible = false
-        end
-    end
-    
-    -- Update canvas size
-    scriptContent.CanvasSize = UDim2.new(0, 0, 0, math.max(visibleCount * 40 + 60, 200))
-end
-
--- Search events
-searchBox.Changed:Connect(function()
-    performSearch()
-end)
-
-clearButton.MouseButton1Click:Connect(function()
-    searchBox.Text = ""
-    performSearch()
-end)
 
 local notifContent = Instance.new("Frame")
 notifContent.Name = "NotifContent"
@@ -548,7 +396,142 @@ jumpCorner.CornerRadius = UDim.new(0, 3)
 jumpCorner.Parent = jumpSlider
 
 -- Functions
-local function updatePlayerList()
+local function loadScript(scriptData)
+    -- Animation effect
+    local button = scriptData.button
+    if not button then return end
+    
+    -- Create loading animation
+    local originalText = button.Text
+    local originalColor = button.BackgroundColor3
+    
+    -- Loading state
+    button.BackgroundColor3 = Color3.new(0.4, 0.8, 0.4)
+    button.Text = "⏳ Loading..."
+    
+    -- Animate loading dots
+    spawn(function()
+        local dots = ""
+        for i = 1, 3 do
+            wait(0.2)
+            dots = dots .. "."
+            if button.Text:find("Loading") then
+                button.Text = "⏳ Loading" .. dots
+            end
+        end
+    end)
+    
+    -- Load script
+    spawn(function()
+        wait(0.8) -- Wait for animation
+        pcall(function()
+            local success, error = pcall(function()
+                loadstring(game:HttpGet(scriptData.url))()
+            end)
+            
+            if success then
+                button.BackgroundColor3 = Color3.new(0.4, 0.9, 0.4)
+                button.Text = "✅ Loaded!"
+            else
+                button.BackgroundColor3 = Color3.new(0.9, 0.4, 0.4)
+                button.Text = "❌ Error!"
+                print("Script Error:", error)
+            end
+        end)
+        
+        wait(2)
+        -- Reset button
+        button.BackgroundColor3 = originalColor
+        button.Text = originalText
+    end)
+end
+
+local function createScriptButton(scriptData, position)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0, 110, 0, 30)
+    button.Position = position
+    button.BackgroundColor3 = Color3.new(0.9, 0.95, 1)
+    button.Text = "🗃️ " .. scriptData.name
+    button.TextColor3 = Color3.new(0.2, 0.3, 0.6)
+    button.TextSize = 9
+    button.Font = Enum.Font.Gotham
+    button.TextWrapped = true
+    button.Parent = scriptsFrame
+    
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 5)
+    buttonCorner.Parent = button
+    
+    -- Store button reference in script data
+    scriptData.button = button
+    
+    button.MouseButton1Click:Connect(function()
+        loadScript(scriptData)
+    end)
+    
+    -- Hover effects
+    button.MouseEnter:Connect(function()
+        if not button.Text:find("Loading") and not button.Text:find("Loaded") and not button.Text:find("Error") then
+            button.BackgroundColor3 = Color3.new(0.8, 0.9, 1)
+        end
+    end)
+    
+    button.MouseLeave:Connect(function()
+        if not button.Text:find("Loading") and not button.Text:find("Loaded") and not button.Text:find("Error") then
+            button.BackgroundColor3 = Color3.new(0.9, 0.95, 1)
+        end
+    end)
+    
+    return button
+end
+
+local function displayScripts(filteredScripts)
+    -- Clear existing buttons
+    for _, child in pairs(scriptsFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+    
+    -- Create script buttons in grid (3 columns)
+    local columns = 3
+    local buttonWidth = 110
+    local buttonHeight = 35
+    local paddingX = 10
+    local paddingY = 5
+    
+    for i, script in ipairs(filteredScripts) do
+        local row = math.floor((i - 1) / columns)
+        local col = (i - 1) % columns
+        
+        local posX = col * (buttonWidth + paddingX) + 5
+        local posY = row * (buttonHeight + paddingY) + 5
+        
+        createScriptButton(script, UDim2.new(0, posX, 0, posY))
+    end
+    
+   -- Update canvas size
+    local totalRows = math.ceil(#filteredScripts / columns)
+    scriptsFrame.CanvasSize = UDim2.new(0, 0, 0, totalRows * (buttonHeight + paddingY) + 10)
+end
+
+local function searchScripts(query)
+    if query == "" then
+        displayScripts(scripts)
+        return
+    end
+    
+    local filtered = {}
+    query = query:lower()
+    
+    for _, script in ipairs(scripts) do
+        if script.name:lower():find(query) then
+            table.insert(filtered, script)
+        end
+    end
+    
+    displayScripts(filtered)
+end
     for _, child in pairs(playerList:GetChildren()) do
         if child:IsA("Frame") then
             child:Destroy()
@@ -758,6 +741,16 @@ for tabName, tabData in pairs(tabButtons) do
         switchTab(tabName)
     end)
 end
+
+-- Search functionality
+searchBox.Changed:Connect(function(property)
+    if property == "Text" then
+        searchScripts(searchBox.Text)
+    end
+end)
+
+-- Initialize scripts display
+displayScripts(scripts)
 
 -- Close/Toggle functionality
 closeBtn.MouseButton1Click:Connect(function()
