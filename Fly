@@ -1,511 +1,198 @@
--- Obfuscated Mila UI Script
-local a1,a2,a3,a4,a5=game:GetService("Players"),game:GetService("UserInputService"),game:GetService("RunService"),game:GetService("TweenService"),game:GetService("CoreGui")
-local b1,b2,b3=a1.LocalPlayer,nil,nil
-b2=b1.Character or b1.CharacterAdded:Wait()
-b3=b2:WaitForChild("Humanoid")
+-- Roblox Loading UI Script
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
 
-local c1,c2,c3,c4,c5,c6=false,false,16,50,nil,"Home"
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
-local function d1(str)
-    return str
-end
+-- Tạo ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "LoadingUI"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = playerGui
 
-local e1=Instance.new("ScreenGui")
-e1.Name=d1("MilaUI")
-e1.Parent=a5
-e1.ResetOnSpawn=false
+-- Tạo Frame chính (background)
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(1, 0, 1, 0)
+mainFrame.Position = UDim2.new(0, 0, 0, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
 
-local f1=Instance.new("Frame")
-f1.Name=d1("MainFrame")
-f1.Size=UDim2.new(0,400,0,280)
-f1.Position=UDim2.new(0.5,-200,0.5,-140)
-f1.BackgroundColor3=Color3.new(0.95,0.95,0.98)
-f1.BorderSizePixel=0
-f1.Active=true
-f1.Draggable=true
-f1.Parent=e1
+-- Tạo container cho loading bar
+local loadingContainer = Instance.new("Frame")
+loadingContainer.Name = "LoadingContainer"
+loadingContainer.Size = UDim2.new(0, 400, 0, 30)
+loadingContainer.Position = UDim2.new(0.5, -200, 0.5, -15)
+loadingContainer.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+loadingContainer.BorderSizePixel = 0
+loadingContainer.Parent = mainFrame
 
-local f2=Instance.new("UICorner")
-f2.CornerRadius=UDim.new(0,15)
-f2.Parent=f1
+-- Tạo UICorner cho container
+local containerCorner = Instance.new("UICorner")
+containerCorner.CornerRadius = UDim.new(0, 15)
+containerCorner.Parent = loadingContainer
 
-local g1=Instance.new("Frame")
-g1.Size=UDim2.new(1,0,0,8)
-g1.Position=UDim2.new(0,0,0,0)
-g1.BackgroundColor3=Color3.new(0.85,0.4,0.4)
-g1.BorderSizePixel=0
-g1.Parent=f1
+-- Tạo thanh loading (progress bar)
+local progressBar = Instance.new("Frame")
+progressBar.Name = "ProgressBar"
+progressBar.Size = UDim2.new(0, 0, 1, 0)
+progressBar.Position = UDim2.new(0, 0, 0, 0)
+progressBar.BackgroundColor3 = Color3.fromRGB(0, 162, 255)
+progressBar.BorderSizePixel = 0
+progressBar.Parent = loadingContainer
 
-local g2=Instance.new("UICorner")
-g2.CornerRadius=UDim.new(0,15)
-g2.Parent=g1
+-- Tạo UICorner cho progress bar
+local progressCorner = Instance.new("UICorner")
+progressCorner.CornerRadius = UDim.new(0, 15)
+progressCorner.Parent = progressBar
 
-local g3=Instance.new("Frame")
-g3.Size=UDim2.new(1,0,0,8)
-g3.Position=UDim2.new(0,0,0,4)
-g3.BackgroundColor3=Color3.new(0.85,0.4,0.4)
-g3.BorderSizePixel=0
-g3.Parent=g1
-
-local h1=Instance.new("ImageLabel")
-h1.Size=UDim2.new(0,30,0,30)
-h1.Position=UDim2.new(0,15,0,15)
-h1.BackgroundColor3=Color3.new(0.85,0.4,0.4)
-h1.BorderSizePixel=0
-h1.Parent=f1
-
-local h2=Instance.new("UICorner")
-h2.CornerRadius=UDim.new(0,8)
-h2.Parent=h1
-
-local h3=Instance.new("TextLabel")
-h3.Size=UDim2.new(1,0,1,0)
-h3.BackgroundTransparency=1
-h3.Text="💖"
-h3.TextColor3=Color3.new(1,1,1)
-h3.TextSize=16
-h3.Font=Enum.Font.GothamBold
-h3.Parent=h1
-
-local i1=Instance.new("Frame")
-i1.Size=UDim2.new(0,80,0,30)
-i1.Position=UDim2.new(1,-90,0,15)
-i1.BackgroundTransparency=1
-i1.Parent=f1
-
-local i2=Instance.new("TextButton")
-i2.Size=UDim2.new(0,25,0,25)
-i2.Position=UDim2.new(0,0,0,2)
-i2.BackgroundColor3=Color3.new(1,0.8,0.4)
-i2.Text="-"
-i2.TextColor3=Color3.new(1,1,1)
-i2.TextSize=16
-i2.Font=Enum.Font.GothamBold
-i2.Parent=i1
-
-local i3=Instance.new("UICorner")
-i3.CornerRadius=UDim.new(1,0)
-i3.Parent=i2
-
-local i4=Instance.new("TextButton")
-i4.Size=UDim2.new(0,25,0,25)
-i4.Position=UDim2.new(0,30,0,2)
-i4.BackgroundColor3=Color3.new(0.85,0.4,0.4)
-i4.Text="✕"
-i4.TextColor3=Color3.new(1,1,1)
-i4.TextSize=12
-i4.Font=Enum.Font.GothamBold
-i4.Parent=i1
-
-local i5=Instance.new("UICorner")
-i5.CornerRadius=UDim.new(1,0)
-i5.Parent=i4
-
-local j1=Instance.new("TextButton")
-j1.Name=d1("ToggleButton")
-j1.Size=UDim2.new(0,80,0,30)
-j1.Position=UDim2.new(0,10,0,10)
-j1.BackgroundColor3=Color3.new(0.85,0.4,0.4)
-j1.Text="Mila 💖"
-j1.TextColor3=Color3.new(1,1,1)
-j1.TextSize=12
-j1.Font=Enum.Font.Gotham
-j1.Visible=false
-j1.Parent=e1
-
-local j2=Instance.new("UICorner")
-j2.CornerRadius=UDim.new(0,10)
-j2.Parent=j1
-
-local k1=Instance.new("Frame")
-k1.Size=UDim2.new(1,0,0,40)
-k1.Position=UDim2.new(0,0,0,50)
-k1.BackgroundTransparency=1
-k1.Parent=f1
-
-local k2={"Home","Script","Notifications","Other"}
-local k3={}
-
-for l1,l2 in ipairs(k2) do
-    local l3=Instance.new("TextButton")
-    l3.Size=UDim2.new(0.25,-5,1,0)
-    l3.Position=UDim2.new((l1-1)*0.25,(l1-1)*2.5,0,0)
-    l3.BackgroundTransparency=1
-    l3.Text=l2
-    l3.TextColor3=l2=="Home" and Color3.new(0.2,0.4,0.8) or Color3.new(0.5,0.5,0.5)
-    l3.TextSize=12
-    l3.Font=Enum.Font.Gotham
-    l3.Parent=k1
-    
-    local l4=Instance.new("Frame")
-    l4.Size=UDim2.new(1,0,0,2)
-    l4.Position=UDim2.new(0,0,1,0)
-    l4.BackgroundColor3=Color3.new(0.2,0.4,0.8)
-    l4.BorderSizePixel=0
-    l4.Visible=l2=="Home"
-    l4.Parent=l3
-    
-    k3[l2]={button=l3,underline=l4}
-end
-
-local m1=Instance.new("Frame")
-m1.Size=UDim2.new(1,-20,1,-110)
-m1.Position=UDim2.new(0,10,0,100)
-m1.BackgroundTransparency=1
-m1.Parent=f1
-
-local m2=Instance.new("ScrollingFrame")
-m2.Name=d1("HomeContent")
-m2.Size=UDim2.new(1,0,1,0)
-m2.BackgroundTransparency=1
-m2.ScrollBarThickness=6
-m2.CanvasSize=UDim2.new(0,0,0,300)
-m2.Parent=m1
-
-local m3=Instance.new("ScrollingFrame")
-m3.Name=d1("ScriptContent")
-m3.Size=UDim2.new(1,0,1,0)
-m3.BackgroundTransparency=1
-m3.ScrollBarThickness=6
-m3.CanvasSize=UDim2.new(0,0,0,600)
-m3.Visible=false
-m3.Parent=m1
-
-local n1=Instance.new("Frame")
-n1.Size=UDim2.new(1,0,0,30)
-n1.Position=UDim2.new(0,0,0,0)
-n1.BackgroundTransparency=1
-n1.Parent=m3
-
-local n2=Instance.new("TextBox")
-n2.Size=UDim2.new(1,-10,1,0)
-n2.Position=UDim2.new(0,5,0,0)
-n2.BackgroundColor3=Color3.new(1,1,1)
-n2.Text=""
-n2.PlaceholderText="🔍 Search scripts..."
-n2.TextColor3=Color3.new(0,0,0)
-n2.TextSize=12
-n2.Font=Enum.Font.Gotham
-n2.Parent=n1
-
-local n3=Instance.new("UICorner")
-n3.CornerRadius=UDim.new(0,5)
-n3.Parent=n2
-
-local o1=Instance.new("Frame")
-o1.Size=UDim2.new(1,0,1,-40)
-o1.Position=UDim2.new(0,0,0,40)
-o1.BackgroundTransparency=1
-o1.Parent=m3
-
-local o2=Instance.new("Frame")
-o2.Size=UDim2.new(0,200,0,100)
-o2.Position=UDim2.new(0.5,-100,0.5,-50)
-o2.BackgroundColor3=Color3.new(0,0,0)
-o2.BackgroundTransparency=0.3
-o2.BorderSizePixel=0
-o2.Visible=false
-o2.Parent=e1
-
-local o3=Instance.new("UICorner")
-o3.CornerRadius=UDim.new(0,10)
-o3.Parent=o2
-
-local o4=Instance.new("TextLabel")
-o4.Size=UDim2.new(1,0,0,30)
-o4.Position=UDim2.new(0,0,0,10)
-o4.BackgroundTransparency=1
-o4.Text="Loading Script..."
-o4.TextColor3=Color3.new(1,1,1)
-o4.TextSize=14
-o4.Font=Enum.Font.GothamBold
-o4.Parent=o2
-
-local o5=Instance.new("TextLabel")
-o5.Size=UDim2.new(1,0,0,30)
-o5.Position=UDim2.new(0,0,0,40)
-o5.BackgroundTransparency=1
-o5.Text="⭕"
-o5.TextColor3=Color3.new(1,1,1)
-o5.TextSize=20
-o5.Font=Enum.Font.Gotham
-o5.Parent=o2
-
-local p1={
-    {name="Infinity Yield",code="loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()"},
-    {name="Airflow",code="loadstring(game:HttpGet(\"https://api.luarmor.net/files/v3/loaders/255ac567ced3dcb9e69aa7e44c423f19.lua\"))()"},
-    {name="H4X",code="loadstring(game:HttpGet(\"https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua\",true))()"},
-    {name="R15 Emote",code="loadstring(game:HttpGetAsync(\"https://gist.githubusercontent.com/RedZenXYZ/3da6af1961efa275de6c3c2a6dbace03/raw/bb027f99cec0ea48ef9c5eabfb9116ddff20633d/FE%2520Emotes%2520Gui\"))()"},
-    {name="Skull Hub",code="loadstring(game:HttpGet('https://raw.githubusercontent.com/hungquan99/SkullHub/main/loader.lua'))()"}
+-- Tạo UIGradient cho hiệu ứng gradient
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0.0, Color3.fromRGB(0, 162, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100, 200, 255)),
+    ColorSequenceKeypoint.new(1.0, Color3.fromRGB(0, 162, 255))
 }
+gradient.Rotation = 45
+gradient.Parent = progressBar
 
-local m4=Instance.new("ScrollingFrame")
-m4.Name=d1("NotifContent")
-m4.Size=UDim2.new(1,0,1,0)
-m4.BackgroundTransparency=1
-m4.ScrollBarThickness=6
-m4.CanvasSize=UDim2.new(0,0,0,300)
-m4.Visible=false
-m4.Parent=m1
+-- Tạo hiệu ứng shine
+local shineFrame = Instance.new("Frame")
+shineFrame.Name = "Shine"
+shineFrame.Size = UDim2.new(0, 60, 1, 0)
+shineFrame.Position = UDim2.new(0, -60, 0, 0)
+shineFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+shineFrame.BackgroundTransparency = 0.7
+shineFrame.BorderSizePixel = 0
+shineFrame.Parent = progressBar
 
-local m5=Instance.new("Frame")
-m5.Name=d1("OtherContent")
-m5.Size=UDim2.new(1,0,1,0)
-m5.BackgroundTransparency=1
-m5.Visible=false
-m5.Parent=m1
+local shineCorner = Instance.new("UICorner")
+shineCorner.CornerRadius = UDim.new(0, 15)
+shineCorner.Parent = shineFrame
 
-local q1=Instance.new("Frame")
-q1.Name=d1("PlayerFrame")
-q1.Size=UDim2.new(0,180,0,200)
-q1.Position=UDim2.new(1,10,0,0)
-q1.BackgroundColor3=Color3.new(0.95,0.95,0.98)
-q1.BorderSizePixel=0
-q1.Visible=false
-q1.Parent=f1
+local shineGradient = Instance.new("UIGradient")
+shineGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
+}
+shineGradient.Transparency = NumberSequence.new{
+    NumberSequenceKeypoint.new(0.0, 1),
+    NumberSequenceKeypoint.new(0.5, 0.3),
+    NumberSequenceKeypoint.new(1.0, 1)
+}
+shineGradient.Rotation = 90
+shineGradient.Parent = shineFrame
 
-local q2=Instance.new("UICorner")
-q2.CornerRadius=UDim.new(0,10)
-q2.Parent=q1
+-- Tạo loading text
+local loadingText = Instance.new("TextLabel")
+loadingText.Name = "LoadingText"
+loadingText.Size = UDim2.new(0, 400, 0, 50)
+loadingText.Position = UDim2.new(0.5, -200, 0.5, 50)
+loadingText.BackgroundTransparency = 1
+loadingText.Text = "Loading..."
+loadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
+loadingText.TextScaled = true
+loadingText.Font = Enum.Font.GothamBold
+loadingText.Parent = mainFrame
 
-local function r1(name,text,position,callback,parent)
-    parent=parent or m2
+-- Tạo percentage text
+local percentText = Instance.new("TextLabel")
+percentText.Name = "PercentText"
+percentText.Size = UDim2.new(0, 100, 0, 25)
+percentText.Position = UDim2.new(0.5, -50, 0.5, -50)
+percentText.BackgroundTransparency = 1
+percentText.Text = "0%"
+percentText.TextColor3 = Color3.fromRGB(255, 255, 255)
+percentText.TextScaled = true
+percentText.Font = Enum.Font.Gotham
+percentText.Parent = mainFrame
+
+-- Hàm animate loading
+local function animateLoading()
+    local totalTime = 3 -- Thời gian loading (giây)
+    local steps = 100
+    local timePerStep = totalTime / steps
     
-    local r2=Instance.new("TextButton")
-    r2.Name=name
-    r2.Size=UDim2.new(0,100,0,25)
-    r2.Position=position
-    r2.BackgroundColor3=Color3.new(0.85,0.9,1)
-    r2.Text=text
-    r2.TextColor3=Color3.new(0.2,0.3,0.6)
-    r2.TextSize=10
-    r2.Font=Enum.Font.Gotham
-    r2.Parent=parent
-    
-    local r3=Instance.new("UICorner")
-    r3.CornerRadius=UDim.new(0,5)
-    r3.Parent=r2
-    
-    r2.MouseButton1Click:Connect(callback)
-    
-    r2.MouseEnter:Connect(function()
-        r2.BackgroundColor3=Color3.new(0.8,0.85,1)
-    end)
-    
-    r2.MouseLeave:Connect(function()
-        r2.BackgroundColor3=Color3.new(0.85,0.9,1)
-    end)
-    
-    return r2
-end
-
-local s1=Instance.new("TextLabel")
-s1.Size=UDim2.new(0,150,0,15)
-s1.Position=UDim2.new(0,10,0,10)
-s1.BackgroundTransparency=1
-s1.Text="Speed: 16"
-s1.TextColor3=Color3.new(0.3,0.3,0.3)
-s1.TextSize=10
-s1.Font=Enum.Font.Gotham
-s1.Parent=m2
-
-local s2=Instance.new("TextBox")
-s2.Size=UDim2.new(0,60,0,20)
-s2.Position=UDim2.new(0,10,0,30)
-s2.BackgroundColor3=Color3.new(1,1,1)
-s2.Text="16"
-s2.TextColor3=Color3.new(0,0,0)
-s2.TextSize=10
-s2.PlaceholderText="16"
-s2.Parent=m2
-
-local s3=Instance.new("UICorner")
-s3.CornerRadius=UDim.new(0,3)
-s3.Parent=s2
-
-local t1=Instance.new("TextLabel")
-t1.Size=UDim2.new(0,150,0,15)
-t1.Position=UDim2.new(0,200,0,10)
-t1.BackgroundTransparency=1
-t1.Text="Jump: 50"
-t1.TextColor3=Color3.new(0.3,0.3,0.3)
-t1.TextSize=10
-t1.Font=Enum.Font.Gotham
-t1.Parent=m2
-
-local t2=Instance.new("TextBox")
-t2.Size=UDim2.new(0,60,0,20)
-t2.Position=UDim2.new(0,200,0,30)
-t2.BackgroundColor3=Color3.new(1,1,1)
-t2.Text="50"
-t2.TextColor3=Color3.new(0,0,0)
-t2.TextSize=10
-t2.PlaceholderText="50"
-t2.Parent=m2
-
-local t3=Instance.new("UICorner")
-t3.CornerRadius=UDim.new(0,3)
-t3.Parent=t2
-
-local function u1(scriptName)
-    o4.Text="Loading " ..scriptName.. "..."
-    o2.Visible=true
-    
-    local u2
-    u2=a3.Heartbeat:Connect(function()
-        if not o2.Visible then
-            u2:Disconnect()
-            return
+    for i = 1, steps do
+        local progress = i / steps
+        
+        -- Update progress bar
+        local progressTween = TweenService:Create(
+            progressBar,
+            TweenInfo.new(timePerStep, Enum.EasingStyle.Linear),
+            {Size = UDim2.new(progress, 0, 1, 0)}
+        )
+        progressTween:Play()
+        
+        -- Update percentage text
+        percentText.Text = math.floor(progress * 100) .. "%"
+        
+        -- Animate shine effect
+        if progress > 0.1 then
+            local shineTween = TweenService:Create(
+                shineFrame,
+                TweenInfo.new(0.5, Enum.EasingStyle.Linear),
+                {Position = UDim2.new(progress - 0.15, 0, 0, 0)}
+            )
+            shineTween:Play()
         end
-        o5.Rotation=o5.Rotation+5
-    end)
+        
+        wait(timePerStep)
+    end
     
-    wait(2)
-    o2.Visible=false
-    if u2 then
-        u2:Disconnect()
-    end
-end
-
-local function u3()
-    c1=not c1
-    if c1 then
-        local u4
-        u4=a3.Stepped:Connect(function()
-            if not c1 then
-                u4:Disconnect()
-                return
-            end
-            for _,u5 in pairs(b2:GetChildren()) do
-                if u5:IsA("BasePart") then
-                    u5.CanCollide=false
-                end
-            end
-        end)
-    else
-        for _,u5 in pairs(b2:GetChildren()) do
-            if u5:IsA("BasePart") and u5.Name~="HumanoidRootPart" then
-                u5.CanCollide=true
-            end
-        end
-    end
-end
-
-local function u6()
-    c2=not c2
-    if c2 then
-        c5=a2.JumpRequest:Connect(function()
-            if b2 and b2:FindFirstChild("Humanoid") then
-                b2.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-            end
-        end)
-    else
-        if c5 then
-            c5:Disconnect()
-            c5=nil
-        end
-    end
-end
-
-local function u7()
-    workspace.CurrentCamera.CameraSubject=b2.Humanoid
-end
-
-local function u8()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Vehicle%20Fly%20Gui"))()
+    -- Sau khi loading xong
+    wait(0.5)
+    
+    -- Fade out loading UI
+    local fadeOutTween = TweenService:Create(
+        mainFrame,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+        {BackgroundTransparency = 1}
+    )
+    
+    local fadeOutContainer = TweenService:Create(
+        loadingContainer,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+        {BackgroundTransparency = 1}
+    )
+    
+    local fadeOutProgress = TweenService:Create(
+        progressBar,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+        {BackgroundTransparency = 1}
+    )
+    
+    local fadeOutText = TweenService:Create(
+        loadingText,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+        {TextTransparency = 1}
+    )
+    
+    local fadeOutPercent = TweenService:Create(
+        percentText,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+        {TextTransparency = 1}
+    )
+    
+    fadeOutTween:Play()
+    fadeOutContainer:Play()
+    fadeOutProgress:Play()
+    fadeOutText:Play()
+    fadeOutPercent:Play()
+    
+    -- Chờ fade out hoàn thành
+    fadeOutTween.Completed:Connect(function()
+        -- Xóa UI
+        screenGui:Destroy()
+        
+        -- Chạy script chính
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Sddnin4/Mila/refs/heads/main/V2.txt"))()
     end)
 end
 
-r1(d1("SpeedButton"),"🏃 Speed",UDim2.new(0,10,0,60),function()
-    local u9=tonumber(s2.Text) or 16
-    b3.WalkSpeed=u9
-    s1.Text="Speed: " ..u9
-end)
-
-r1(d1("JumpButton"),"🦘 Jump",UDim2.new(0,120,0,60),function()
-    local v1=tonumber(t2.Text) or 50
-    b3.JumpPower=v1
-    t1.Text="Jump: " ..v1
-end)
-
-r1(d1("NoclipButton"),"👻 Noclip",UDim2.new(0,230,0,60),function()
-    u3()
-end)
-
-r1(d1("FlyButton"),"🕊️ Fly",UDim2.new(0,10,0,95),function()
-    u8()
-end)
-
-r1(d1("InfiniteJumpButton"),"♾️ Inf Jump",UDim2.new(0,120,0,95),function()
-    u6()
-end)
-
-for v2,v3 in pairs(k3) do
-    v3.button.MouseButton1Click:Connect(function()
-        c6=v2
-
-        for v4,v5 in pairs(k3) do
-            if v4==v2 then
-                v5.button.TextColor3=Color3.new(0.2,0.4,0.8)
-                v5.underline.Visible=true
-            else
-                v5.button.TextColor3=Color3.new(0.5,0.5,0.5)
-                v5.underline.Visible=false
-            end
-        end
-
-        m2.Visible=v2=="Home"
-        m3.Visible=v2=="Script"
-        m4.Visible=v2=="Notifications"
-        m5.Visible=v2=="Other"
-    end)
-end
-
-i4.MouseButton1Click:Connect(function()
-    f1.Visible=false
-    j1.Visible=true
-    q1.Visible=false
-end)
-
-i2.MouseButton1Click:Connect(function()
-    f1.Visible=false
-    j1.Visible=true
-    q1.Visible=false
-end)
-
-j1.MouseButton1Click:Connect(function()
-    f1.Visible=true
-    j1.Visible=false
-end)
-
-a2.InputBegan:Connect(function(v6,v7)
-    if v7 then return end
-    if v6.KeyCode==Enum.KeyCode.RightShift then
-        if f1.Visible then
-            f1.Visible=false
-            j1.Visible=true
-            q1.Visible=false
-        else
-            f1.Visible=true
-            j1.Visible=false
-        end
-    end
-end)
-
-b1.CharacterAdded:Connect(function(v8)
-    b2=v8
-    b3=b2:WaitForChild("Humanoid")
-    c1=false
-    c2=false
-    if c5 then
-        c5:Disconnect()
-        c5=nil
-    end
-    wait(1)
-    b3.WalkSpeed=c3
-    b3.JumpPower=c4
-end)
-
-print("Mila UI (Tab Design) đã được tải thành công! 💖")
-print("Nhấn Right Shift để bật/tắt UI")
+-- Bắt đầu animation loading
+spawn(animateLoading)
