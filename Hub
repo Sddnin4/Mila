@@ -588,4 +588,346 @@ createButton(homeContent, "ResetBtn", "🔄 Reset All", UDim2.new(0, 95, 0, 140)
         bodyVelocity:Destroy()
         bodyVelocity = nil
     end
-    if bod
+    if bodyAngularVelocity then
+        bodyAngularVelocity:Destroy()
+        bodyAngularVelocity = nil
+    end
+    
+    -- Reset UI inputs
+    speedInput.Text = ""
+    jumpInput.Text = ""
+    
+    -- Hide player frame
+    playerFrame.Visible = false
+    
+    -- Reset camera
+    if workspace.CurrentCamera and character and humanoid then
+        workspace.CurrentCamera.CameraSubject = humanoid
+    end
+    
+    -- Reset collision
+    if character then
+        for _, part in pairs(character:GetChildren()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                part.CanCollide = true
+            end
+        end
+    end
+end)
+
+-- SCRIPT TAB CONTENT
+-- Scripts data
+local scriptsData = {
+    {name = "Infinity Yield", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()"},
+    {name = "Airflow", code = "loadstring(game:HttpGet(\"https://api.luarmor.net/files/v3/loaders/255ac567ced3dcb9e69aa7e44c423f19.lua\"))()"},
+    {name = "H4X", code = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua\", true))()"},
+    {name = "R15 Emote", code = "loadstring(game:HttpGetAsync(\"https://gist.githubusercontent.com/RedZenXYZ/3da6af1961efa275de6c3c2a6dbace03/raw/bb027f99cec0ea48ef9c5eabfb9116ddff20633d/FE%2520Emotes%2520Gui\"))()"},
+    {name = "Skull Hub", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/hungquan99/SkullHub/main/loader.lua'))()"},
+    {name = "Nameless Admin", code = "loadstring(game:HttpGet(\"https://rawscripts.net/raw/Universal-Script-nameless-admin-15646\"))()"},
+    {name = "NatHub", code = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/ArdyBotzz/NatHub/refs/heads/master/NatHub.lua\"))()"},
+    {name = "Arceus X", code = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/AZYsGithub/chillz-workshop/main/Arceus%20X%20V3\"))()"},
+    {name = "Shader", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/randomstring0/pshade-ultimate/refs/heads/main/src/cd.lua'))()"},
+    {name = "Native", code = "loadstring(game:HttpGet(\"https://getnative.cc/script/loader\"))()"},
+    {name = "Nolag", code = "loadstring(game:HttpGetAsync(\"https://raw.githubusercontent.com/NoLag-id/No-Lag-HUB/refs/heads/main/Loader/LoaderV1.lua\"))()"},
+    {name = "Limit Hub", code = "loadstring(game:HttpGet(('https://raw.githubusercontent.com/FakeModz/LimitHub/refs/heads/main/LimitHub_Loader.lua')))()"},
+    {name = "Speed Hub X", code = "loadstring(game:HttpGet(\"https://rawscripts.net/raw/Grow-a-Garden-Speed-Hub-X-Keyless-38062\"))()"},
+    {name = "Lunor", code = "loadstring(game:HttpGet(\"https://lunor.dev/loader\"))()"},
+    {name = "ThunderZ", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua'))()"}
+}
+
+-- Function to create script button
+local function createScriptButton(script, index)
+    local scriptContainer = Instance.new("Frame")
+    scriptContainer.Name = "ScriptContainer_" .. index
+    scriptContainer.Size = UDim2.new(1, -10, 0, 35)
+    scriptContainer.Position = UDim2.new(0, 5, 0, (index - 1) * 40)
+    scriptContainer.BackgroundColor3 = Color3.new(0.98, 0.98, 0.98)
+    scriptContainer.BorderSizePixel = 0
+    scriptContainer.Parent = scriptContent
+    
+    local containerCorner = Instance.new("UICorner")
+    containerCorner.CornerRadius = UDim.new(0, 6)
+    containerCorner.Parent = scriptContainer
+    
+    local scriptButton = Instance.new("TextButton")
+    scriptButton.Name = "ScriptButton"
+    scriptButton.Size = UDim2.new(1, -4, 1, -4)
+    scriptButton.Position = UDim2.new(0, 2, 0, 2)
+    scriptButton.BackgroundColor3 = Color3.new(1, 0.4, 0.7)
+    scriptButton.Text = "▶️ " .. script.name
+    scriptButton.TextColor3 = Color3.new(1, 1, 1)
+    scriptButton.TextSize = 12
+    scriptButton.Font = Enum.Font.GothamBold
+    scriptButton.TextXAlignment = Enum.TextXAlignment.Left
+    scriptButton.Parent = scriptContainer
+    
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 4)
+    buttonCorner.Parent = scriptButton
+    
+    -- Add padding for text
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 8)
+    padding.Parent = scriptButton
+    
+    -- Button click event
+    scriptButton.MouseButton1Click:Connect(function()
+        scriptButton.Text = "⏳ Loading..."
+        scriptButton.BackgroundColor3 = Color3.new(1, 0.6, 0.2)
+        
+        task.spawn(function()
+            pcall(function()
+                loadstring(script.code)()
+            end)
+            
+            task.wait(0.5)
+            if scriptButton and scriptButton.Parent then
+                scriptButton.Text = "✅ " .. script.name
+                scriptButton.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
+                
+                task.wait(2)
+                if scriptButton and scriptButton.Parent then
+                    scriptButton.Text = "▶️ " .. script.name
+                    scriptButton.BackgroundColor3 = Color3.new(1, 0.4, 0.7)
+                end
+            end
+        end)
+    end)
+    
+    -- Hover effects
+    scriptButton.MouseEnter:Connect(function()
+        if scriptButton.Text:find("▶️") then
+            scriptButton.BackgroundColor3 = Color3.new(1, 0.5, 0.8)
+        end
+    end)
+    
+    scriptButton.MouseLeave:Connect(function()
+        if scriptButton.Text:find("▶️") then
+            scriptButton.BackgroundColor3 = Color3.new(1, 0.4, 0.7)
+        end
+    end)
+    
+    return scriptContainer
+end
+
+-- Function to filter and display scripts
+local function filterScripts(searchTerm)
+    -- Clear existing script buttons
+    for _, child in pairs(scriptContent:GetChildren()) do
+        if child.Name:find("ScriptContainer_") then
+            child:Destroy()
+        end
+    end
+    
+    local filteredScripts = {}
+    searchTerm = searchTerm:lower()
+    
+    for _, script in pairs(scriptsData) do
+        if searchTerm == "" or script.name:lower():find(searchTerm) then
+            table.insert(filteredScripts, script)
+        end
+    end
+    
+    -- Create buttons for filtered scripts
+    for i, script in pairs(filteredScripts) do
+        createScriptButton(script, i)
+    end
+    
+    -- Update canvas size
+    scriptContent.CanvasSize = UDim2.new(0, 0, 0, #filteredScripts * 40 + 10)
+end
+
+-- Search functionality
+searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    filterScripts(searchBox.Text)
+end)
+
+clearButton.MouseButton1Click:Connect(function()
+    searchBox.Text = ""
+    filterScripts("")
+end)
+
+-- Initialize scripts display
+filterScripts("")
+
+-- Player List Functions
+function updatePlayerList()
+    -- Clear existing players
+    for _, child in pairs(playerList:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
+        end
+    end
+    
+    local playerCount = 0
+    for _, targetPlayer in pairs(Players:GetPlayers()) do
+        if targetPlayer ~= player then
+            playerCount = playerCount + 1
+            
+            local playerContainer = Instance.new("Frame")
+            playerContainer.Size = UDim2.new(1, 0, 0, 30) -- Reduced height since no teleport button
+            playerContainer.BackgroundColor3 = Color3.new(0.98, 0.98, 0.98)
+            playerContainer.Parent = playerList
+            
+            local containerCorner = Instance.new("UICorner")
+            containerCorner.CornerRadius = UDim.new(0, 4)
+            containerCorner.Parent = playerContainer
+            
+            local playerName = Instance.new("TextLabel")
+            playerName.Size = UDim2.new(1, -80, 1, 0)
+            playerName.Position = UDim2.new(0, 5, 0, 0)
+            playerName.BackgroundTransparency = 1
+            playerName.Text = targetPlayer.Name
+            playerName.TextSize = 10
+            playerName.Font = Enum.Font.GothamBold
+            playerName.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+            playerName.TextXAlignment = Enum.TextXAlignment.Left
+            playerName.TextYAlignment = Enum.TextYAlignment.Center
+            playerName.Parent = playerContainer
+            
+            local viewBtn = Instance.new("TextButton")
+            viewBtn.Size = UDim2.new(0, 70, 0, 25)
+            viewBtn.Position = UDim2.new(1, -75, 0, 2.5)
+            viewBtn.BackgroundColor3 = Color3.new(1, 0.6, 0.2)
+            viewBtn.Text = "👁️ View"
+            viewBtn.TextSize = 8
+            viewBtn.Font = Enum.Font.Gotham
+            viewBtn.TextColor3 = Color3.new(1, 1, 1)
+            viewBtn.Parent = playerContainer
+            
+            local viewCorner = Instance.new("UICorner")
+            viewCorner.CornerRadius = UDim.new(0, 4)
+            viewCorner.Parent = viewBtn
+            
+            viewBtn.MouseButton1Click:Connect(function()
+                if targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
+                    workspace.CurrentCamera.CameraSubject = targetPlayer.Character.Humanoid
+                end
+            end)
+        end
+    end
+    
+    playerList.CanvasSize = UDim2.new(0, 0, 0, playerCount * 32) -- Adjusted for smaller height
+end
+end
+
+-- Tab Switching
+local function switchTab(tabName)
+    if tabName == "Home" then
+        homeContent.Visible = true
+        scriptContent.Visible = false
+        searchFrame.Visible = false
+        homeTab.BackgroundColor3 = Color3.new(1, 1, 1)
+        homeTab.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+        scriptTab.BackgroundColor3 = Color3.new(0.8, 0.8, 0.8)
+        scriptTab.TextColor3 = Color3.new(0.4, 0.4, 0.4)
+    else
+        homeContent.Visible = false
+        scriptContent.Visible = true
+        searchFrame.Visible = true
+        homeTab.BackgroundColor3 = Color3.new(0.8, 0.8, 0.8)
+        homeTab.TextColor3 = Color3.new(0.4, 0.4, 0.4)
+        scriptTab.BackgroundColor3 = Color3.new(1, 1, 1)
+        scriptTab.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+    end
+end
+
+homeTab.MouseButton1Click:Connect(function()
+    switchTab("Home")
+end)
+
+scriptTab.MouseButton1Click:Connect(function()
+    switchTab("Script")
+end)
+
+-- Close/Toggle functionality
+closeButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    toggleButton.Visible = true
+    playerFrame.Visible = false
+end)
+
+toggleButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = true
+    toggleButton.Visible = false
+end)
+
+-- Keyboard shortcut (Right Shift)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        if mainFrame.Visible then
+            mainFrame.Visible = false
+            toggleButton.Visible = true
+            playerFrame.Visible = false
+        else
+            mainFrame.Visible = true
+            toggleButton.Visible = false
+        end
+    end
+end)
+
+-- Character respawn handling with proper cleanup
+local function cleanupConnections()
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+    end
+    if flyConnection then
+        flyConnection:Disconnect()
+        flyConnection = nil
+    end
+    if bodyVelocity then
+        bodyVelocity:Destroy()
+        bodyVelocity = nil
+    end
+    if bodyAngularVelocity then
+        bodyAngularVelocity:Destroy()
+        bodyAngularVelocity = nil
+    end
+end
+
+player.CharacterAdded:Connect(function(newCharacter)
+    -- Clean up old connections
+    cleanupConnections()
+    
+    -- Reset variables
+    character = newCharacter
+    humanoid = character:WaitForChild("Humanoid")
+    noclip = false
+    flying = false
+    
+    -- Wait for character to fully load
+    task.wait(1)
+    
+    -- Reset to original values
+    if humanoid then
+        humanoid.WalkSpeed = originalWalkSpeed
+        humanoid.JumpPower = originalJumpPower
+    end
+end)
+
+-- Cleanup on script end
+game:GetService("RunService").Heartbeat:Connect(function()
+    if not character or not character.Parent then
+        -- Character was removed, clean up
+        if character ~= (player.Character or player.CharacterAdded:Wait()) then
+            cleanupConnections()
+        end
+    end
+end)
+
+-- Show UI after loading
+task.wait(2.5)
+if mainFrame then
+    mainFrame.Visible = true
+end
+
+print("Mila UI đã được tải thành công! 💖")
+print("Nhấn Right Shift để bật/tắt UI")
+print("Phím điều khiển Fly:")
+print("- WASD: Di chuyển")
+print("- Space: Bay lên")
+print("- Left Ctrl: Bay xuống") 
+print("- Left Shift: Tăng tốc độ bay")
+print("Đã loại bỏ: Infinite Jump và Teleport")
