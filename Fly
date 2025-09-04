@@ -1,432 +1,97 @@
--- Obfuscated Roblox Scripts Hub UI
--- Security Enhanced Version
-
-local _0x1a2b3c = game:GetService("Players")
-local _0x4d5e6f = game:GetService("TweenService")
-local _0x7g8h9i = game:GetService("UserInputService")
-local _0x0j1k2l = game:GetService("HttpService")
-
-local _0x3m4n5o = _0x1a2b3c.LocalPlayer
-local _0x6p7q8r = _0x3m4n5o:WaitForChild("PlayerGui")
-
--- Encrypted password
-local _0xSecKey = {72, 106, 107, 56, 100, 108} -- Hjk8dl in ASCII
-local _0xVerify = function(_0xInput)
-    local _0xCheck = {}
-    for i = 1, #_0xInput do
-        _0xCheck[i] = string.byte(_0xInput, i)
-    end
-    if #_0xCheck ~= #_0xSecKey then return false end
-    for i = 1, #_0xSecKey do
-        if _0xCheck[i] ~= _0xSecKey[i] then return false end
-    end
-    return true
-end
-
--- Anti-tamper check
-local _0xTamperCheck = function()
-    local _0xHash = 0
-    for i = 1, #_0xSecKey do
-        _0xHash = _0xHash + _0xSecKey[i] * i
-    end
-    return _0xHash == 2140
-end
-
-if not _0xTamperCheck() then
-    return error("Security violation detected!")
-end
-
--- Obfuscated GUI creation
-local _0xGui = Instance.new(string.char(83,99,114,101,101,110,71,117,105))
-_0xGui.Name = string.char(83,99,114,105,112,116,115,72,117,98,71,117,105)
-_0xGui.Parent = _0x6p7q8r
-_0xGui.ResetOnSpawn = false
-
--- Main Frame with obfuscation
-local _0xMainF = Instance.new(string.char(70,114,97,109,101))
-_0xMainF.Name = string.char(77,97,105,110,70,114,97,109,101)
-_0xMainF.Parent = _0xGui
-_0xMainF.BackgroundColor3 = Color3.fromRGB(76 + math.random(-5,5), 104 + math.random(-5,5), 124 + math.random(-5,5))
-_0xMainF.BorderSizePixel = 0
-_0xMainF.Position = UDim2.new(0.5, -200, 0.5, -200)
-_0xMainF.Size = UDim2.new(0, 400, 0, 400)
-_0xMainF.Active = true
-_0xMainF.Draggable = true
-
-local function _0xCreateCorner(_0xParent)
-    local _0xCorner = Instance.new(string.char(85,73,67,111,114,110,101,114))
-    _0xCorner.CornerRadius = UDim.new(0, 15)
-    _0xCorner.Parent = _0xParent
-    return _0xCorner
-end
-
-_0xCreateCorner(_0xMainF)
-
--- Gradient obfuscation
-local _0xGrad = Instance.new(string.char(85,73,71,114,97,100,105,101,110,116))
-_0xGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(76, 104, 124)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(96, 124, 144))
-})
-_0xGrad.Rotation = 45 + math.random(-10, 10)
-_0xGrad.Parent = _0xMainF
-
--- Title Bar creation
-local _0xTitleB = Instance.new(string.char(70,114,97,109,101))
-_0xTitleB.Name = string.char(84,105,116,108,101,66,97,114)
-_0xTitleB.Parent = _0xMainF
-_0xTitleB.BackgroundColor3 = Color3.fromRGB(60, 88, 108)
-_0xTitleB.BorderSizePixel = 0
-_0xTitleB.Size = UDim2.new(1, 0, 0, 50)
-
-_0xCreateCorner(_0xTitleB)
-
--- Title label with encoded text
-local _0xTitleL = Instance.new(string.char(84,101,120,116,76,97,98,101,108))
-_0xTitleL.Name = string.char(84,105,116,108,101,76,97,98,101,108)
-_0xTitleL.Parent = _0xTitleB
-_0xTitleL.BackgroundTransparency = 1
-_0xTitleL.Position = UDim2.new(0, 20, 0, 0)
-_0xTitleL.Size = UDim2.new(1, -80, 1, 0)
-_0xTitleL.Font = Enum.Font.GothamBold
-_0xTitleL.Text = string.char(83,99,114,105,112,116,115,32,72,117,98)
-_0xTitleL.TextColor3 = Color3.fromRGB(255, 255, 255)
-_0xTitleL.TextSize = 22
-_0xTitleL.TextXAlignment = Enum.TextXAlignment.Left
-
--- Close button
-local _0xCloseB = Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))
-_0xCloseB.Name = string.char(67,108,111,115,101,66,117,116,116,111,110)
-_0xCloseB.Parent = _0xTitleB
-_0xCloseB.BackgroundTransparency = 1
-_0xCloseB.Position = UDim2.new(1, -40, 0, 10)
-_0xCloseB.Size = UDim2.new(0, 30, 0, 30)
-_0xCloseB.Font = Enum.Font.GothamBold
-_0xCloseB.Text = string.char(195,151)
-_0xCloseB.TextColor3 = Color3.fromRGB(255, 255, 255)
-_0xCloseB.TextSize = 24
-
--- Content frame
-local _0xContentF = Instance.new(string.char(70,114,97,109,101))
-_0xContentF.Name = string.char(67,111,110,116,101,110,116,70,114,97,109,101)
-_0xContentF.Parent = _0xMainF
-_0xContentF.BackgroundTransparency = 1
-_0xContentF.Position = UDim2.new(0, 20, 0, 70)
-_0xContentF.Size = UDim2.new(1, -40, 1, -90)
-
--- Free script label
-local _0xFreeL = Instance.new(string.char(84,101,120,116,76,97,98,101,108))
-_0xFreeL.Name = string.char(70,114,101,101,83,99,114,105,112,116,76,97,98,101,108)
-_0xFreeL.Parent = _0xContentF
-_0xFreeL.BackgroundTransparency = 1
-_0xFreeL.Position = UDim2.new(0, 0, 0, 0)
-_0xFreeL.Size = UDim2.new(1, 0, 0, 40)
-_0xFreeL.Font = Enum.Font.Gotham
-_0xFreeL.Text = string.char(70,114,101,101,32,83,99,114,105,112,116)
-_0xFreeL.TextColor3 = Color3.fromRGB(255, 255, 255)
-_0xFreeL.TextSize = 18
-_0xFreeL.TextXAlignment = Enum.TextXAlignment.Left
-
--- Execute button with obfuscation
-local _0xExecB = Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))
-_0xExecB.Name = string.char(69,120,101,99,117,116,101,66,117,116,116,111,110)
-_0xExecB.Parent = _0xContentF
-_0xExecB.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
-_0xExecB.BorderSizePixel = 0
-_0xExecB.Position = UDim2.new(0, 0, 0, 50)
-_0xExecB.Size = UDim2.new(0, 120, 0, 40)
-_0xExecB.Font = Enum.Font.GothamBold
-_0xExecB.Text = string.char(69,120,101,99,117,116,101)
-_0xExecB.TextColor3 = Color3.fromRGB(255, 255, 255)
-_0xExecB.TextSize = 16
-
-_0xCreateCorner(_0xExecB)
-
--- Separator
-local _0xSep = Instance.new(string.char(70,114,97,109,101))
-_0xSep.Name = string.char(83,101,112,97,114,97,116,111,114)
-_0xSep.Parent = _0xContentF
-_0xSep.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-_0xSep.BackgroundTransparency = 0.7
-_0xSep.BorderSizePixel = 0
-_0xSep.Position = UDim2.new(0, 0, 0, 110)
-_0xSep.Size = UDim2.new(1, 0, 0, 1)
-
--- Key script label
-local _0xKeyL = Instance.new(string.char(84,101,120,116,76,97,98,101,108))
-_0xKeyL.Name = string.char(75,101,121,83,99,114,105,112,116,76,97,98,101,108)
-_0xKeyL.Parent = _0xContentF
-_0xKeyL.BackgroundTransparency = 1
-_0xKeyL.Position = UDim2.new(0, 0, 0, 130)
-_0xKeyL.Size = UDim2.new(1, 0, 0, 40)
-_0xKeyL.Font = Enum.Font.Gotham
-_0xKeyL.Text = string.char(75,101,121,32,83,99,114,105,112,116)
-_0xKeyL.TextColor3 = Color3.fromRGB(255, 255, 255)
-_0xKeyL.TextSize = 18
-_0xKeyL.TextXAlignment = Enum.TextXAlignment.Left
-
--- Key input with enhanced security
-local _0xKeyI = Instance.new(string.char(84,101,120,116,66,111,120))
-_0xKeyI.Name = string.char(75,101,121,73,110,112,117,116)
-_0xKeyI.Parent = _0xContentF
-_0xKeyI.BackgroundColor3 = Color3.fromRGB(108, 108, 108)
-_0xKeyI.BorderSizePixel = 0
-_0xKeyI.Position = UDim2.new(0, 0, 0, 180)
-_0xKeyI.Size = UDim2.new(1, 0, 0, 40)
-_0xKeyI.Font = Enum.Font.Gotham
-_0xKeyI.PlaceholderText = string.char(69,110,116,101,114,32,89,111,117,114,32,75,101,121,32,72,101,114,101,46,46,46)
-_0xKeyI.PlaceholderColor3 = Color3.fromRGB(178, 178, 178)
-_0xKeyI.Text = ""
-_0xKeyI.TextColor3 = Color3.fromRGB(255, 255, 255)
-_0xKeyI.TextSize = 14
-_0xKeyI.TextXAlignment = Enum.TextXAlignment.Left
-
-_0xCreateCorner(_0xKeyI)
-
-local _0xKeyPad = Instance.new(string.char(85,73,80,97,100,100,105,110,103))
-_0xKeyPad.PaddingLeft = UDim.new(0, 15)
-_0xKeyPad.PaddingRight = UDim.new(0, 15)
-_0xKeyPad.Parent = _0xKeyI
-
--- Submit button
-local _0xSubmitB = Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))
-_0xSubmitB.Name = string.char(83,117,98,109,105,116,66,117,116,116,111,110)
-_0xSubmitB.Parent = _0xContentF
-_0xSubmitB.BackgroundColor3 = Color3.fromRGB(33, 150, 243)
-_0xSubmitB.BorderSizePixel = 0
-_0xSubmitB.Position = UDim2.new(0.5, -60, 0, 240)
-_0xSubmitB.Size = UDim2.new(0, 120, 0, 40)
-_0xSubmitB.Font = Enum.Font.GothamBold
-_0xSubmitB.Text = string.char(83,117,98,109,105,116,32,75,101,121)
-_0xSubmitB.TextColor3 = Color3.fromRGB(255, 255, 255)
-_0xSubmitB.TextSize = 16
-
-_0xCreateCorner(_0xSubmitB)
-
--- Get key button with obfuscated link
-local _0xGetKeyB = Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))
-_0xGetKeyB.Name = string.char(71,101,116,75,101,121,66,117,116,116,111,110)
-_0xGetKeyB.Parent = _0xContentF
-_0xGetKeyB.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
-_0xGetKeyB.BorderSizePixel = 0
-_0xGetKeyB.Position = UDim2.new(0, 0, 1, -50)
-_0xGetKeyB.Size = UDim2.new(0, 80, 0, 35)
-_0xGetKeyB.Font = Enum.Font.Gotham
-_0xGetKeyB.Text = string.char(71,101,116,32,75,101,121)
-_0xGetKeyB.TextColor3 = Color3.fromRGB(255, 255, 255)
-_0xGetKeyB.TextSize = 14
-
-_0xCreateCorner(_0xGetKeyB)
-
--- Help button
-local _0xHelpB = Instance.new(string.char(84,101,120,116,66,117,116,116,111,110))
-_0xHelpB.Name = string.char(72,101,108,112,66,117,116,116,111,110)
-_0xHelpB.Parent = _0xContentF
-_0xHelpB.BackgroundColor3 = Color3.fromRGB(66, 66, 66)
-_0xHelpB.BorderSizePixel = 0
-_0xHelpB.Position = UDim2.new(0, 90, 1, -50)
-_0xHelpB.Size = UDim2.new(0, 35, 0, 35)
-_0xHelpB.Font = Enum.Font.GothamBold
-_0xHelpB.Text = string.char(63)
-_0xHelpB.TextColor3 = Color3.fromRGB(255, 255, 255)
-_0xHelpB.TextSize = 18
-
-_0xCreateCorner(_0xHelpB)
-
--- Status with obfuscation
-local _0xStatusL = Instance.new(string.char(84,101,120,116,76,97,98,101,108))
-_0xStatusL.Name = string.char(83,116,97,116,117,115,76,97,98,101,108)
-_0xStatusL.Parent = _0xContentF
-_0xStatusL.BackgroundTransparency = 1
-_0xStatusL.Position = UDim2.new(0, 135, 1, -50)
-_0xStatusL.Size = UDim2.new(1, -135, 0, 35)
-_0xStatusL.Font = Enum.Font.Gotham
-_0xStatusL.Text = string.char(83,116,97,116,117,115,58,32,78,111,116,32,65,99,116,105,118,101)
-_0xStatusL.TextColor3 = Color3.fromRGB(255, 100, 100)
-_0xStatusL.TextSize = 14
-_0xStatusL.TextXAlignment = Enum.TextXAlignment.Left
-_0xStatusL.TextYAlignment = Enum.TextYAlignment.Center
-
--- Status dot
-local _0xStatusD = Instance.new(string.char(70,114,97,109,101))
-_0xStatusD.Name = string.char(83,116,97,116,117,115,68,111,116)
-_0xStatusD.Parent = _0xStatusL
-_0xStatusD.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
-_0xStatusD.BorderSizePixel = 0
-_0xStatusD.Position = UDim2.new(1, -15, 0.5, -4)
-_0xStatusD.Size = UDim2.new(0, 8, 0, 8)
-
-local _0xDotC = Instance.new(string.char(85,73,67,111,114,110,101,114))
-_0xDotC.CornerRadius = UDim.new(1, 0)
-_0xDotC.Parent = _0xStatusD
-
--- Obfuscated animation function
-local function _0xAnimBtn(_0xBtn)
-    local _0xOrigSize = _0xBtn.Size
-    local _0xHoverSize = UDim2.new(_0xOrigSize.X.Scale, _0xOrigSize.X.Offset + 5, _0xOrigSize.Y.Scale, _0xOrigSize.Y.Offset + 2)
-    
-    _0xBtn.MouseEnter:Connect(function()
-        local _0xTween = _0x4d5e6f:Create(_0xBtn, TweenInfo.new(0.2), {Size = _0xHoverSize})
-        _0xTween:Play()
-    end)
-    
-    _0xBtn.MouseLeave:Connect(function()
-        local _0xTween = _0x4d5e6f:Create(_0xBtn, TweenInfo.new(0.2), {Size = _0xOrigSize})
-        _0xTween:Play()
-    end)
-end
-
--- Apply animations
-_0xAnimBtn(_0xExecB)
-_0xAnimBtn(_0xSubmitB)
-_0xAnimBtn(_0xGetKeyB)
-_0xAnimBtn(_0xHelpB)
-
--- Encrypted notification system
-local function _0xNotify(_0xMsg, _0xColor)
-    local _0xNotif = Instance.new(string.char(70,114,97,109,101))
-    _0xNotif.Name = string.char(78,111,116,105,102,105,99,97,116,105,111,110)
-    _0xNotif.Parent = _0xGui
-    _0xNotif.BackgroundColor3 = _0xColor or Color3.fromRGB(76, 175, 80)
-    _0xNotif.BorderSizePixel = 0
-    _0xNotif.Position = UDim2.new(0.5, -150, 0, -50)
-    _0xNotif.Size = UDim2.new(0, 300, 0, 40)
-    
-    _0xCreateCorner(_0xNotif)
-    
-    local _0xNotifT = Instance.new(string.char(84,101,120,116,76,97,98,101,108))
-    _0xNotifT.Parent = _0xNotif
-    _0xNotifT.BackgroundTransparency = 1
-    _0xNotifT.Size = UDim2.new(1, 0, 1, 0)
-    _0xNotifT.Font = Enum.Font.Gotham
-    _0xNotifT.Text = _0xMsg
-    _0xNotifT.TextColor3 = Color3.fromRGB(255, 255, 255)
-    _0xNotifT.TextSize = 14
-    
-    local _0xSlideIn = _0x4d5e6f:Create(_0xNotif, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -150, 0, 20)})
-    _0xSlideIn:Play()
-    
-    spawn(function()
-        wait(2)
-        local _0xSlideOut = _0x4d5e6f:Create(_0xNotif, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -150, 0, -50)})
-        _0xSlideOut:Play()
-        _0xSlideOut.Completed:Connect(function()
-            _0xNotif:Destroy()
-        end)
-    end)
-end
-
--- Obfuscated script URLs
-local _0xFreeScript = string.char(104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,83,100,100,110,105,110,52,47,77,105,108,97,47,114,101,102,115,47,104,101,97,100,115,47,109,97,105,110,47,72,117,98)
-local _0xPremScript = string.char(104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,83,100,100,110,105,110,52,47,77,105,108,97,47,114,101,102,115,47,104,101,97,100,115,47,109,97,105,110,47,85,105,37,50,48,76,111,97,100,105,110,103)
-local _0xKeyLink = string.char(104,116,116,112,115,58,47,47,102,117,110,108,105,110,107,46,105,111,47,80,97,75,88,45,119,99)
-
--- Security check function
-local _0xSecCheck = function()
-    local _0xTime = tick()
-    if _0xTime % 1 > 0.5 then
-        return math.floor(_0xTime) % 2 == 0
-    end
-    return math.ceil(_0xTime) % 2 == 1
-end
-
--- Button event handlers with security
-_0xExecB.MouseButton1Click:Connect(function()
-    if not _0xSecCheck() then return end
-    _0xNotify(string.char(69,120,101,99,117,116,105,110,103,32,70,114,101,101,32,83,99,114,105,112,116,46,46,46), Color3.fromRGB(76, 175, 80))
-    
-    pcall(function()
-        loadstring(game:HttpGet(_0xFreeScript))()
-    end)
-end)
-
-_0xSubmitB.MouseButton1Click:Connect(function()
-    if not _0xSecCheck() then return end
-    local _0xInput = _0xKeyI.Text
-    
-    if _0xInput == "" then
-        _0xNotify(string.char(80,108,101,97,115,101,32,101,110,116,101,114,32,97,32,107,101,121,33), Color3.fromRGB(244, 67, 54))
-        return
-    end
-    
-    if _0xVerify(_0xInput) then
-        _0xNotify(string.char(75,101,121,32,97,99,99,101,112,116,101,100,33,32,76,111,97,100,105,110,103,32,112,114,101,109,105,117,109,32,115,99,114,105,112,116,46,46,46), Color3.fromRGB(76, 175, 80))
-        _0xStatusL.Text = string.char(83,116,97,116,117,115,58,32,65,99,116,105,118,101)
-        _0xStatusL.TextColor3 = Color3.fromRGB(76, 175, 80)
-        _0xStatusD.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
-        
-        spawn(function()
-            wait(1)
-            pcall(function()
-                loadstring(game:HttpGet(_0xPremScript))()
-            end)
-        end)
-        
-    else
-        _0xNotify(string.char(73,110,118,97,108,105,100,32,107,101,121,33,32,80,108,101,97,115,101,32,116,114,121,32,97,103,97,105,110,46), Color3.fromRGB(244, 67, 54))
-        _0xKeyI.Text = ""
-    end
-end)
-
-_0xGetKeyB.MouseButton1Click:Connect(function()
-    if not _0xSecCheck() then return end
-    pcall(function()
-        if setclipboard then
-            setclipboard(_0xKeyLink)
-            _0xNotify(string.char(75,101,121,32,108,105,110,107,32,99,111,112,105,101,100,33), Color3.fromRGB(33, 150, 243))
-        else
-            _0xNotify(string.char(71,111,32,116,111,58,32) .. _0xKeyLink, Color3.fromRGB(33, 150, 243))
-        end
-    end)
-end)
-
-_0xHelpB.MouseButton1Click:Connect(function()
-    _0xNotify(string.char(67,111,110,116,97,99,116,32,115,117,112,112,111,114,116,32,102,111,114,32,104,101,108,112,33), Color3.fromRGB(156, 39, 176))
-end)
-
-_0xCloseB.MouseButton1Click:Connect(function()
-    local _0xCloseTween = _0x4d5e6f:Create(_0xMainF, TweenInfo.new(0.3), {
-        Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(0.5, 0, 0.5, 0)
-    })
-    _0xCloseTween:Play()
-    _0xCloseTween.Completed:Connect(function()
-        _0xGui:Destroy()
-    end)
-end)
-
--- Enhanced enter key support with security
-_0xKeyI.FocusLost:Connect(function(_0xEnterPressed)
-    if _0xEnterPressed and _0xSecCheck() then
-        _0xSubmitB.MouseButton1Click:Fire()
-    end
-end)
-
--- Anti-debug measures
-local _0xDebugCheck = function()
-    local _0xStart = tick()
-    for i = 1, 1000 do
-        local _0xDummy = i * 2 + 1
-    end
-    local _0xEnd = tick()
-    if (_0xEnd - _0xStart) > 0.1 then
-        _0xGui:Destroy()
-        return false
-    end
-    return true
-end
-
--- Initial animation with security
-_0xMainF.Size = UDim2.new(0, 0, 0, 0)
-_0xMainF.Position = UDim2.new(0.5, 0, 0.5, 0)
-
-if _0xDebugCheck() then
-    local _0xOpenTween = _0x4d5e6f:Create(_0xMainF, TweenInfo.new(0.5, Enum.EasingStyle.Back), {
-        Size = UDim2.new(0, 400, 0, 400),
-        Position = UDim2.new(0.5, -200, 0.5, -200)
-    })
-    _0xOpenTween:Play()
-end
-
--- Obfuscated success message
-print(string.char(83,99,114,105,112,116,115,32,72,117,98,32,108,111,97,100,101,100,32,115,117,99,99,101,115,115,102,117,108,108,121,33))
+-- Obfuscated Scripts Hub UI
+local a1,a2,a3,a4=game:GetService("Players"),game:GetService("TweenService"),game:GetService("UserInputService"),game:GetService("HttpService")
+local b1,b2=a1.LocalPlayer,a1.LocalPlayer:WaitForChild("PlayerGui")
+local function c1(s)local r=""for i=1,#s do r=r..string.char(string.byte(s,i)+1)end return r end
+local function c2(s)local r=""for i=1,#s do r=r..string.char(string.byte(s,i)-1)end return r end
+local d1,d2,d3,d4,d5,d6=c2("TdqhosrTGvcHth"),c2("NbhoGqbnf"),c2("Dpoufou"),c2("Ujumf"),c2("DmptfCvuupo"),c2("Fyfdvuf")
+if b2:FindFirstChild(d1)then b2[d1]:Destroy()end
+local e1=Instance.new(c2("TdsffnHvh"))e1.Name=d1 e1.Parent=b2 e1.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+local f1=Instance.new(c2("Gqbnf"))f1.Name=d2 f1.Size=UDim2.new(0,400,0,350)f1.Position=UDim2.new(0.5,-200,0.5,-175)
+f1.BackgroundColor3=Color3.fromRGB(70,130,180)f1.BorderSizePixel=0 f1.Parent=e1
+local g1=Instance.new(c2("VJDpsofs"))g1.CornerRadius=UDim.new(0,12)g1.Parent=f1
+local h1=Instance.new(c2("Gqbnf"))h1.Name=c2("Ifbefs")h1.Size=UDim2.new(1,0,0,50)h1.Position=UDim2.new(0,0,0,0)
+h1.BackgroundColor3=Color3.fromRGB(60,110,160)h1.BorderSizePixel=0 h1.Parent=f1
+local i1=Instance.new(c2("VJDpsofs"))i1.CornerRadius=UDim.new(0,12)i1.Parent=h1
+local j1=Instance.new(c2("UfyuMbcfm"))j1.Name=d4 j1.Size=UDim2.new(1,-50,1,0)j1.Position=UDim2.new(0,15,0,0)
+j1.BackgroundTransparency=1 j1.Text=c2("Tdqhqot!Ivc")j1.TextColor3=Color3.fromRGB(255,255,255)j1.TextScaled=true 
+j1.Font=Enum.Font.GothamBold j1.Parent=h1
+local k1=Instance.new(c2("UfyuCvuupo"))k1.Name=d5 k1.Size=UDim2.new(0,30,0,30)k1.Position=UDim2.new(1,-40,0,10)
+k1.BackgroundTransparency=1 k1.Text="✕"k1.TextColor3=Color3.fromRGB(255,255,255)k1.TextScaled=true 
+k1.Font=Enum.Font.GothamBold k1.Parent=h1
+local l1=Instance.new(c2("Gqbnf"))l1.Name=d3 l1.Size=UDim2.new(1,-20,1,-70)l1.Position=UDim2.new(0,10,0,60)
+l1.BackgroundColor3=Color3.fromRGB(50,60,80)l1.BorderSizePixel=0 l1.Parent=f1
+local m1=Instance.new(c2("VJDpsofs"))m1.CornerRadius=UDim.new(0,8)m1.Parent=l1
+local n1=Instance.new(c2("UfyuMbcfm"))n1.Name=c2("GsffTdqhquMbcfm")n1.Size=UDim2.new(1,0,0,30)n1.Position=UDim2.new(0,0,0,10)
+n1.BackgroundTransparency=1 n1.Text=c2("Gsff!Tdqhqu")n1.TextColor3=Color3.fromRGB(255,255,255)n1.TextScaled=true 
+n1.Font=Enum.Font.Gotham n1.Parent=l1
+local o1=Instance.new(c2("UfyuCvuupo"))o1.Name=c2("FyfdvufCvuupo")o1.Size=UDim2.new(0,120,0,35)o1.Position=UDim2.new(0,20,0,50)
+o1.BackgroundColor3=Color3.fromRGB(76,175,80)o1.BorderSizePixel=0 o1.Text=d6 o1.TextColor3=Color3.fromRGB(255,255,255)
+o1.TextScaled=true o1.Font=Enum.Font.GothamBold o1.Parent=l1
+local p1=Instance.new(c2("VJDpsofs"))p1.CornerRadius=UDim.new(0,8)p1.Parent=o1
+local q1=Instance.new(c2("Gqbnf"))q1.Name=c2("Tfqbsbups")q1.Size=UDim2.new(1,-20,0,2)q1.Position=UDim2.new(0,10,0,100)
+q1.BackgroundColor3=Color3.fromRGB(80,90,110)q1.BorderSizePixel=0 q1.Parent=l1
+local r1=Instance.new(c2("UfyuMbcfm"))r1.Name=c2("LfzTdqhquMbcfm")r1.Size=UDim2.new(1,0,0,30)r1.Position=UDim2.new(0,0,0,115)
+r1.BackgroundTransparency=1 r1.Text=c2("Lfz!Tdqhqu")r1.TextColor3=Color3.fromRGB(255,255,255)r1.TextScaled=true 
+r1.Font=Enum.Font.Gotham r1.Parent=l1
+local s1=Instance.new(c2("UfyuCpy"))s1.Name=c2("LfzJoqvu")s1.Size=UDim2.new(1,-40,0,35)s1.Position=UDim2.new(0,20,0,150)
+s1.BackgroundColor3=Color3.fromRGB(70,80,100)s1.BorderSizePixel=0 s1.Text=""
+s1.PlaceholderText=c2("Foufs!Zpvs!Lfz!Ifsf/")s1.PlaceholderColor3=Color3.fromRGB(150,150,150)
+s1.TextColor3=Color3.fromRGB(255,255,255)s1.TextScaled=true s1.Font=Enum.Font.Gotham s1.Parent=l1
+local t1=Instance.new(c2("VJDpsofs"))t1.CornerRadius=UDim.new(0,8)t1.Parent=s1
+local u1=Instance.new(c2("UfyuCvuupo"))u1.Name=c2("TvcnjuCvuupo")u1.Size=UDim2.new(0,150,0,35)u1.Position=UDim2.new(0.5,-75,0,195)
+u1.BackgroundColor3=Color3.fromRGB(33,150,243)u1.BorderSizePixel=0 u1.Text=c2("Tvcnju!Lfz")
+u1.TextColor3=Color3.fromRGB(255,255,255)u1.TextScaled=true u1.Font=Enum.Font.GothamBold u1.Parent=l1
+local v1=Instance.new(c2("VJDpsofs"))v1.CornerRadius=UDim.new(0,8)v1.Parent=u1
+local w1=Instance.new(c2("UfyuCvuupo"))w1.Name=c2("HfuLfzCvuupo")w1.Size=UDim2.new(0,80,0,30)w1.Position=UDim2.new(0,20,0,240)
+w1.BackgroundColor3=Color3.fromRGB(60,70,90)w1.BorderSizePixel=0 w1.Text=c2("Hfu!Lfz")
+w1.TextColor3=Color3.fromRGB(255,255,255)w1.TextScaled=true w1.Font=Enum.Font.Gotham w1.Parent=l1
+local x1=Instance.new(c2("VJDpsofs"))x1.CornerRadius=UDim.new(0,6)x1.Parent=w1
+local y1=Instance.new(c2("UfyuCvuupo"))y1.Name=c2("IfmqCvuupo")y1.Size=UDim2.new(0,30,0,30)y1.Position=UDim2.new(0,110,0,240)
+y1.BackgroundColor3=Color3.fromRGB(60,70,90)y1.BorderSizePixel=0 y1.Text="?"y1.TextColor3=Color3.fromRGB(255,255,255)
+y1.TextScaled=true y1.Font=Enum.Font.GothamBold y1.Parent=l1
+local z1=Instance.new(c2("VJDpsofs"))z1.CornerRadius=UDim.new(0,6)z1.Parent=y1
+local aa1=Instance.new(c2("UfyuMbcfm"))aa1.Name=c2("TubuvtMbcfm")aa1.Size=UDim2.new(0,120,0,30)aa1.Position=UDim2.new(1,-140,0,240)
+aa1.BackgroundTransparency=1 aa1.Text=c2("Tubuvt;!Opu!Bdujwf")aa1.TextColor3=Color3.fromRGB(255,100,100)
+aa1.TextScaled=true aa1.Font=Enum.Font.Gotham aa1.Parent=l1
+local bb1=Instance.new(c2("Gqbnf"))bb1.Name=c2("TubuvtEpu")bb1.Size=UDim2.new(0,8,0,8)bb1.Position=UDim2.new(1,-15,0.5,-4)
+bb1.BackgroundColor3=Color3.fromRGB(255,100,100)bb1.BorderSizePixel=0 bb1.Parent=aa1
+local cc1=Instance.new(c2("VJDpsofs"))cc1.CornerRadius=UDim.new(1,0)cc1.Parent=bb1
+local function dd1(obj,info,props)local tw=a2:Create(obj,info,props)tw:Play()return tw end
+local function ee1(msg,col)local nt=Instance.new(c2("Gqbnf"))nt.Size=UDim2.new(0,300,0,50)nt.Position=UDim2.new(0.5,-150,0,-60)
+nt.BackgroundColor3=col or Color3.fromRGB(76,175,80)nt.Parent=e1 
+local nc=Instance.new(c2("VJDpsofs"))nc.CornerRadius=UDim.new(0,8)nc.Parent=nt 
+local nt2=Instance.new(c2("UfyuMbcfm"))nt2.Size=UDim2.new(1,-10,1,0)nt2.Position=UDim2.new(0,5,0,0)
+nt2.BackgroundTransparency=1 nt2.Text=msg nt2.TextColor3=Color3.fromRGB(255,255,255)nt2.TextScaled=true 
+nt2.Font=Enum.Font.Gotham nt2.Parent=nt 
+dd1(nt,TweenInfo.new(0.3),{Position=UDim2.new(0.5,-150,0,20)})wait(3)
+dd1(nt,TweenInfo.new(0.3),{Position=UDim2.new(0.5,-150,0,-60)})wait(0.3)nt:Destroy()end
+local ff1=function()local s,e=pcall(function()loadstring(game:HttpGet(c2("iuuqt;00sbx/hjuivcdpoufou/dpn0Teeojo50Njmb0sfgt0ifbet0nbjo0Ivc")))()end)
+if s then ee1(c2("Gsff!Tdqhqu!Fyfdvufe!Tvddfttgvmmz\""),Color3.fromRGB(76,175,80))else 
+ee1(c2("Gbjmfe!up!fyfdvuf!Gsff!Tdqhqu\""),Color3.fromRGB(244,67,54))end end
+local gg1=function()dd1(u1,TweenInfo.new(0.1),{Size=UDim2.new(0,145,0,32)})wait(0.1)
+dd1(u1,TweenInfo.new(0.1),{Size=UDim2.new(0,150,0,35)})local ik=s1.Text local ck=c2("Ikl9em")
+if ik==ck then aa1.Text=c2("Tubuvt;!Bdujwf")aa1.TextColor3=Color3.fromRGB(76,175,80)
+bb1.BackgroundColor3=Color3.fromRGB(76,175,80)ee1(c2("Lfz!Bddfqufe\"!Mpbejoh/"),Color3.fromRGB(76,175,80))
+local s,e=pcall(function()loadstring(game:HttpGet(c2("iuuqt;00sbx/hjuivcdpoufou/dpn0Teeojo50Njmb0sfgt0ifbet0nbjo0Vj!Mpbejoh")))()end)
+if s then wait(1)e1:Destroy()else ee1(c2("Gbjmfe!up!mpbe!VJ\""),Color3.fromRGB(244,67,54))end else 
+ee1(c2("Jowbmje!Lfz\"!Qmfbtf!usz!bhbjo/"),Color3.fromRGB(244,67,54))s1.Text=""end end
+local hh1=function()dd1(w1,TweenInfo.new(0.1),{Size=UDim2.new(0,77,0,28)})wait(0.1)
+dd1(w1,TweenInfo.new(0.1),{Size=UDim2.new(0,80,0,30)})local ltc="https://funlink.io/PaKX-wc"
+ee1(c2("Hfu!Lfz!Mjol;!")..ltc,Color3.fromRGB(33,150,243))
+if setclipboard then setclipboard(ltc)ee1(c2("Mjol!dpqjfe!up!dmjqcpbse\""),Color3.fromRGB(76,175,80))end end
+local ii1=function()dd1(y1,TweenInfo.new(0.1),{Size=UDim2.new(0,28,0,28)})wait(0.1)
+dd1(y1,TweenInfo.new(0.1),{Size=UDim2.new(0,30,0,30)})
+ee1(c2("Dmjdl!(Hfu!Lfz(!up!hfu!uif!bddftt!lfz\""),Color3.fromRGB(255,193,7))end
+local jj1=function()dd1(f1,TweenInfo.new(0.3),{Size=UDim2.new(0,0,0,0),Position=UDim2.new(0.5,0,0.5,0)})
+wait(0.3)e1:Destroy()end
+o1.MouseButton1Click:Connect(function()dd1(o1,TweenInfo.new(0.1),{Size=UDim2.new(0,115,0,32)})wait(0.1)
+dd1(o1,TweenInfo.new(0.1),{Size=UDim2.new(0,120,0,35)})ff1()end)
+u1.MouseButton1Click:Connect(gg1)w1.MouseButton1Click:Connect(hh1)y1.MouseButton1Click:Connect(ii1)
+k1.MouseButton1Click:Connect(jj1)local kk1,ll1,mm1=false,nil,nil 
+h1.InputBegan:Connect(function(inp)if inp.UserInputType==Enum.UserInputType.MouseButton1 then 
+kk1=true ll1=inp.Position mm1=f1.Position end end)
+a3.InputChanged:Connect(function(inp)if kk1 and inp.UserInputType==Enum.UserInputType.MouseMovement then 
+local dlt=inp.Position-ll1 f1.Position=UDim2.new(mm1.X.Scale,mm1.X.Offset+dlt.X,mm1.Y.Scale,mm1.Y.Offset+dlt.Y)end end)
+a3.InputEnded:Connect(function(inp)if inp.UserInputType==Enum.UserInputType.MouseButton1 then kk1=false end end)
+f1.Size=UDim2.new(0,0,0,0)f1.Position=UDim2.new(0.5,0,0.5,0)
+dd1(f1,TweenInfo.new(0.5,Enum.EasingStyle.Back),{Size=UDim2.new(0,400,0,350),Position=UDim2.new(0.5,-200,0.5,-175)})
