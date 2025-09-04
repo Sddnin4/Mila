@@ -1,5 +1,5 @@
 -- Mila UI Script for Roblox (Tab Design)
--- Tạo bởi: Mila
+-- Tạo bởi: Assistant
 -- Tính năng: Speed, Jump, Fly, Noclip, Teleport, Infinite Jump
 
 local Players = game:GetService("Players")
@@ -575,35 +575,20 @@ local function createScriptButton(scriptData, position)
     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
     nameLabel.Parent = scriptFrame
     
-    -- Execute Button
+    -- Execute Button (centered)
     local executeBtn = Instance.new("TextButton")
-    executeBtn.Size = UDim2.new(0, 80, 0, 25)
-    executeBtn.Position = UDim2.new(0, 5, 0, 30)
+    executeBtn.Size = UDim2.new(0, 120, 0, 25)
+    executeBtn.Position = UDim2.new(0, 30, 0, 30)
     executeBtn.BackgroundColor3 = Color3.new(0.4, 0.8, 0.4)
     executeBtn.Text = "▶ Execute"
     executeBtn.TextColor3 = Color3.new(1, 1, 1)
-    executeBtn.TextSize = 10
+    executeBtn.TextSize = 11
     executeBtn.Font = Enum.Font.Gotham
     executeBtn.Parent = scriptFrame
     
     local executeCorner = Instance.new("UICorner")
     executeCorner.CornerRadius = UDim.new(0, 5)
     executeCorner.Parent = executeBtn
-    
-    -- Copy Button
-    local copyBtn = Instance.new("TextButton")
-    copyBtn.Size = UDim2.new(0, 80, 0, 25)
-    copyBtn.Position = UDim2.new(0, 90, 0, 30)
-    copyBtn.BackgroundColor3 = Color3.new(0.6, 0.6, 0.8)
-    copyBtn.Text = "📋 Copy"
-    copyBtn.TextColor3 = Color3.new(1, 1, 1)
-    copyBtn.TextSize = 10
-    copyBtn.Font = Enum.Font.Gotham
-    copyBtn.Parent = scriptFrame
-    
-    local copyCorner = Instance.new("UICorner")
-    copyCorner.CornerRadius = UDim.new(0, 5)
-    copyCorner.Parent = copyBtn
     
     -- Button Events
     executeBtn.MouseButton1Click:Connect(function()
@@ -616,20 +601,6 @@ local function createScriptButton(scriptData, position)
         end)
     end)
     
-    copyBtn.MouseButton1Click:Connect(function()
-        -- Copy script code to clipboard
-        pcall(function()
-            setclipboard(scriptData.code)
-        end)
-        
-        -- Visual feedback
-        copyBtn.Text = "✅ Copied!"
-        copyBtn.BackgroundColor3 = Color3.new(0.4, 0.8, 0.4)
-        wait(1)
-        copyBtn.Text = "📋 Copy"
-        copyBtn.BackgroundColor3 = Color3.new(0.6, 0.6, 0.8)
-    end)
-    
     -- Hover effects
     executeBtn.MouseEnter:Connect(function()
         executeBtn.BackgroundColor3 = Color3.new(0.3, 0.7, 0.3)
@@ -637,14 +608,6 @@ local function createScriptButton(scriptData, position)
     
     executeBtn.MouseLeave:Connect(function()
         executeBtn.BackgroundColor3 = Color3.new(0.4, 0.8, 0.4)
-    end)
-    
-    copyBtn.MouseEnter:Connect(function()
-        copyBtn.BackgroundColor3 = Color3.new(0.5, 0.5, 0.7)
-    end)
-    
-    copyBtn.MouseLeave:Connect(function()
-        copyBtn.BackgroundColor3 = Color3.new(0.6, 0.6, 0.8)
     end)
     
     return scriptFrame
