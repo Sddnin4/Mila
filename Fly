@@ -1,465 +1,511 @@
 -- Obfuscated Mila UI Script
-local _0x1a2b3c = game:GetService("\80\108\97\121\101\114\115")
-local _0x4d5e6f = game:GetService("\85\115\101\114\73\110\112\117\116\83\101\114\118\105\99\101")
-local _0x7g8h9i = game:GetService("\82\117\110\83\101\114\118\105\99\101")
-local _0x0j1k2l = game:GetService("\84\119\101\101\110\83\101\114\118\105\99\101")
-local _0x3m4n5o = game:GetService("\67\111\114\101\71\117\105")
+local a1,a2,a3,a4,a5=game:GetService("Players"),game:GetService("UserInputService"),game:GetService("RunService"),game:GetService("TweenService"),game:GetService("CoreGui")
+local b1,b2,b3=a1.LocalPlayer,nil,nil
+b2=b1.Character or b1.CharacterAdded:Wait()
+b3=b2:WaitForChild("Humanoid")
 
-local _0xPlayer = _0x1a2b3c.LocalPlayer
-local _0xChar = _0xPlayer.Character or _0xPlayer.CharacterAdded:Wait()
-local _0xHum = _0xChar:WaitForChild("\72\117\109\97\110\111\105\100")
+local c1,c2,c3,c4,c5,c6=false,false,16,50,nil,"Home"
 
-local _0xa1b2c3 = false
-local _0xd4e5f6 = false
-local _0xg7h8i9 = 16
-local _0xj0k1l2 = 50
-local _0xm3n4o5
-local _0xp6q7r8 = "\72\111\109\101"
-
-local function _0x9z8y7x(str)
-    local result = ""
-    for i = 1, #str do
-        result = result .. string.char(string.byte(str, i) + math.random(-5, 5))
-    end
-    return result
+local function d1(str)
+    return str
 end
 
-local _0xScreenGui = Instance.new("\83\99\114\101\101\110\71\117\105")
-_0xScreenGui.Name = _0x9z8y7x("\77\105\108\97\85\73")
-_0xScreenGui.Parent = _0x3m4n5o
-_0xScreenGui.ResetOnSpawn = false
+local e1=Instance.new("ScreenGui")
+e1.Name=d1("MilaUI")
+e1.Parent=a5
+e1.ResetOnSpawn=false
 
-local _0xMainFrame = Instance.new("\70\114\97\109\101")
-_0xMainFrame.Name = _0x9z8y7x("\77\97\105\110\70\114\97\109\101")
-_0xMainFrame.Size = UDim2.new(0, 400, 0, 280)
-_0xMainFrame.Position = UDim2.new(0.5, -200, 0.5, -140)
-_0xMainFrame.BackgroundColor3 = Color3.new(0.95, 0.95, 0.98)
-_0xMainFrame.BorderSizePixel = 0
-_0xMainFrame.Active = true
-_0xMainFrame.Draggable = true
-_0xMainFrame.Parent = _0xScreenGui
+local f1=Instance.new("Frame")
+f1.Name=d1("MainFrame")
+f1.Size=UDim2.new(0,400,0,280)
+f1.Position=UDim2.new(0.5,-200,0.5,-140)
+f1.BackgroundColor3=Color3.new(0.95,0.95,0.98)
+f1.BorderSizePixel=0
+f1.Active=true
+f1.Draggable=true
+f1.Parent=e1
 
-local function _0xCreateRoundCorner(parent, radius)
-    local corner = Instance.new("\85\73\67\111\114\110\101\114")
-    corner.CornerRadius = UDim.new(0, radius or 15)
-    corner.Parent = parent
-    return corner
-end
+local f2=Instance.new("UICorner")
+f2.CornerRadius=UDim.new(0,15)
+f2.Parent=f1
 
-_0xCreateRoundCorner(_0xMainFrame, 15)
+local g1=Instance.new("Frame")
+g1.Size=UDim2.new(1,0,0,8)
+g1.Position=UDim2.new(0,0,0,0)
+g1.BackgroundColor3=Color3.new(0.85,0.4,0.4)
+g1.BorderSizePixel=0
+g1.Parent=f1
 
-local _0xTopBar = Instance.new("\70\114\97\109\101")
-_0xTopBar.Size = UDim2.new(1, 0, 0, 8)
-_0xTopBar.Position = UDim2.new(0, 0, 0, 0)
-_0xTopBar.BackgroundColor3 = Color3.new(0.85, 0.4, 0.4)
-_0xTopBar.BorderSizePixel = 0
-_0xTopBar.Parent = _0xMainFrame
+local g2=Instance.new("UICorner")
+g2.CornerRadius=UDim.new(0,15)
+g2.Parent=g1
 
-_0xCreateRoundCorner(_0xTopBar, 15)
+local g3=Instance.new("Frame")
+g3.Size=UDim2.new(1,0,0,8)
+g3.Position=UDim2.new(0,0,0,4)
+g3.BackgroundColor3=Color3.new(0.85,0.4,0.4)
+g3.BorderSizePixel=0
+g3.Parent=g1
 
-local _0xTopBarBottom = Instance.new("\70\114\97\109\101")
-_0xTopBarBottom.Size = UDim2.new(1, 0, 0, 8)
-_0xTopBarBottom.Position = UDim2.new(0, 0, 0, 4)
-_0xTopBarBottom.BackgroundColor3 = Color3.new(0.85, 0.4, 0.4)
-_0xTopBarBottom.BorderSizePixel = 0
-_0xTopBarBottom.Parent = _0xTopBar
+local h1=Instance.new("ImageLabel")
+h1.Size=UDim2.new(0,30,0,30)
+h1.Position=UDim2.new(0,15,0,15)
+h1.BackgroundColor3=Color3.new(0.85,0.4,0.4)
+h1.BorderSizePixel=0
+h1.Parent=f1
 
-local _0xLogo = Instance.new("\73\109\97\103\101\76\97\98\101\108")
-_0xLogo.Size = UDim2.new(0, 30, 0, 30)
-_0xLogo.Position = UDim2.new(0, 15, 0, 15)
-_0xLogo.BackgroundColor3 = Color3.new(0.85, 0.4, 0.4)
-_0xLogo.BorderSizePixel = 0
-_0xLogo.Parent = _0xMainFrame
+local h2=Instance.new("UICorner")
+h2.CornerRadius=UDim.new(0,8)
+h2.Parent=h1
 
-_0xCreateRoundCorner(_0xLogo, 8)
+local h3=Instance.new("TextLabel")
+h3.Size=UDim2.new(1,0,1,0)
+h3.BackgroundTransparency=1
+h3.Text="💖"
+h3.TextColor3=Color3.new(1,1,1)
+h3.TextSize=16
+h3.Font=Enum.Font.GothamBold
+h3.Parent=h1
 
-local _0xLogoText = Instance.new("\84\101\120\116\76\97\98\101\108")
-_0xLogoText.Size = UDim2.new(1, 0, 1, 0)
-_0xLogoText.BackgroundTransparency = 1
-_0xLogoText.Text = "\240\159\146\150"
-_0xLogoText.TextColor3 = Color3.new(1, 1, 1)
-_0xLogoText.TextSize = 16
-_0xLogoText.Font = Enum.Font.GothamBold
-_0xLogoText.Parent = _0xLogo
+local i1=Instance.new("Frame")
+i1.Size=UDim2.new(0,80,0,30)
+i1.Position=UDim2.new(1,-90,0,15)
+i1.BackgroundTransparency=1
+i1.Parent=f1
 
-local _0xCloseArea = Instance.new("\70\114\97\109\101")
-_0xCloseArea.Size = UDim2.new(0, 80, 0, 30)
-_0xCloseArea.Position = UDim2.new(1, -90, 0, 15)
-_0xCloseArea.BackgroundTransparency = 1
-_0xCloseArea.Parent = _0xMainFrame
+local i2=Instance.new("TextButton")
+i2.Size=UDim2.new(0,25,0,25)
+i2.Position=UDim2.new(0,0,0,2)
+i2.BackgroundColor3=Color3.new(1,0.8,0.4)
+i2.Text="-"
+i2.TextColor3=Color3.new(1,1,1)
+i2.TextSize=16
+i2.Font=Enum.Font.GothamBold
+i2.Parent=i1
 
-local function _0xCreateCloseButton(text, position, color, callback)
-    local btn = Instance.new("\84\101\120\116\66\117\116\116\111\110")
-    btn.Size = UDim2.new(0, 25, 0, 25)
-    btn.Position = position
-    btn.BackgroundColor3 = color
-    btn.Text = text
-    btn.TextColor3 = Color3.new(1, 1, 1)
-    btn.TextSize = text == "\45" and 16 or 12
-    btn.Font = Enum.Font.GothamBold
-    btn.Parent = _0xCloseArea
+local i3=Instance.new("UICorner")
+i3.CornerRadius=UDim.new(1,0)
+i3.Parent=i2
+
+local i4=Instance.new("TextButton")
+i4.Size=UDim2.new(0,25,0,25)
+i4.Position=UDim2.new(0,30,0,2)
+i4.BackgroundColor3=Color3.new(0.85,0.4,0.4)
+i4.Text="✕"
+i4.TextColor3=Color3.new(1,1,1)
+i4.TextSize=12
+i4.Font=Enum.Font.GothamBold
+i4.Parent=i1
+
+local i5=Instance.new("UICorner")
+i5.CornerRadius=UDim.new(1,0)
+i5.Parent=i4
+
+local j1=Instance.new("TextButton")
+j1.Name=d1("ToggleButton")
+j1.Size=UDim2.new(0,80,0,30)
+j1.Position=UDim2.new(0,10,0,10)
+j1.BackgroundColor3=Color3.new(0.85,0.4,0.4)
+j1.Text="Mila 💖"
+j1.TextColor3=Color3.new(1,1,1)
+j1.TextSize=12
+j1.Font=Enum.Font.Gotham
+j1.Visible=false
+j1.Parent=e1
+
+local j2=Instance.new("UICorner")
+j2.CornerRadius=UDim.new(0,10)
+j2.Parent=j1
+
+local k1=Instance.new("Frame")
+k1.Size=UDim2.new(1,0,0,40)
+k1.Position=UDim2.new(0,0,0,50)
+k1.BackgroundTransparency=1
+k1.Parent=f1
+
+local k2={"Home","Script","Notifications","Other"}
+local k3={}
+
+for l1,l2 in ipairs(k2) do
+    local l3=Instance.new("TextButton")
+    l3.Size=UDim2.new(0.25,-5,1,0)
+    l3.Position=UDim2.new((l1-1)*0.25,(l1-1)*2.5,0,0)
+    l3.BackgroundTransparency=1
+    l3.Text=l2
+    l3.TextColor3=l2=="Home" and Color3.new(0.2,0.4,0.8) or Color3.new(0.5,0.5,0.5)
+    l3.TextSize=12
+    l3.Font=Enum.Font.Gotham
+    l3.Parent=k1
     
-    _0xCreateRoundCorner(btn, 25)
+    local l4=Instance.new("Frame")
+    l4.Size=UDim2.new(1,0,0,2)
+    l4.Position=UDim2.new(0,0,1,0)
+    l4.BackgroundColor3=Color3.new(0.2,0.4,0.8)
+    l4.BorderSizePixel=0
+    l4.Visible=l2=="Home"
+    l4.Parent=l3
     
-    btn.MouseButton1Click:Connect(callback)
-    return btn
+    k3[l2]={button=l3,underline=l4}
 end
 
-local _0xMinimizeBtn = _0xCreateCloseButton("\45", UDim2.new(0, 0, 0, 2), Color3.new(1, 0.8, 0.4), function()
-    _0xMainFrame.Visible = false
-    _0xToggleButton.Visible = true
-    if _0xPlayerFrame then _0xPlayerFrame.Visible = false end
-end)
+local m1=Instance.new("Frame")
+m1.Size=UDim2.new(1,-20,1,-110)
+m1.Position=UDim2.new(0,10,0,100)
+m1.BackgroundTransparency=1
+m1.Parent=f1
 
-local _0xCloseBtn = _0xCreateCloseButton("\226\156\149", UDim2.new(0, 30, 0, 2), Color3.new(0.85, 0.4, 0.4), function()
-    _0xMainFrame.Visible = false
-    _0xToggleButton.Visible = true
-    if _0xPlayerFrame then _0xPlayerFrame.Visible = false end
-end)
+local m2=Instance.new("ScrollingFrame")
+m2.Name=d1("HomeContent")
+m2.Size=UDim2.new(1,0,1,0)
+m2.BackgroundTransparency=1
+m2.ScrollBarThickness=6
+m2.CanvasSize=UDim2.new(0,0,0,300)
+m2.Parent=m1
 
-local _0xToggleButton = Instance.new("\84\101\120\116\66\117\116\116\111\110")
-_0xToggleButton.Name = _0x9z8y7x("\84\111\103\103\108\101\66\117\116\116\111\110")
-_0xToggleButton.Size = UDim2.new(0, 80, 0, 30)
-_0xToggleButton.Position = UDim2.new(0, 10, 0, 10)
-_0xToggleButton.BackgroundColor3 = Color3.new(0.85, 0.4, 0.4)
-_0xToggleButton.Text = _0x9z8y7x("\77\105\108\97") .. " \240\159\146\150"
-_0xToggleButton.TextColor3 = Color3.new(1, 1, 1)
-_0xToggleButton.TextSize = 12
-_0xToggleButton.Font = Enum.Font.Gotham
-_0xToggleButton.Visible = false
-_0xToggleButton.Parent = _0xScreenGui
+local m3=Instance.new("ScrollingFrame")
+m3.Name=d1("ScriptContent")
+m3.Size=UDim2.new(1,0,1,0)
+m3.BackgroundTransparency=1
+m3.ScrollBarThickness=6
+m3.CanvasSize=UDim2.new(0,0,0,600)
+m3.Visible=false
+m3.Parent=m1
 
-_0xCreateRoundCorner(_0xToggleButton, 10)
+local n1=Instance.new("Frame")
+n1.Size=UDim2.new(1,0,0,30)
+n1.Position=UDim2.new(0,0,0,0)
+n1.BackgroundTransparency=1
+n1.Parent=m3
 
-local _0xTabFrame = Instance.new("\70\114\97\109\101")
-_0xTabFrame.Size = UDim2.new(1, 0, 0, 40)
-_0xTabFrame.Position = UDim2.new(0, 0, 0, 50)
-_0xTabFrame.BackgroundTransparency = 1
-_0xTabFrame.Parent = _0xMainFrame
+local n2=Instance.new("TextBox")
+n2.Size=UDim2.new(1,-10,1,0)
+n2.Position=UDim2.new(0,5,0,0)
+n2.BackgroundColor3=Color3.new(1,1,1)
+n2.Text=""
+n2.PlaceholderText="🔍 Search scripts..."
+n2.TextColor3=Color3.new(0,0,0)
+n2.TextSize=12
+n2.Font=Enum.Font.Gotham
+n2.Parent=n1
 
-local _0xTabs = {"\72\111\109\101", "\83\99\114\105\112\116", "\78\111\116\105\102\105\99\97\116\105\111\110\115", "\79\116\104\101\114"}
-local _0xTabButtons = {}
+local n3=Instance.new("UICorner")
+n3.CornerRadius=UDim.new(0,5)
+n3.Parent=n2
 
-for i, tabName in ipairs(_0xTabs) do
-    local tabButton = Instance.new("\84\101\120\116\66\117\116\116\111\110")
-    tabButton.Size = UDim2.new(0.25, -5, 1, 0)
-    tabButton.Position = UDim2.new((i-1) * 0.25, (i-1) * 2.5, 0, 0)
-    tabButton.BackgroundTransparency = 1
-    tabButton.Text = tabName
-    tabButton.TextColor3 = tabName == "\72\111\109\101" and Color3.new(0.2, 0.4, 0.8) or Color3.new(0.5, 0.5, 0.5)
-    tabButton.TextSize = 12
-    tabButton.Font = Enum.Font.Gotham
-    tabButton.Parent = _0xTabFrame
-    
-    local underline = Instance.new("\70\114\97\109\101")
-    underline.Size = UDim2.new(1, 0, 0, 2)
-    underline.Position = UDim2.new(0, 0, 1, 0)
-    underline.BackgroundColor3 = Color3.new(0.2, 0.4, 0.8)
-    underline.BorderSizePixel = 0
-    underline.Visible = tabName == "\72\111\109\101"
-    underline.Parent = tabButton
-    
-    _0xTabButtons[tabName] = {button = tabButton, underline = underline}
-end
+local o1=Instance.new("Frame")
+o1.Size=UDim2.new(1,0,1,-40)
+o1.Position=UDim2.new(0,0,0,40)
+o1.BackgroundTransparency=1
+o1.Parent=m3
 
-local _0xContentArea = Instance.new("\70\114\97\109\101")
-_0xContentArea.Size = UDim2.new(1, -20, 1, -110)
-_0xContentArea.Position = UDim2.new(0, 10, 0, 100)
-_0xContentArea.BackgroundTransparency = 1
-_0xContentArea.Parent = _0xMainFrame
+local o2=Instance.new("Frame")
+o2.Size=UDim2.new(0,200,0,100)
+o2.Position=UDim2.new(0.5,-100,0.5,-50)
+o2.BackgroundColor3=Color3.new(0,0,0)
+o2.BackgroundTransparency=0.3
+o2.BorderSizePixel=0
+o2.Visible=false
+o2.Parent=e1
 
-local function _0xCreateContent(name, visible)
-    local content = Instance.new("\83\99\114\111\108\108\105\110\103\70\114\97\109\101")
-    content.Name = name
-    content.Size = UDim2.new(1, 0, 1, 0)
-    content.BackgroundTransparency = 1
-    content.ScrollBarThickness = 6
-    content.CanvasSize = UDim2.new(0, 0, 0, 300)
-    content.Visible = visible or false
-    content.Parent = _0xContentArea
-    return content
-end
+local o3=Instance.new("UICorner")
+o3.CornerRadius=UDim.new(0,10)
+o3.Parent=o2
 
-local _0xHomeContent = _0xCreateContent(_0x9z8y7x("\72\111\109\101\67\111\110\116\101\110\116"), true)
-local _0xScriptContent = _0xCreateContent(_0x9z8y7x("\83\99\114\105\112\116\67\111\110\116\101\110\116"), false)
-local _0xNotifContent = _0xCreateContent(_0x9z8y7x("\78\111\116\105\102\67\111\110\116\101\110\116"), false)
-local _0xOtherContent = Instance.new("\70\114\97\109\101")
-_0xOtherContent.Name = _0x9z8y7x("\79\116\104\101\114\67\111\110\116\101\110\116")
-_0xOtherContent.Size = UDim2.new(1, 0, 1, 0)
-_0xOtherContent.BackgroundTransparency = 1
-_0xOtherContent.Visible = false
-_0xOtherContent.Parent = _0xContentArea
+local o4=Instance.new("TextLabel")
+o4.Size=UDim2.new(1,0,0,30)
+o4.Position=UDim2.new(0,0,0,10)
+o4.BackgroundTransparency=1
+o4.Text="Loading Script..."
+o4.TextColor3=Color3.new(1,1,1)
+o4.TextSize=14
+o4.Font=Enum.Font.GothamBold
+o4.Parent=o2
 
-local _0xSearchFrame = Instance.new("\70\114\97\109\101")
-_0xSearchFrame.Size = UDim2.new(1, 0, 0, 30)
-_0xSearchFrame.Position = UDim2.new(0, 0, 0, 0)
-_0xSearchFrame.BackgroundTransparency = 1
-_0xSearchFrame.Parent = _0xScriptContent
+local o5=Instance.new("TextLabel")
+o5.Size=UDim2.new(1,0,0,30)
+o5.Position=UDim2.new(0,0,0,40)
+o5.BackgroundTransparency=1
+o5.Text="⭕"
+o5.TextColor3=Color3.new(1,1,1)
+o5.TextSize=20
+o5.Font=Enum.Font.Gotham
+o5.Parent=o2
 
-local _0xSearchBox = Instance.new("\84\101\120\116\66\111\120")
-_0xSearchBox.Size = UDim2.new(1, -10, 1, 0)
-_0xSearchBox.Position = UDim2.new(0, 5, 0, 0)
-_0xSearchBox.BackgroundColor3 = Color3.new(1, 1, 1)
-_0xSearchBox.Text = ""
-_0xSearchBox.PlaceholderText = "\240\159\148\141 " .. _0x9z8y7x("\83\101\97\114\99\104\32\115\99\114\105\112\116\115") .. "..."
-_0xSearchBox.TextColor3 = Color3.new(0, 0, 0)
-_0xSearchBox.TextSize = 12
-_0xSearchBox.Font = Enum.Font.Gotham
-_0xSearchBox.Parent = _0xSearchFrame
-
-_0xCreateRoundCorner(_0xSearchBox, 5)
-
-local _0xScriptsContainer = Instance.new("\70\114\97\109\101")
-_0xScriptsContainer.Size = UDim2.new(1, 0, 1, -40)
-_0xScriptsContainer.Position = UDim2.new(0, 0, 0, 40)
-_0xScriptsContainer.BackgroundTransparency = 1
-_0xScriptsContainer.Parent = _0xScriptContent
-
-local _0xLoadingFrame = Instance.new("\70\114\97\109\101")
-_0xLoadingFrame.Size = UDim2.new(0, 200, 0, 100)
-_0xLoadingFrame.Position = UDim2.new(0.5, -100, 0.5, -50)
-_0xLoadingFrame.BackgroundColor3 = Color3.new(0, 0, 0)
-_0xLoadingFrame.BackgroundTransparency = 0.3
-_0xLoadingFrame.BorderSizePixel = 0
-_0xLoadingFrame.Visible = false
-_0xLoadingFrame.Parent = _0xScreenGui
-
-_0xCreateRoundCorner(_0xLoadingFrame, 10)
-
-local _0xLoadingText = Instance.new("\84\101\120\116\76\97\98\101\108")
-_0xLoadingText.Size = UDim2.new(1, 0, 0, 30)
-_0xLoadingText.Position = UDim2.new(0, 0, 0, 10)
-_0xLoadingText.BackgroundTransparency = 1
-_0xLoadingText.Text = _0x9z8y7x("\76\111\97\100\105\110\103\32\83\99\114\105\112\116") .. "..."
-_0xLoadingText.TextColor3 = Color3.new(1, 1, 1)
-_0xLoadingText.TextSize = 14
-_0xLoadingText.Font = Enum.Font.GothamBold
-_0xLoadingText.Parent = _0xLoadingFrame
-
-local _0xLoadingSpinner = Instance.new("\84\101\120\116\76\97\98\101\108")
-_0xLoadingSpinner.Size = UDim2.new(1, 0, 0, 30)
-_0xLoadingSpinner.Position = UDim2.new(0, 0, 0, 40)
-_0xLoadingSpinner.BackgroundTransparency = 1
-_0xLoadingSpinner.Text = "\226\173\149"
-_0xLoadingSpinner.TextColor3 = Color3.new(1, 1, 1)
-_0xLoadingSpinner.TextSize = 20
-_0xLoadingSpinner.Font = Enum.Font.Gotham
-_0xLoadingSpinner.Parent = _0xLoadingFrame
-
-local _0xScriptsData = {
-    {name = _0x9z8y7x("\73\110\102\105\110\105\116\121\32\89\105\101\108\100"), code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()"},
-    {name = _0x9z8y7x("\65\105\114\102\108\111\119"), code = "loadstring(game:HttpGet(\"https://api.luarmor.net/files/v3/loaders/255ac567ced3dcb9e69aa7e44c423f19.lua\"))()"},
-    {name = _0x9z8y7x("\72\52\88"), code = "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua\", true))()"},
-    {name = _0x9z8y7x("\82\49\53\32\69\109\111\116\101"), code = "loadstring(game:HttpGetAsync(\"https://gist.githubusercontent.com/RedZenXYZ/3da6af1961efa275de6c3c2a6dbace03/raw/bb027f99cec0ea48ef9c5eabfb9116ddff20633d/FE%2520Emotes%2520Gui\"))()"},
-    {name = _0x9z8y7x("\83\107\117\108\108\32\72\117\98"), code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/hungquan99/SkullHub/main/loader.lua'))()"}
+local p1={
+    {name="Infinity Yield",code="loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()"},
+    {name="Airflow",code="loadstring(game:HttpGet(\"https://api.luarmor.net/files/v3/loaders/255ac567ced3dcb9e69aa7e44c423f19.lua\"))()"},
+    {name="H4X",code="loadstring(game:HttpGet(\"https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua\",true))()"},
+    {name="R15 Emote",code="loadstring(game:HttpGetAsync(\"https://gist.githubusercontent.com/RedZenXYZ/3da6af1961efa275de6c3c2a6dbace03/raw/bb027f99cec0ea48ef9c5eabfb9116ddff20633d/FE%2520Emotes%2520Gui\"))()"},
+    {name="Skull Hub",code="loadstring(game:HttpGet('https://raw.githubusercontent.com/hungquan99/SkullHub/main/loader.lua'))()"}
 }
 
-local _0xPlayerFrame = Instance.new("\70\114\97\109\101")
-_0xPlayerFrame.Name = _0x9z8y7x("\80\108\97\121\101\114\70\114\97\109\101")
-_0xPlayerFrame.Size = UDim2.new(0, 180, 0, 200)
-_0xPlayerFrame.Position = UDim2.new(1, 10, 0, 0)
-_0xPlayerFrame.BackgroundColor3 = Color3.new(0.95, 0.95, 0.98)
-_0xPlayerFrame.BorderSizePixel = 0
-_0xPlayerFrame.Visible = false
-_0xPlayerFrame.Parent = _0xMainFrame
+local m4=Instance.new("ScrollingFrame")
+m4.Name=d1("NotifContent")
+m4.Size=UDim2.new(1,0,1,0)
+m4.BackgroundTransparency=1
+m4.ScrollBarThickness=6
+m4.CanvasSize=UDim2.new(0,0,0,300)
+m4.Visible=false
+m4.Parent=m1
 
-_0xCreateRoundCorner(_0xPlayerFrame, 10)
+local m5=Instance.new("Frame")
+m5.Name=d1("OtherContent")
+m5.Size=UDim2.new(1,0,1,0)
+m5.BackgroundTransparency=1
+m5.Visible=false
+m5.Parent=m1
 
-local function _0xCreateButton(name, text, position, callback, parent)
-    parent = parent or _0xHomeContent
+local q1=Instance.new("Frame")
+q1.Name=d1("PlayerFrame")
+q1.Size=UDim2.new(0,180,0,200)
+q1.Position=UDim2.new(1,10,0,0)
+q1.BackgroundColor3=Color3.new(0.95,0.95,0.98)
+q1.BorderSizePixel=0
+q1.Visible=false
+q1.Parent=f1
+
+local q2=Instance.new("UICorner")
+q2.CornerRadius=UDim.new(0,10)
+q2.Parent=q1
+
+local function r1(name,text,position,callback,parent)
+    parent=parent or m2
     
-    local button = Instance.new("\84\101\120\116\66\117\116\116\111\110")
-    button.Name = name
-    button.Size = UDim2.new(0, 100, 0, 25)
-    button.Position = position
-    button.BackgroundColor3 = Color3.new(0.85, 0.9, 1)
-    button.Text = text
-    button.TextColor3 = Color3.new(0.2, 0.3, 0.6)
-    button.TextSize = 10
-    button.Font = Enum.Font.Gotham
-    button.Parent = parent
+    local r2=Instance.new("TextButton")
+    r2.Name=name
+    r2.Size=UDim2.new(0,100,0,25)
+    r2.Position=position
+    r2.BackgroundColor3=Color3.new(0.85,0.9,1)
+    r2.Text=text
+    r2.TextColor3=Color3.new(0.2,0.3,0.6)
+    r2.TextSize=10
+    r2.Font=Enum.Font.Gotham
+    r2.Parent=parent
     
-    _0xCreateRoundCorner(button, 5)
+    local r3=Instance.new("UICorner")
+    r3.CornerRadius=UDim.new(0,5)
+    r3.Parent=r2
     
-    button.MouseButton1Click:Connect(callback)
+    r2.MouseButton1Click:Connect(callback)
     
-    button.MouseEnter:Connect(function()
-        button.BackgroundColor3 = Color3.new(0.8, 0.85, 1)
+    r2.MouseEnter:Connect(function()
+        r2.BackgroundColor3=Color3.new(0.8,0.85,1)
     end)
     
-    button.MouseLeave:Connect(function()
-        button.BackgroundColor3 = Color3.new(0.85, 0.9, 1)
+    r2.MouseLeave:Connect(function()
+        r2.BackgroundColor3=Color3.new(0.85,0.9,1)
     end)
     
-    return button
+    return r2
 end
 
-local function _0xCreateSlider(labelText, defaultValue, position, parent)
-    local label = Instance.new("\84\101\120\116\76\97\98\101\108")
-    label.Size = UDim2.new(0, 150, 0, 15)
-    label.Position = position
-    label.BackgroundTransparency = 1
-    label.Text = labelText .. ": " .. defaultValue
-    label.TextColor3 = Color3.new(0.3, 0.3, 0.3)
-    label.TextSize = 10
-    label.Font = Enum.Font.Gotham
-    label.Parent = parent or _0xHomeContent
+local s1=Instance.new("TextLabel")
+s1.Size=UDim2.new(0,150,0,15)
+s1.Position=UDim2.new(0,10,0,10)
+s1.BackgroundTransparency=1
+s1.Text="Speed: 16"
+s1.TextColor3=Color3.new(0.3,0.3,0.3)
+s1.TextSize=10
+s1.Font=Enum.Font.Gotham
+s1.Parent=m2
 
-    local slider = Instance.new("\84\101\120\116\66\111\120")
-    slider.Size = UDim2.new(0, 60, 0, 20)
-    slider.Position = UDim2.new(position.X.Scale, position.X.Offset, position.Y.Scale, position.Y.Offset + 20)
-    slider.BackgroundColor3 = Color3.new(1, 1, 1)
-    slider.Text = tostring(defaultValue)
-    slider.TextColor3 = Color3.new(0, 0, 0)
-    slider.TextSize = 10
-    slider.PlaceholderText = tostring(defaultValue)
-    slider.Parent = parent or _0xHomeContent
+local s2=Instance.new("TextBox")
+s2.Size=UDim2.new(0,60,0,20)
+s2.Position=UDim2.new(0,10,0,30)
+s2.BackgroundColor3=Color3.new(1,1,1)
+s2.Text="16"
+s2.TextColor3=Color3.new(0,0,0)
+s2.TextSize=10
+s2.PlaceholderText="16"
+s2.Parent=m2
 
-    _0xCreateRoundCorner(slider, 3)
+local s3=Instance.new("UICorner")
+s3.CornerRadius=UDim.new(0,3)
+s3.Parent=s2
 
-    return label, slider
-end
+local t1=Instance.new("TextLabel")
+t1.Size=UDim2.new(0,150,0,15)
+t1.Position=UDim2.new(0,200,0,10)
+t1.BackgroundTransparency=1
+t1.Text="Jump: 50"
+t1.TextColor3=Color3.new(0.3,0.3,0.3)
+t1.TextSize=10
+t1.Font=Enum.Font.Gotham
+t1.Parent=m2
 
-local _0xSpeedLabel, _0xSpeedSlider = _0xCreateSlider(_0x9z8y7x("\83\112\101\101\100"), 16, UDim2.new(0, 10, 0, 10))
-local _0xJumpLabel, _0xJumpSlider = _0xCreateSlider(_0x9z8y7x("\74\117\109\112"), 50, UDim2.new(0, 200, 0, 10))
+local t2=Instance.new("TextBox")
+t2.Size=UDim2.new(0,60,0,20)
+t2.Position=UDim2.new(0,200,0,30)
+t2.BackgroundColor3=Color3.new(1,1,1)
+t2.Text="50"
+t2.TextColor3=Color3.new(0,0,0)
+t2.TextSize=10
+t2.PlaceholderText="50"
+t2.Parent=m2
 
-local function _0xShowLoading(scriptName)
-    _0xLoadingText.Text = _0x9z8y7x("\76\111\97\100\105\110\103\32") .. scriptName .. "..."
-    _0xLoadingFrame.Visible = true
+local t3=Instance.new("UICorner")
+t3.CornerRadius=UDim.new(0,3)
+t3.Parent=t2
+
+local function u1(scriptName)
+    o4.Text="Loading " ..scriptName.. "..."
+    o2.Visible=true
     
-    local spinConnection
-    spinConnection = _0x7g8h9i.Heartbeat:Connect(function()
-        if not _0xLoadingFrame.Visible then
-            spinConnection:Disconnect()
+    local u2
+    u2=a3.Heartbeat:Connect(function()
+        if not o2.Visible then
+            u2:Disconnect()
             return
         end
-        _0xLoadingSpinner.Rotation = _0xLoadingSpinner.Rotation + 5
+        o5.Rotation=o5.Rotation+5
     end)
     
     wait(2)
-    _0xLoadingFrame.Visible = false
-    if spinConnection then
-        spinConnection:Disconnect()
+    o2.Visible=false
+    if u2 then
+        u2:Disconnect()
     end
 end
 
-local function _0xToggleNoclip()
-    _0xa1b2c3 = not _0xa1b2c3
-    if _0xa1b2c3 then
-        local connection
-        connection = _0x7g8h9i.Stepped:Connect(function()
-            if not _0xa1b2c3 then
-                connection:Disconnect()
+local function u3()
+    c1=not c1
+    if c1 then
+        local u4
+        u4=a3.Stepped:Connect(function()
+            if not c1 then
+                u4:Disconnect()
                 return
             end
-            for _, part in pairs(_0xChar:GetChildren()) do
-                if part:IsA("\66\97\115\101\80\97\114\116") then
-                    part.CanCollide = false
+            for _,u5 in pairs(b2:GetChildren()) do
+                if u5:IsA("BasePart") then
+                    u5.CanCollide=false
                 end
             end
         end)
+    else
+        for _,u5 in pairs(b2:GetChildren()) do
+            if u5:IsA("BasePart") and u5.Name~="HumanoidRootPart" then
+                u5.CanCollide=true
+            end
+        end
     end
 end
 
-local function _0xToggleInfiniteJump()
-    _0xd4e5f6 = not _0xd4e5f6
-    if _0xd4e5f6 then
-        _0xm3n4o5 = _0x4d5e6f.JumpRequest:Connect(function()
-            if _0xChar and _0xChar:FindFirstChild("\72\117\109\97\110\111\105\100") then
-                _0xChar.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+local function u6()
+    c2=not c2
+    if c2 then
+        c5=a2.JumpRequest:Connect(function()
+            if b2 and b2:FindFirstChild("Humanoid") then
+                b2.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
             end
         end)
     else
-        if _0xm3n4o5 then
-            _0xm3n4o5:Disconnect()
-            _0xm3n4o5 = nil
+        if c5 then
+            c5:Disconnect()
+            c5=nil
         end
     end
 end
 
-local function _0xSwitchTab(tabName)
-    _0xp6q7r8 = tabName
-
-    for name, tabData in pairs(_0xTabButtons) do
-        if name == tabName then
-            tabData.button.TextColor3 = Color3.new(0.2, 0.4, 0.8)
-            tabData.underline.Visible = true
-        else
-            tabData.button.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-            tabData.underline.Visible = false
-        end
-    end
-
-    _0xHomeContent.Visible = tabName == "\72\111\109\101"
-    _0xScriptContent.Visible = tabName == "\83\99\114\105\112\116"
-    _0xNotifContent.Visible = tabName == "\78\111\116\105\102\105\99\97\116\105\111\110\115"
-    _0xOtherContent.Visible = tabName == "\79\116\104\101\114"
+local function u7()
+    workspace.CurrentCamera.CameraSubject=b2.Humanoid
 end
 
-_0xCreateButton(_0x9z8y7x("\83\112\101\101\100\66\117\116\116\111\110"), "\240\159\143\131 " .. _0x9z8y7x("\83\112\101\101\100"), UDim2.new(0, 10, 0, 60), function()
-    local speed = tonumber(_0xSpeedSlider.Text) or 16
-    _0xHum.WalkSpeed = speed
-    _0xSpeedLabel.Text = _0x9z8y7x("\83\112\101\101\100") .. ": " .. speed
-end)
-
-_0xCreateButton(_0x9z8y7x("\74\117\109\112\66\117\116\116\111\110"), "\240\159\166\152 " .. _0x9z8y7x("\74\117\109\112"), UDim2.new(0, 120, 0, 60), function()
-    local jump = tonumber(_0xJumpSlider.Text) or 50
-    _0xHum.JumpPower = jump
-    _0xJumpLabel.Text = _0x9z8y7x("\74\117\109\112") .. ": " .. jump
-end)
-
-_0xCreateButton(_0x9z8y7x("\78\111\99\108\105\112\66\117\116\116\111\110"), "\240\159\145\187 " .. _0x9z8y7x("\78\111\99\108\105\112"), UDim2.new(0, 230, 0, 60), function()
-    _0xToggleNoclip()
-end)
-
-_0xCreateButton(_0x9z8y7x("\70\108\121\66\117\116\116\111\110"), "\240\159\149\138\239\184\143 " .. _0x9z8y7x("\70\108\121"), UDim2.new(0, 10, 0, 95), function()
+local function u8()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Vehicle%20Fly%20Gui"))()
     end)
+end
+
+r1(d1("SpeedButton"),"🏃 Speed",UDim2.new(0,10,0,60),function()
+    local u9=tonumber(s2.Text) or 16
+    b3.WalkSpeed=u9
+    s1.Text="Speed: " ..u9
 end)
 
-_0xCreateButton(_0x9z8y7x("\73\110\102\105\110\105\116\101\74\117\109\112\66\117\116\116\111\110"), "\226\153\190\239\184\143 " .. _0x9z8y7x("\73\110\102\32\74\117\109\112"), UDim2.new(0, 120, 0, 95), function()
-    _0xToggleInfiniteJump()
+r1(d1("JumpButton"),"🦘 Jump",UDim2.new(0,120,0,60),function()
+    local v1=tonumber(t2.Text) or 50
+    b3.JumpPower=v1
+    t1.Text="Jump: " ..v1
 end)
 
-for tabName, tabData in pairs(_0xTabButtons) do
-    tabData.button.MouseButton1Click:Connect(function()
-        _0xSwitchTab(tabName)
+r1(d1("NoclipButton"),"👻 Noclip",UDim2.new(0,230,0,60),function()
+    u3()
+end)
+
+r1(d1("FlyButton"),"🕊️ Fly",UDim2.new(0,10,0,95),function()
+    u8()
+end)
+
+r1(d1("InfiniteJumpButton"),"♾️ Inf Jump",UDim2.new(0,120,0,95),function()
+    u6()
+end)
+
+for v2,v3 in pairs(k3) do
+    v3.button.MouseButton1Click:Connect(function()
+        c6=v2
+
+        for v4,v5 in pairs(k3) do
+            if v4==v2 then
+                v5.button.TextColor3=Color3.new(0.2,0.4,0.8)
+                v5.underline.Visible=true
+            else
+                v5.button.TextColor3=Color3.new(0.5,0.5,0.5)
+                v5.underline.Visible=false
+            end
+        end
+
+        m2.Visible=v2=="Home"
+        m3.Visible=v2=="Script"
+        m4.Visible=v2=="Notifications"
+        m5.Visible=v2=="Other"
     end)
 end
 
-_0xToggleButton.MouseButton1Click:Connect(function()
-    _0xMainFrame.Visible = true
-    _0xToggleButton.Visible = false
+i4.MouseButton1Click:Connect(function()
+    f1.Visible=false
+    j1.Visible=true
+    q1.Visible=false
 end)
 
-_0x4d5e6f.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.RightShift then
-        if _0xMainFrame.Visible then
-            _0xMainFrame.Visible = false
-            _0xToggleButton.Visible = true
-            if _0xPlayerFrame then _0xPlayerFrame.Visible = false end
+i2.MouseButton1Click:Connect(function()
+    f1.Visible=false
+    j1.Visible=true
+    q1.Visible=false
+end)
+
+j1.MouseButton1Click:Connect(function()
+    f1.Visible=true
+    j1.Visible=false
+end)
+
+a2.InputBegan:Connect(function(v6,v7)
+    if v7 then return end
+    if v6.KeyCode==Enum.KeyCode.RightShift then
+        if f1.Visible then
+            f1.Visible=false
+            j1.Visible=true
+            q1.Visible=false
         else
-            _0xMainFrame.Visible = true
-            _0xToggleButton.Visible = false
+            f1.Visible=true
+            j1.Visible=false
         end
     end
 end)
 
-_0xPlayer.CharacterAdded:Connect(function(newCharacter)
-    _0xChar = newCharacter
-    _0xHum = _0xChar:WaitForChild("\72\117\109\97\110\111\105\100")
-    _0xa1b2c3 = false
-    _0xd4e5f6 = false
-    if _0xm3n4o5 then
-        _0xm3n4o5:Disconnect()
-        _0xm3n4o5 = nil
+b1.CharacterAdded:Connect(function(v8)
+    b2=v8
+    b3=b2:WaitForChild("Humanoid")
+    c1=false
+    c2=false
+    if c5 then
+        c5:Disconnect()
+        c5=nil
     end
     wait(1)
-    _0xHum.WalkSpeed = _0xg7h8i9
-    _0xHum.JumpPower = _0xj0k1l2
+    b3.WalkSpeed=c3
+    b3.JumpPower=c4
 end)
 
-local _0xSuccess = pcall(function()
-    print(_0x9z8y7x("\77\105\108\97
+print("Mila UI (Tab Design) đã được tải thành công! 💖")
+print("Nhấn Right Shift để bật/tắt UI")
