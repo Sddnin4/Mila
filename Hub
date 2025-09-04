@@ -316,7 +316,7 @@ playerHeaderBottom.Parent = playerHeader
 local playerTitle = Instance.new("TextLabel")
 playerTitle.Size = UDim2.new(1, 0, 1, 0)
 playerTitle.BackgroundTransparency = 1
-playerTitle.Text = "👥 Players"
+playerTitle.Text = "📋 Player List"
 playerTitle.TextColor3 = Color3.new(1, 1, 1)
 playerTitle.TextSize = 14
 playerTitle.Font = Enum.Font.GothamBold
@@ -550,7 +550,7 @@ createButton(homeContent, "FlyBtn", "🕊️ Fly", UDim2.new(0, 10, 0, 105), UDi
     toggleFly()
 end)
 
-createButton(homeContent, "PlayersBtn", "👥 Players", UDim2.new(0, 95, 0, 105), UDim2.new(0, 75, 0, 25), function()
+createButton(homeContent, "PlayersBtn", "👥 Player List", UDim2.new(0, 95, 0, 105), UDim2.new(0, 75, 0, 25), function()
     playerFrame.Visible = not playerFrame.Visible
     if playerFrame.Visible then
         updatePlayerList()
@@ -765,7 +765,7 @@ function updatePlayerList()
             playerCount = playerCount + 1
             
             local playerContainer = Instance.new("Frame")
-            playerContainer.Size = UDim2.new(1, 0, 0, 30) -- Reduced height since no teleport button
+            playerContainer.Size = UDim2.new(1, 0, 0, 25) -- Reduced height further
             playerContainer.BackgroundColor3 = Color3.new(0.98, 0.98, 0.98)
             playerContainer.Parent = playerList
             
@@ -774,40 +774,20 @@ function updatePlayerList()
             containerCorner.Parent = playerContainer
             
             local playerName = Instance.new("TextLabel")
-            playerName.Size = UDim2.new(1, -80, 1, 0)
+            playerName.Size = UDim2.new(1, -10, 1, 0)
             playerName.Position = UDim2.new(0, 5, 0, 0)
             playerName.BackgroundTransparency = 1
-            playerName.Text = targetPlayer.Name
-            playerName.TextSize = 10
+            playerName.Text = "👤 " .. targetPlayer.Name
+            playerName.TextSize = 11
             playerName.Font = Enum.Font.GothamBold
             playerName.TextColor3 = Color3.new(0.2, 0.2, 0.2)
             playerName.TextXAlignment = Enum.TextXAlignment.Left
             playerName.TextYAlignment = Enum.TextYAlignment.Center
             playerName.Parent = playerContainer
-            
-            local viewBtn = Instance.new("TextButton")
-            viewBtn.Size = UDim2.new(0, 70, 0, 25)
-            viewBtn.Position = UDim2.new(1, -75, 0, 2.5)
-            viewBtn.BackgroundColor3 = Color3.new(1, 0.6, 0.2)
-            viewBtn.Text = "👁️ View"
-            viewBtn.TextSize = 8
-            viewBtn.Font = Enum.Font.Gotham
-            viewBtn.TextColor3 = Color3.new(1, 1, 1)
-            viewBtn.Parent = playerContainer
-            
-            local viewCorner = Instance.new("UICorner")
-            viewCorner.CornerRadius = UDim.new(0, 4)
-            viewCorner.Parent = viewBtn
-            
-            viewBtn.MouseButton1Click:Connect(function()
-                if targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
-                    workspace.CurrentCamera.CameraSubject = targetPlayer.Character.Humanoid
-                end
-            end)
         end
     end
     
-    playerList.CanvasSize = UDim2.new(0, 0, 0, playerCount * 32) -- Adjusted for smaller height
+    playerList.CanvasSize = UDim2.new(0, 0, 0, playerCount * 27) -- Adjusted for smaller height
 end
 end
 
@@ -930,4 +910,4 @@ print("- WASD: Di chuyển")
 print("- Space: Bay lên")
 print("- Left Ctrl: Bay xuống") 
 print("- Left Shift: Tăng tốc độ bay")
-print("Đã loại bỏ: Infinite Jump và Teleport") 
+print("Player List chỉ hiển thị danh sách, không có tính năng tương tác")
