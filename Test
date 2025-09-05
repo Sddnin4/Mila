@@ -1,0 +1,477 @@
+-- Gemini AI Chat 2.0 - All-in-One Flash Edition
+-- Chỉ cần đặt LocalScript này trong StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Cấu hình API (Direct client call)
+local GEMINI_API_KEY = "AIzaSyCbDIdXWM2mMkIYxQ9HC_yvj4GKxBz3UNw"
+local GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
+
+-- Hàm gọi Gemini API trực tiếp từ client
+local function callGeminiAPI(prompt)
+    local headers = {
+        ["Content-Type"] = "application/json",
+    }
+    
+    local fullUrl = GEMINI_API_URL .. "?key=" .. GEMINI_API_KEY
+    
+    local requestBody = {
+        contents = {
+            {
+                parts = {
+                    {
+                        text = prompt
+                    }
+                }
+            }
+        },
+        generationConfig = {
+            temperature = 0.8,
+            topK = 40,
+            topP = 0.95,
+            maxOutputTokens = 600,
+        },
+        safetySettings = {
+            {
+                category = "HARM_CATEGORY_HARASSMENT",
+                threshold = "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+                category = "HARM_CATEGORY_HATE_SPEECH", 
+                threshold = "BLOCK_MEDIUM_AND_ABOVE"
+            }
+        }
+    }
+    
+    local success, response = pcall(function()
+        return HttpService:RequestAsync({
+            Url = fullUrl,
+            Method = "POST",
+            Headers = headers,
+            Body = HttpService:JSONEncode(requestBody)
+        })
+    end)
+    
+    if success and response.Success then
+        local data = HttpService:JSONDecode(response.Body)
+        if data.candidates and #data.candidates > 0 then
+            return data.candidates[1].content.parts[1].text
+        else
+            return "Xin lỗi, tôi không thể tạo phản hồi lúc này! 🤔"
+        end
+    else
+        warn("Gemini API Error:", response)
+        return "Oops! Có lỗi kết nối. Kiểm tra HTTP Requests trong Game Settings! 😅"
+    end
+end
+
+-- Tạo GUI Flash
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GeminiFlashChat"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Main Frame - Horizontal Layout
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "FlashChatFrame"
+mainFrame.Size = UDim2.new(0, 650, 0, 130)
+mainFrame.Position = UDim2.new(0.5, -325, 1, -150)
+mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+mainFrame.BackgroundTransparency = 0.2
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+-- Gradient Background
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 150)), -- Hot Pink
+    ColorSequenceKeypoint.new(0.3, Color3.fromRGB(0, 255, 255)), -- Cyan  
+    ColorSequenceKeypoint.new(0.7, Color3.fromRGB(255, 255, 0)), -- Yellow
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 150))  -- Back to Pink
+}
+gradient.Rotation = 0
+gradient.Parent = mainFrame
+
+-- Rounded corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 20)
+corner.Parent = mainFrame
+
+-- Border Glow
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(255, 255, 255)
+stroke.Thickness = 2
+stroke.Transparency = 0.3
+stroke.Parent = mainFrame
+
+-- Chat Display (Horizontal)
+local chatDisplay = Instance.new("ScrollingFrame")
+chatDisplay.Name = "ChatDisplay"
+chatDisplay.Size = UDim2.new(0, 420, 1, -25)
+chatDisplay.Position = UDim2.new(0, 15, 0, 12)
+chatDisplay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+chatDisplay.BackgroundTransparency = 0.4
+chatDisplay.BorderSizePixel = 0
+chatDisplay.ScrollBarThickness = 5
+chatDisplay.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
+chatDisplay.ScrollingDirection = Enum.ScrollingDirection.Y
+chatDisplay.Parent = mainFrame
+
+local chatCorner = Instance.new("UICorner")
+chatCorner.CornerRadius = UDim.new(0, 12)
+chatCorner.Parent = chatDisplay
+
+local chatLayout = Instance.new("UIListLayout")
+chatLayout.SortOrder = Enum.SortOrder.LayoutOrder
+chatLayout.Padding = UDim.new(0, 4)
+chatLayout.FillDirection = Enum.FillDirection.Vertical
+chatLayout.Parent = chatDisplay
+
+-- Input Section
+local inputSection = Instance.new("Frame")
+inputSection.Name = "InputSection"
+inputSection.Size = UDim2.new(0, 200, 1, -25)
+inputSection.Position = UDim2.new(1, -215, 0, 12)
+inputSection.BackgroundTransparency = 1
+inputSection.Parent = mainFrame
+
+-- AI Status Indicator
+local statusFrame = Instance.new("Frame")
+statusFrame.Name = "StatusFrame"
+statusFrame.Size = UDim2.new(1, 0, 0, 28)
+statusFrame.Position = UDim2.new(0, 0, 0, 0)
+statusFrame.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+statusFrame.BackgroundTransparency = 0.1
+statusFrame.BorderSizePixel = 0
+statusFrame.Parent = inputSection
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(0, 8)
+statusCorner.Parent = statusFrame
+
+local statusStroke = Instance.new("UIStroke")
+statusStroke.Color = Color3.fromRGB(255, 255, 255)
+statusStroke.Thickness = 1
+statusStroke.Parent = statusFrame
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, 1, 0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "🤖 GEMINI ONLINE"
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.TextScaled = true
+statusLabel.Font = Enum.Font.GothamBold
+statusLabel.Parent = statusFrame
+
+-- Text Input
+local textInput = Instance.new("TextBox")
+textInput.Name = "TextInput"
+textInput.Size = UDim2.new(1, 0, 0, 35)
+textInput.Position = UDim2.new(0, 0, 0, 35)
+textInput.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+textInput.BackgroundTransparency = 0.2
+textInput.Text = ""
+textInput.PlaceholderText = "Type your message..."
+textInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+textInput.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
+textInput.TextScaled = true
+textInput.Font = Enum.Font.GothamBold
+textInput.TextXAlignment = Enum.TextXAlignment.Left
+textInput.Parent = inputSection
+
+local inputCorner = Instance.new("UICorner")
+inputCorner.CornerRadius = UDim.new(0, 10)
+inputCorner.Parent = textInput
+
+local inputStroke = Instance.new("UIStroke")
+inputStroke.Color = Color3.fromRGB(100, 200, 255)
+inputStroke.Thickness = 1
+inputStroke.Parent = textInput
+
+-- Send Button
+local sendButton = Instance.new("TextButton")
+sendButton.Name = "SendButton" 
+sendButton.Size = UDim2.new(1, 0, 0, 32)
+sendButton.Position = UDim2.new(0, 0, 1, -37)
+sendButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+sendButton.Text = "⚡ FLASH SEND"
+sendButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+sendButton.TextScaled = true
+sendButton.Font = Enum.Font.GothamBold
+sendButton.BorderSizePixel = 0
+sendButton.Parent = inputSection
+
+local sendCorner = Instance.new("UICorner")
+sendCorner.CornerRadius = UDim.new(0, 10)
+sendCorner.Parent = sendButton
+
+local sendStroke = Instance.new("UIStroke")
+sendStroke.Color = Color3.fromRGB(255, 255, 255)
+sendStroke.Thickness = 2
+sendStroke.Parent = sendButton
+
+-- Toggle Button (Fixed position)
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 100, 0, 30)
+toggleButton.Position = UDim2.new(1, -110, 1, -200)
+toggleButton.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+toggleButton.Text = "💬 FLASH"
+toggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+toggleButton.TextScaled = true
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.BorderSizePixel = 0
+toggleButton.Parent = screenGui
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 15)
+toggleCorner.Parent = toggleButton
+
+local toggleStroke = Instance.new("UIStroke")
+toggleStroke.Color = Color3.fromRGB(255, 255, 255)
+toggleStroke.Thickness = 2
+toggleStroke.Parent = toggleButton
+
+-- Variables
+local isVisible = true
+local isProcessing = false
+
+-- Animations
+-- Gradient rotation
+spawn(function()
+    while true do
+        local tween = TweenService:Create(gradient, TweenInfo.new(3, Enum.EasingStyle.Linear), {
+            Rotation = gradient.Rotation + 360
+        })
+        tween:Play()
+        tween.Completed:Wait()
+    end
+end)
+
+-- Status pulse animation
+spawn(function()
+    while true do
+        if not isProcessing then
+            local colors = {
+                Color3.fromRGB(0, 255, 0),
+                Color3.fromRGB(0, 255, 255),
+                Color3.fromRGB(255, 0, 255),
+                Color3.fromRGB(255, 255, 0)
+            }
+            
+            for _, color in ipairs(colors) do
+                local tween = TweenService:Create(statusFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine), {
+                    BackgroundColor3 = color
+                })
+                tween:Play()
+                tween.Completed:Wait()
+            end
+        end
+        wait(0.1)
+    end
+end)
+
+-- Hàm thêm tin nhắn flash
+local function addFlashMessage(sender, message, isUser)
+    local messageFrame = Instance.new("Frame")
+    messageFrame.Size = UDim2.new(1, -10, 0, 0)
+    messageFrame.BackgroundTransparency = 1
+    messageFrame.LayoutOrder = #chatDisplay:GetChildren()
+    messageFrame.Parent = chatDisplay
+    
+    local messageLabel = Instance.new("TextLabel")
+    messageLabel.Size = UDim2.new(1, 0, 0, 0)
+    messageLabel.BackgroundColor3 = isUser and Color3.fromRGB(255, 100, 0) or Color3.fromRGB(100, 0, 255)
+    messageLabel.BackgroundTransparency = 0.1
+    messageLabel.Text = (isUser and "⚡ YOU: " or "🤖 AI: ") .. message
+    messageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    messageLabel.TextWrapped = true
+    messageLabel.TextScaled = false
+    messageLabel.TextSize = 12
+    messageLabel.Font = Enum.Font.GothamBold
+    messageLabel.TextXAlignment = Enum.TextXAlignment.Left
+    messageLabel.TextYAlignment = Enum.TextYAlignment.Top
+    messageLabel.BorderSizePixel = 0
+    messageLabel.Parent = messageFrame
+    
+    local msgCorner = Instance.new("UICorner")
+    msgCorner.CornerRadius = UDim.new(0, 8)
+    msgCorner.Parent = messageLabel
+    
+    local msgStroke = Instance.new("UIStroke")
+    msgStroke.Color = Color3.fromRGB(255, 255, 255)
+    msgStroke.Thickness = 1
+    msgStroke.Transparency = 0.5
+    msgStroke.Parent = messageLabel
+    
+    local padding = Instance.new("UIPadding")
+    padding.PaddingBottom = UDim.new(0, 6)
+    padding.PaddingLeft = UDim.new(0, 8)
+    padding.PaddingRight = UDim.new(0, 8)
+    padding.PaddingTop = UDim.new(0, 6)
+    padding.Parent = messageLabel
+    
+    -- Tính chiều cao
+    local textBounds = game:GetService("TextService"):GetTextSize(
+        messageLabel.Text, 12, Enum.Font.GothamBold, 
+        Vector2.new(380, math.huge)
+    )
+    local height = math.max(25, textBounds.Y + 12)
+    
+    messageFrame.Size = UDim2.new(1, -10, 0, height)
+    messageLabel.Size = UDim2.new(1, 0, 1, 0)
+    
+    -- Flash animation
+    messageLabel.BackgroundTransparency = 1
+    messageLabel.TextTransparency = 1
+    local flashTween = TweenService:Create(messageLabel, TweenInfo.new(0.4, Enum.EasingStyle.Back), {
+        BackgroundTransparency = 0.1,
+        TextTransparency = 0
+    })
+    flashTween:Play()
+    
+    -- Auto scroll
+    wait()
+    chatDisplay.CanvasSize = UDim2.new(0, 0, 0, chatLayout.AbsoluteContentSize.Y + 10)
+    chatDisplay.CanvasPosition = Vector2.new(0, chatDisplay.CanvasSize.Y.Offset)
+end
+
+-- Hàm gửi tin nhắn flash
+local function sendFlashMessage()
+    local message = textInput.Text:gsub("^%s*(.-)%s*$", "%1")
+    if #message > 0 and not isProcessing then
+        isProcessing = true
+        
+        -- Flash button effect
+        local originalColor = sendButton.BackgroundColor3
+        local flashTween = TweenService:Create(sendButton, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            Size = UDim2.new(1, 0, 0, 35)
+        })
+        flashTween:Play()
+        
+        flashTween.Completed:Connect(function()
+            TweenService:Create(sendButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                BackgroundColor3 = originalColor,
+                Size = UDim2.new(1, 0, 0, 32)
+            }):Play()
+        end)
+        
+        addFlashMessage("User", message, true)
+        textInput.Text = ""
+        
+        -- Update status
+        statusLabel.Text = "🔄 PROCESSING..."
+        statusFrame.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+        
+        -- Call Gemini API
+        spawn(function()
+            local aiPrompt = "Bạn là AI thân thiện trong Roblox. Trả lời ngắn gọn, vui vẻ với emoji phù hợp trẻ em: " .. message
+            local aiResponse = callGeminiAPI(aiPrompt)
+            
+            -- Reset status
+            statusLabel.Text = "🤖 GEMINI ONLINE"
+            addFlashMessage("AI", aiResponse, false)
+            isProcessing = false
+        end)
+    end
+end
+
+-- Toggle visibility
+local function toggleChat()
+    isVisible = not isVisible
+    local targetPos = isVisible and UDim2.new(0.5, -325, 1, -150) or UDim2.new(0.5, -325, 1, 20)
+    
+    local tween = TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back), {
+        Position = targetPos
+    })
+    tween:Play()
+    
+    toggleButton.Text = isVisible and "💬 HIDE" or "💬 SHOW"
+    
+    -- Button color change
+    local newColor = isVisible and Color3.fromRGB(255, 100, 100) or Color3.fromRGB(100, 255, 100)
+    TweenService:Create(toggleButton, TweenInfo.new(0.3), {BackgroundColor3 = newColor}):Play()
+end
+
+-- Events
+sendButton.MouseButton1Click:Connect(sendFlashMessage)
+toggleButton.MouseButton1Click:Connect(toggleChat)
+
+textInput.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        sendFlashMessage()
+    end
+end)
+
+-- Hotkeys
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed then
+        if input.KeyCode == Enum.KeyCode.T then
+            toggleChat()
+            if isVisible then
+                wait(0.2)
+                textInput:CaptureFocus()
+            end
+        elseif input.KeyCode == Enum.KeyCode.Return and isVisible then
+            sendFlashMessage()
+        end
+    end
+end)
+
+-- Hover effects
+sendButton.MouseEnter:Connect(function()
+    if not isProcessing then
+        TweenService:Create(sendButton, TweenInfo.new(0.2), {
+            Size = UDim2.new(1, 0, 0, 35),
+            BackgroundColor3 = Color3.fromRGB(255, 150, 50)
+        }):Play()
+    end
+end)
+
+sendButton.MouseLeave:Connect(function()
+    if not isProcessing then
+        TweenService:Create(sendButton, TweenInfo.new(0.2), {
+            Size = UDim2.new(1, 0, 0, 32),
+            BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+        }):Play()
+    end
+end)
+
+toggleButton.MouseEnter:Connect(function()
+    TweenService:Create(toggleButton, TweenInfo.new(0.2), {
+        Size = UDim2.new(0, 105, 0, 32)
+    }):Play()
+end)
+
+toggleButton.MouseLeave:Connect(function()
+    TweenService:Create(toggleButton, TweenInfo.new(0.2), {
+        Size = UDim2.new(0, 100, 0, 30)
+    }):Play()
+end)
+
+-- Focus effects
+textInput.Focused:Connect(function()
+    TweenService:Create(inputStroke, TweenInfo.new(0.2), {
+        Color = Color3.fromRGB(0, 255, 255),
+        Thickness = 2
+    }):Play()
+end)
+
+textInput.FocusLost:Connect(function()
+    TweenService:Create(inputStroke, TweenInfo.new(0.2), {
+        Color = Color3.fromRGB(100, 200, 255),
+        Thickness = 1
+    }):Play()
+end)
+
+-- Welcome message
+wait(1)
+addFlashMessage("AI", "🚀 Gemini AI Flash Chat 2.0 activated! Ready to chat with style! ⚡✨", false)
