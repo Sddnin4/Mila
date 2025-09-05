@@ -1,46 +1,6 @@
--- Search bar for scripts
-local searchFrame = Instance.new("Frame")
-searchFrame.Name = "SearchFrame"
-searchFrame.Size = UDim2.new(1, -10, 0, 25)
-searchFrame.Position = UDim2.new(0, 5, 0, 40)
-searchFrame.BackgroundColor3 = Color3.new(1, 1, 1)
-searchFrame.BorderSizePixel = 0
-searchFrame.Visible = false
-searchFrame.Parent = mainFrame
-
-local searchCorner = Instance.new("UICorner")
-searchCorner.CornerRadius = UDim.new(0, 6)
-searchCorner.Parent = searchFrame
-
-local searchBox = Instance.new("TextBox")
-searchBox.Name = "SearchBox"
-searchBox.Size = UDim2.new(1, -30, 1, -4)
-searchBox.Position = UDim2.new(0, 8, 0, 2)
-searchBox.BackgroundTransparency = 1
-searchBox.PlaceholderText = "🔍 Tìm kiếm script..."
-searchBox.Text = ""
-searchBox.TextColor3 = Color3.new(0.2, 0.2, 0.2)
-searchBox.TextSize = 12
-searchBox.Font = Enum.Font.Gotham
-searchBox.TextXAlignment = Enum.TextXAlignment.Left
-searchBox.Parent = searchFrame
-
-local clearButton = Instance.new("TextButton")
-clearButton.Name = "ClearButton"
-clearButton.Size = UDim2.new(0, 20, 0, 20)
-clearButton.Position = UDim2.new(1, -22, 0, 2.5)
-clearButton.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
-clearButton.Text = "✕"
-clearButton.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-clearButton.TextSize = 12
-clearButton.Font = Enum.Font.GothamBold
-clearButton.Parent = searchFrame
-
-local clearCorner = Instance.new("UICorner")
-clearCorner.CornerRadius = UDim.new(1, 0)
-clearCorner.Parent = clearButton-- Mila UI Script for Roblox - Fixed Version
+-- Mila UI Script for Roblox - Fixed & Working Version
 -- Tạo bởi: Mila
--- Tính năng: Speed, Jump, Fly, Noclip, Teleport, InfiniteJump
+-- Tính năng: Speed, Jump, Fly, Noclip
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -129,20 +89,21 @@ loadingText.Parent = loadingFrame
 -- Progress Animation with proper error handling
 local function animateLoading()
     local steps = {"Đang khởi tạo...", "Đang tải giao diện...", "Đang chuẩn bị tính năng...", "Hoàn thành!"}
-    local stepSize = 100 / #steps
     
     for i = 1, 100 do
         if not loadingGui or not loadingGui.Parent then break end
         
-        task.wait(0.02) -- Use task.wait instead of wait
+        task.wait(0.02)
         
         if progressFill and progressFill.Parent then
             progressFill.Size = UDim2.new(i/100, 0, 1, 0)
         end
         
         if loadingText and loadingText.Parent then
-            local stepIndex = math.min(math.floor(i / stepSize) + 1, #steps)
-            loadingText.Text = steps[stepIndex]
+            local stepIndex = math.ceil(i / 25)
+            if stepIndex <= #steps then
+                loadingText.Text = steps[stepIndex]
+            end
         end
     end
     
@@ -158,7 +119,7 @@ task.spawn(animateLoading)
 -- Main UI Creation
 local screenGui = createScreenGui("MilaUI")
 
--- Main Frame (Larger size for better text display)
+-- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
 mainFrame.Size = UDim2.new(0, 320, 0, 220)
@@ -185,7 +146,6 @@ local tabCorner = Instance.new("UICorner")
 tabCorner.CornerRadius = UDim.new(0, 12)
 tabCorner.Parent = tabContainer
 
--- Tab Bottom Frame (to square bottom corners)
 local tabBottom = Instance.new("Frame")
 tabBottom.Size = UDim2.new(1, 0, 0, 12)
 tabBottom.Position = UDim2.new(0, 0, 1, -12)
@@ -241,7 +201,7 @@ local closeCorner = Instance.new("UICorner")
 closeCorner.CornerRadius = UDim.new(1, 0)
 closeCorner.Parent = closeButton
 
--- Toggle Button (when closed)
+-- Toggle Button
 local toggleButton = Instance.new("TextButton")
 toggleButton.Name = "ToggleButton"
 toggleButton.Size = UDim2.new(0, 60, 0, 25)
@@ -268,18 +228,60 @@ homeContent.ScrollBarThickness = 4
 homeContent.CanvasSize = UDim2.new(0, 0, 0, 300)
 homeContent.Parent = mainFrame
 
--- Script Content Frame with search
+-- Script Content Frame
 local scriptContent = Instance.new("ScrollingFrame")
 scriptContent.Name = "ScriptContent"
-scriptContent.Size = UDim2.new(1, -10, 1, -75) -- Adjusted for search bar
-scriptContent.Position = UDim2.new(0, 5, 0, 70) -- Adjusted for search bar
+scriptContent.Size = UDim2.new(1, -10, 1, -75)
+scriptContent.Position = UDim2.new(0, 5, 0, 70)
 scriptContent.BackgroundTransparency = 1
 scriptContent.ScrollBarThickness = 4
 scriptContent.CanvasSize = UDim2.new(0, 0, 0, 800)
 scriptContent.Visible = false
 scriptContent.Parent = mainFrame
 
--- Button Creation Function with better text size
+-- Search Frame
+local searchFrame = Instance.new("Frame")
+searchFrame.Name = "SearchFrame"
+searchFrame.Size = UDim2.new(1, -10, 0, 25)
+searchFrame.Position = UDim2.new(0, 5, 0, 40)
+searchFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+searchFrame.BorderSizePixel = 0
+searchFrame.Visible = false
+searchFrame.Parent = mainFrame
+
+local searchCorner = Instance.new("UICorner")
+searchCorner.CornerRadius = UDim.new(0, 6)
+searchCorner.Parent = searchFrame
+
+local searchBox = Instance.new("TextBox")
+searchBox.Name = "SearchBox"
+searchBox.Size = UDim2.new(1, -30, 1, -4)
+searchBox.Position = UDim2.new(0, 8, 0, 2)
+searchBox.BackgroundTransparency = 1
+searchBox.PlaceholderText = "🔍 Tìm kiếm script..."
+searchBox.Text = ""
+searchBox.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+searchBox.TextSize = 12
+searchBox.Font = Enum.Font.Gotham
+searchBox.TextXAlignment = Enum.TextXAlignment.Left
+searchBox.Parent = searchFrame
+
+local clearButton = Instance.new("TextButton")
+clearButton.Name = "ClearButton"
+clearButton.Size = UDim2.new(0, 20, 0, 20)
+clearButton.Position = UDim2.new(1, -22, 0, 2.5)
+clearButton.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
+clearButton.Text = "✕"
+clearButton.TextColor3 = Color3.new(0.5, 0.5, 0.5)
+clearButton.TextSize = 12
+clearButton.Font = Enum.Font.GothamBold
+clearButton.Parent = searchFrame
+
+local clearCorner = Instance.new("UICorner")
+clearCorner.CornerRadius = UDim.new(1, 0)
+clearCorner.Parent = clearButton
+
+-- Button Creation Function
 local function createButton(parent, name, text, position, size, callback)
     local button = Instance.new("TextButton")
     button.Name = name
@@ -290,14 +292,13 @@ local function createButton(parent, name, text, position, size, callback)
     button.TextColor3 = Color3.new(1, 1, 1)
     button.TextSize = 12
     button.Font = Enum.Font.GothamBold
-    button.TextScaled = true -- Auto scale text
+    button.TextScaled = true
     button.Parent = parent
     
     local buttonCorner = Instance.new("UICorner")
     buttonCorner.CornerRadius = UDim.new(0, 6)
     buttonCorner.Parent = button
     
-    -- Add text size constraints
     local textSizeConstraint = Instance.new("UITextSizeConstraint")
     textSizeConstraint.MaxTextSize = 12
     textSizeConstraint.MinTextSize = 8
@@ -305,7 +306,6 @@ local function createButton(parent, name, text, position, size, callback)
     
     button.MouseButton1Click:Connect(callback)
     
-    -- Hover effect
     button.MouseEnter:Connect(function()
         button.BackgroundColor3 = Color3.new(1, 0.5, 0.8)
     end)
@@ -317,7 +317,7 @@ local function createButton(parent, name, text, position, size, callback)
     return button
 end
 
--- Input Creation Function with better text size
+-- Input Creation Function
 local function createInput(parent, name, placeholder, position, size)
     local input = Instance.new("TextBox")
     input.Name = name
@@ -329,14 +329,12 @@ local function createInput(parent, name, placeholder, position, size)
     input.TextColor3 = Color3.new(0.2, 0.2, 0.2)
     input.TextSize = 11
     input.Font = Enum.Font.Gotham
-    input.TextScaled = false
     input.Parent = parent
     
     local inputCorner = Instance.new("UICorner")
     inputCorner.CornerRadius = UDim.new(0, 4)
     inputCorner.Parent = input
     
-    -- Add padding for better text display
     local padding = Instance.new("UIPadding")
     padding.PaddingLeft = UDim.new(0, 4)
     padding.PaddingRight = UDim.new(0, 4)
@@ -345,7 +343,7 @@ local function createInput(parent, name, placeholder, position, size)
     return input
 end
 
--- Label Creation Function with better text size
+-- Label Creation Function
 local function createLabel(parent, text, position, size)
     local label = Instance.new("TextLabel")
     label.Size = size or UDim2.new(0, 120, 0, 15)
@@ -355,7 +353,6 @@ local function createLabel(parent, text, position, size)
     label.TextColor3 = Color3.new(0.3, 0.3, 0.3)
     label.TextSize = 11
     label.Font = Enum.Font.GothamBold
-    label.TextScaled = false
     label.Parent = parent
     
     return label
@@ -388,8 +385,6 @@ local function toggleFly()
             end
             
             local camera = workspace.CurrentCamera
-            local humanoidRootPart = character.HumanoidRootPart
-            
             local moveVector = humanoid.MoveDirection
             local speed = 50
             
@@ -433,27 +428,24 @@ local function toggleFly()
 end
 
 -- HOME TAB CONTENT
--- Speed Controls
 local speedLabel = createLabel(homeContent, "Speed:", UDim2.new(0, 10, 0, 10))
 local speedInput = createInput(homeContent, "SpeedInput", "16", UDim2.new(0, 60, 0, 10), UDim2.new(0, 50, 0, 20))
 createButton(homeContent, "SpeedBtn", "Apply", UDim2.new(0, 120, 0, 10), UDim2.new(0, 50, 0, 20), function()
     local speed = tonumber(speedInput.Text) or 16
     if humanoid then
-        humanoid.WalkSpeed = math.max(0, math.min(speed, 1000)) -- Clamp between 0 and 1000
+        humanoid.WalkSpeed = math.max(0, math.min(speed, 1000))
     end
 end)
 
--- Jump Controls
 local jumpLabel = createLabel(homeContent, "Jump:", UDim2.new(0, 10, 0, 40))
 local jumpInput = createInput(homeContent, "JumpInput", "50", UDim2.new(0, 60, 0, 40), UDim2.new(0, 50, 0, 20))
 createButton(homeContent, "JumpBtn", "Apply", UDim2.new(0, 120, 0, 40), UDim2.new(0, 50, 0, 20), function()
     local jump = tonumber(jumpInput.Text) or 50
     if humanoid then
-        humanoid.JumpPower = math.max(0, math.min(jump, 1000)) -- Clamp between 0 and 1000
+        humanoid.JumpPower = math.max(0, math.min(jump, 1000))
     end
 end)
 
--- Main Buttons
 createButton(homeContent, "NoclipBtn", "👻 Noclip", UDim2.new(0, 10, 0, 70), UDim2.new(0, 75, 0, 25), function()
     noclip = not noclip
     
@@ -499,20 +491,17 @@ createButton(homeContent, "ResetCamBtn", "📷 Reset Cam", UDim2.new(0, 10, 0, 1
 end)
 
 createButton(homeContent, "ResetBtn", "🔄 Reset All", UDim2.new(0, 95, 0, 105), UDim2.new(0, 75, 0, 25), function()
-    -- Reset speed and jump
     if humanoid then
         humanoid.WalkSpeed = originalWalkSpeed
         humanoid.JumpPower = originalJumpPower
     end
     
-    -- Disable noclip
     noclip = false
     if noclipConnection then
         noclipConnection:Disconnect()
         noclipConnection = nil
     end
     
-    -- Disable fly
     flying = false
     if flyConnection then
         flyConnection:Disconnect()
@@ -527,16 +516,13 @@ createButton(homeContent, "ResetBtn", "🔄 Reset All", UDim2.new(0, 95, 0, 105)
         bodyAngularVelocity = nil
     end
     
-    -- Reset UI inputs
     speedInput.Text = ""
     jumpInput.Text = ""
     
-    -- Reset camera
     if workspace.CurrentCamera and character and humanoid then
         workspace.CurrentCamera.CameraSubject = humanoid
     end
     
-    -- Reset collision
     if character then
         for _, part in pairs(character:GetChildren()) do
             if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
@@ -547,7 +533,6 @@ createButton(homeContent, "ResetBtn", "🔄 Reset All", UDim2.new(0, 95, 0, 105)
 end)
 
 -- SCRIPT TAB CONTENT
--- Scripts data
 local scriptsData = {
     {name = "Infinity Yield", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()"},
     {name = "Airflow", code = "loadstring(game:HttpGet(\"https://api.luarmor.net/files/v3/loaders/255ac567ced3dcb9e69aa7e44c423f19.lua\"))()"},
@@ -566,7 +551,6 @@ local scriptsData = {
     {name = "ThunderZ", code = "loadstring(game:HttpGet('https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua'))()"}
 }
 
--- Function to create script button
 local function createScriptButton(script, index)
     local scriptContainer = Instance.new("Frame")
     scriptContainer.Name = "ScriptContainer_" .. index
@@ -596,12 +580,10 @@ local function createScriptButton(script, index)
     buttonCorner.CornerRadius = UDim.new(0, 4)
     buttonCorner.Parent = scriptButton
     
-    -- Add padding for text
     local padding = Instance.new("UIPadding")
     padding.PaddingLeft = UDim.new(0, 8)
     padding.Parent = scriptButton
     
-    -- Button click event
     scriptButton.MouseButton1Click:Connect(function()
         scriptButton.Text = "⏳ Loading..."
         scriptButton.BackgroundColor3 = Color3.new(1, 0.6, 0.2)
@@ -625,7 +607,6 @@ local function createScriptButton(script, index)
         end)
     end)
     
-    -- Hover effects
     scriptButton.MouseEnter:Connect(function()
         if scriptButton.Text:find("▶️") then
             scriptButton.BackgroundColor3 = Color3.new(1, 0.5, 0.8)
@@ -641,7 +622,6 @@ local function createScriptButton(script, index)
     return scriptContainer
 end
 
--- Function to filter and display scripts
 local function filterScripts(searchTerm)
     -- Clear existing script buttons
     for _, child in pairs(scriptContent:GetChildren()) do
@@ -794,3 +774,7 @@ end
 print("Mila UI đã được tải thành công! 💖")
 print("Nhấn Right Shift để bật/tắt UI")
 print("Phím điều khiển Fly:")
+print("- WASD: Di chuyển")
+print("- Space: Bay lên")
+print("- Left Ctrl: Bay xuống") 
+print("- Left Shift: Tăng tốc độ bay")
