@@ -1,4 +1,4 @@
--- Roblox Chat UI Script
+-- Roblox Chat UI Script với AI thông minh
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -280,11 +280,31 @@ function analyzeMessage(userMessage)
         }
     end
     
-    -- Default intelligent responses
+    -- Hỏi về âm nhạc
+    if string.find(msg, "music") or string.find(msg, "nhạc") or string.find(msg, "song") or string.find(msg, "bài hát") then
+        return {
+            "Âm nhạc là ngôn ngữ của cảm xúc! Bạn thích thể loại gì?",
+            "Music therapy thật sự có hiệu quả! Bạn có playlist favorite không?",
+            "Học nhạc cụ nào đó có thú vị không? 🎵",
+            "Concert live và nghe recording, experience nào tốt hơn?"
+        }
+    end
+    
+    -- Hỏi về thể thao
+    if string.find(msg, "sport") or string.find(msg, "thể thao") or string.find(msg, "football") or string.find(msg, "bóng") then
+        return {
+            "Thể thao tốt cho sức khỏe! Bạn chơi môn gì?",
+            "Team sport hay individual sport, bạn prefer cái nào?",
+            "Regular exercise giúp improve cả physical lẫn mental health!",
+            "Favorite athlete của bạn là ai? Tại sao admire họ?"
+        }
+    end
+    
+    -- Default intelligent responses nếu không match
     return nil
 end
 
--- Hàm xử lý tin nhắn
+-- Hàm xử lý tin nhắn với AI thông minh
 function sendMessage()
     local message = inputBox.Text
     if message ~= "" then
@@ -407,163 +427,12 @@ function sendMessage()
                 "Constraint identification! Limitations awareness!",
                 "Implementation strategy! Execution planning!",
                 "Iteration cycle! Continuous improvement!",
-                "Feedback loop! Learn and adjust!",
-                
-                -- Phản hồi về communication
-                "Clear communication! Message delivered well!",
-                "Articulation skills! Expression precise!",
-                "Listening actively! Understanding shows!",
-                "Empathy evident! Perspective-taking ability!",
-                "Diplomatic approach! Respectful discourse!",
-                "Constructive feedback! Growth-oriented!",
-                "Collaborative spirit! Teamwork mindset!",
-                "Conflict resolution! Win-win solutions!",
-                "Persuasion techniques! Influence positive!",
-                "Storytelling power! Narrative engagement!"
+                "Feedback loop! Learn and adjust!"
             }
-            -- Chào hỏi & Giới thiệu
-            "Xin chào! Tôi có thể giúp gì cho bạn?",
-            "Chào bạn! Hôm nay thế nào?",
-            "Hi there! Cần hỗ trợ gì không?",
-            "Hello! Tôi là chatbot thông minh đây! 🤖",
-            "Chào mừng! Bạn có câu hỏi gì không?",
-            "Xin chào! Tôi luôn sẵn sàng trò chuyện!",
-            "Hey! Có gì thú vị muốn chia sẻ không?",
             
-            -- Phản hồi tích cực
-            "Thật tuyệt vời! ⭐",
-            "Điều đó rất thú vị!",
-            "Tôi hiểu ý bạn rồi! 👍",
-            "Cảm ơn bạn đã chia sẻ!",
-            "Hay quá! Tôi thích điều này!",
-            "Xuất sắc! 🎉",
-            "Tuyệt vời lắm!",
-            "Quá đỉnh! 🔥",
-            "Bạn thật thông minh!",
-            "Ý tưởng hay đấy! 💡",
-            "Perfect! Chính xác rồi!",
-            "Amazing! Không thể tin được!",
-            
-            -- Câu hỏi & Tò mò
-            "Bạn có thể kể thêm về điều đó không?",
-            "Bạn nghĩ sao về chuyện này?",
-            "Có gì khác bạn muốn nói không?",
-            "Bạn cần tôi giải thích thêm gì không?",
-            "Tại sao bạn lại nghĩ vậy?",
-            "Bạn đã thử cách nào khác chưa?",
-            "Điều gì khiến bạn quan tâm đến chuyện này?",
-            "Bạn có kinh nghiệm gì về vấn đề này?",
-            "Còn ai khác biết về điều này không?",
-            "Bạn học được gì từ trải nghiệm này?",
-            
-            -- Trợ giúp & Hỗ trợ
-            "Tôi sẽ cố gắng giúp bạn! 🤝",
-            "Để tôi suy nghĩ về điều này... 🤔",
-            "Có vẻ bạn đang cần hỗ trợ!",
-            "Tôi ở đây để giúp bạn!",
-            "Đừng lo, chúng ta sẽ tìm ra cách!",
-            "Tôi sẽ hướng dẫn bạn từng bước!",
-            "Cùng nhau giải quyết vấn đề này nhé!",
-            "Bạn có thể tin tưởng vào tôi!",
-            "Tôi có một số gợi ý cho bạn!",
-            
-            -- Game/Roblox/Coding
-            "Bạn có chơi game gì hay không? 🎮",
-            "Roblox thật tuyệt phải không?",
-            "Bạn thích tạo game hay chơi game hơn?",
-            "Có script nào bạn muốn tìm hiểu không?",
-            "Bạn đã thử coding Lua chưa?",
-            "Game nào bạn thích nhất trong Roblox?",
-            "Bạn có làm UI/UX cho game không?",
-            "Studio Roblox có khó học không?",
-            "Bạn có team để làm game chung không?",
-            "Scripting hay Building, bạn thích cái nào hơn?",
-            "Bạn có publish game nào trên Roblox chưa?",
-            
-            -- Vui nhộn & Emoji
-            "Haha, thú vị đấy! 😄",
-            "Bạn làm tôi cười rồi! 😂",
-            "Đó là một câu chuyện hay!",
-            "Wow, không ngờ! 😲",
-            "LOL! Bạn hài hước quá! 🤣",
-            "OMG! Thật không thể tin được! 😱",
-            "Hehe, cute đấy! 🥰",
-            "Aww, dễ thương quá! 💕",
-            "Bruh! Sao lại thế! 😅",
-            "Epic! Quá đỉnh! 🚀",
-            "No way! Thật à? 🤯",
-            
-            -- Động viên & Khích lệ
-            "Bạn làm rất tốt! 💪",
-            "Cố lên! Bạn có thể làm được!",
-            "Đừng bỏ cuộc, bạn gần thành công rồi!",
-            "Tôi tin bạn sẽ thành công!",
-            "Bạn mạnh mẽ hơn bạn nghĩ!",
-            "Keep going! Bạn đang trên đúng hướng!",
-            "Mỗi thất bại là một bài học!",
-            "Bạn đã tiến bộ rất nhiều rồi!",
-            
-            -- Kết thúc & Chào tạm biệt
-            "Cảm ơn bạn đã chat! 🙏",
-            "Hẹn gặp lại bạn sau! 👋",
-            "Chúc bạn một ngày tốt lành! ☀️",
-            "Bye bye! Take care! 💙",
-            "See you later! 🌟",
-            "Chúc bạn may mắn! 🍀",
-            "Tạm biệt và chúc ngủ ngon! 🌙",
-            "Have a great day! ✨",
-            
-            -- Random & Đa dạng
-            "🤔 Hmm... thú vị đấy!",
-            "Thật sao? Kể thêm đi!",
-            "Ồ, thế à! Cool!",
-            "Nghe hay đấy! 🎵",
-            "Bạn giỏi quá! 🌟",
-            "Tôi đồng ý với bạn! ✅",
-            "Đúng rồi! Chính xác! 🎯",
-            "Tuyệt vời! 🎊",
-            "Siêu phẩm! 💎",
-            "Bạn là thiên tài! 🧠",
-            "Mind blown! 🤯",
-            "That's fire! 🔥",
-            "Legit! Thật đấy!",
-            "Slay! Quá đỉnh!",
-            "Vibes! Cảm giác tuyệt!",
-            "Mood! Đúng gu!",
-            "Facts! Sự thật đấy!",
-            "Based! Có lý!",
-            
-            -- Câu hỏi về sở thích
-            "Bạn thích làm gì trong thời gian rảnh?",
-            "Màu sắc nào bạn yêu thích nhất?",
-            "Bạn có sở thích nào đặc biệt không?",
-            "Món ăn yêu thích của bạn là gì?",
-            "Bạn thích nghe nhạc thể loại nào?",
-            "Bạn có pet không? Cute không? 🐶",
-            
-            -- Về công nghệ & tương lai
-            "AI có thay thế con người không nhỉ? 🤖",
-            "Công nghệ ngày càng phát triển nhỉ!",
-            "VR/AR có thú vị không?",
-            "Metaverse sẽ như thế nào nhỉ?",
-            "Bạn có sợ robot không? 😅",
-            
-            -- Triết lý & suy ngẫm
-            "Cuộc sống thật thú vị phải không?",
-            "Mỗi ngày đều có điều mới mẻ!",
-            "Học hỏi là hạnh phúc lớn nhất!",
-            "Bạn có tin vào định mệnh không?",
-            "Ước mơ của bạn là gì?",
-            
-            -- Thời tiết & môi trường
-            "Hôm nay trời đẹp không? ☀️",
-            "Bạn thích mùa nào nhất?",
-            "Mưa hay nắng, bạn thích cái nào?",
-            "Bạn có quan tâm đến môi trường không? 🌱"
-        }
-        
-        local randomResponse = responses[math.random(1, #responses)]
-        createChatMessage("Bot", randomResponse, false)
+            local randomResponse = responses[math.random(1, #responses)]
+            createChatMessage("Bot", randomResponse, false)
+        end
     end
 end
 
@@ -594,5 +463,5 @@ minimizeButton.MouseLeave:Connect(function()
 end)
 
 -- Tin nhắn chào mừng
-createChatMessage("Bot", "Xin chào! Chào mừng bạn đến với chatbot! 🤖", false)
-createChatMessage("Bot", "Hãy gõ tin nhắn để bắt đầu trò chuyện nhé!", false)
+createChatMessage("Bot", "Xin chào! Chào mừng bạn đến với AI Chatbot! 🤖", false)
+createChatMessage("Bot", "Tôi có thể trả lời câu hỏi và trò chuyện thông minh với bạn!", false)
