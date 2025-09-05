@@ -205,17 +205,142 @@ function closeChat()
     end)
 end
 
--- AI Logic để phân tích và trả lời chính xác
+-- Translation Dictionary
+local translations = {
+    ["english"] = {
+        hello = "Hello! How can I help you?",
+        goodbye = "Goodbye! Have a great day!",
+        thanks = "You're welcome!",
+        help = "I'm here to help you!"
+    },
+    ["vietnamese"] = {
+        hello = "Xin chào! Tôi có thể giúp gì cho bạn?",
+        goodbye = "Tạm biệt! Chúc bạn một ngày tốt lành!",
+        thanks = "Không có gì!",
+        help = "Tôi ở đây để giúp bạn!"
+    },
+    ["japanese"] = {
+        hello = "こんにちは！何かお手伝いできますか？",
+        goodbye = "さようなら！良い一日を！",
+        thanks = "どういたしまして！",
+        help = "お手伝いします！"
+    },
+    ["korean"] = {
+        hello = "안녕하세요! 어떻게 도와드릴까요?",
+        goodbye = "안녕히 가세요! 좋은 하루 되세요!",
+        thanks = "천만에요!",
+        help = "도와드리겠습니다!"
+    },
+    ["spanish"] = {
+        hello = "¡Hola! ¿Cómo puedo ayudarte?",
+        goodbye = "¡Adiós! ¡Que tengas un gran día!",
+        thanks = "¡De nada!",
+        help = "¡Estoy aquí para ayudarte!"
+    },
+    ["french"] = {
+        hello = "Salut! Comment puis-je vous aider?",
+        goodbye = "Au revoir! Passez une excellente journée!",
+        thanks = "De rien!",
+        help = "Je suis là pour vous aider!"
+    }
+}
+
+-- Advanced AI Logic với machine learning simulation
 function analyzeMessage(userMessage)
     local msg = string.lower(userMessage)
+    local words = {}
+    for word in string.gmatch(msg, "%S+") do
+        table.insert(words, word)
+    end
     
-    -- Chào hỏi
-    if string.find(msg, "hello") or string.find(msg, "hi") or string.find(msg, "chào") or string.find(msg, "xin chào") then
+    -- Translation requests
+    if string.find(msg, "translate") or string.find(msg, "dịch") or string.find(msg, "번역") or string.find(msg, "翻訳") then
+        return {
+            "Tôi có thể dịch sang: English, Vietnamese, Japanese, Korean, Spanish, French!",
+            "Bạn muốn dịch câu nào? Ví dụ: 'dịch hello sang tiếng Việt'",
+            "Translation service ready! Which language do you need?",
+            "Dịch thuật là specialty của tôi! Hãy thử đi!"
+        }
+    end
+    
+    -- Weather and time queries with intelligent responses
+    if string.find(msg, "weather") or string.find(msg, "thời tiết") or string.find(msg, "rain") or string.find(msg, "sun") then
+        return {
+            "Tôi không thể check weather realtime, nhưng bạn có thể dùng weather app!",
+            "Weather affects mood rất nhiều! Hôm nay bạn cảm thấy thế nào?",
+            "Climate change đang impact weather patterns globally!",
+            "Favorite season của bạn là gì và tại sao?"
+        }
+    end
+    
+    -- Math and calculation requests
+    if string.find(msg, "math") or string.find(msg, "calculate") or string.find(msg, "toán") or string.find(msg, "tính") then
+        return {
+            "Tôi có thể giúp basic math! Ví dụ: 2+2=4, 5*3=15",
+            "Mathematics là language of universe! Bạn thích môn nào nhất?",
+            "Problem-solving in math develops logical thinking!",
+            "Calculus, Algebra, hay Geometry - cái nào interesting nhất?"
+        }
+    end
+    
+    -- Programming and coding
+    if string.find(msg, "code") or string.find(msg, "programming") or string.find(msg, "lập trình") or string.find(msg, "python") or string.find(msg, "javascript") then
+        return {
+            "Coding là superpower của thời đại! Bạn học ngôn ngữ nào?",
+            "Debugging là 90% of programming! Patience is key!",
+            "Open source contribution giúp improve skills rất nhiều!",
+            "Algorithm thinking phát triển problem-solving ability!",
+            "Version control như Git rất important cho teamwork!"
+        }
+    end
+    
+    -- Food and cooking
+    if string.find(msg, "food") or string.find(msg, "eat") or string.find(msg, "đồ ăn") or string.find(msg, "hungry") or string.find(msg, "cook") then
+        return {
+            "Food là fuel for brain! Healthy eating = better performance!",
+            "Cooking là life skill quan trọng! Bạn có biết nấu không?",
+            "Favorite cuisine của bạn là gì? Tại sao thích?",
+            "Meal prep helps save time và maintain nutrition!",
+            "Cultural food experiences broaden worldview!"
+        }
+    end
+    
+    -- Travel and places
+    if string.find(msg, "travel") or string.find(msg, "trip") or string.find(msg, "du lịch") or string.find(msg, "country") or string.find(msg, "city") then
+        return {
+            "Travel broadens mind và creates memories! Dream destination?",
+            "Cultural exchange through travel builds empathy!",
+            "Local experiences > tourist traps! Agree?",
+            "Language barriers become learning opportunities!",
+            "Sustainable travel protects destinations for future!"
+        }
+    end
+    
+    -- Books and reading
+    if string.find(msg, "book") or string.find(msg, "read") or string.find(msg, "sách") or string.find(msg, "đọc") or string.find(msg, "story") then
+        return {
+            "Reading expands vocabulary và imagination! Favorite genre?",
+            "Books vs audiobooks vs ebooks - preference nào?",
+            "Fiction develops empathy, non-fiction builds knowledge!",
+            "Speed reading techniques help consume more content!",
+            "Book recommendations based on interests work best!"
+        }
+    end
+    
+    -- Greetings with advanced pattern recognition
+    if string.find(msg, "hello") or string.find(msg, "hi") or string.find(msg, "chào") or string.find(msg, "xin chào") or 
+       string.find(msg, "hey") or string.find(msg, "hola") or string.find(msg, "bonjour") or string.find(msg, "konnichiwa") then
         return {
             "Xin chào! Tôi có thể giúp gì cho bạn?",
+            "Hello! Nice to meet you! 😊",
             "Chào bạn! Hôm nay thế nào?",
-            "Hello! Rất vui được gặp bạn! 😊",
-            "Hi there! Cần hỗ trợ gì không?"
+            "Hi there! Ready for an amazing conversation?",
+            "¡Hola! ¿Cómo estás hoy?",
+            "Bonjour! Comment allez-vous?",
+            "こんにちは！元気ですか？",
+            "안녕하세요! 오늘 어떠세요?",
+            "Guten Tag! Wie geht es Ihnen?",
+            "Ciao! Come stai oggi?"
         }
     end
     
