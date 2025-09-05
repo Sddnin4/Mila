@@ -1,0 +1,256 @@
+-- Roblox Chat UI Script
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local TextService = game:GetService("TextService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Tạo ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ChatUI"
+screenGui.Parent = playerGui
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Main Frame (Chat Window)
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "ChatFrame"
+mainFrame.Parent = screenGui
+mainFrame.Size = UDim2.new(0, 400, 0, 500)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -250)
+mainFrame.BackgroundColor3 = Color3.fromRGB(45, 50, 60)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+
+-- Corner cho main frame
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 8)
+mainCorner.Parent = mainFrame
+
+-- Header Frame
+local headerFrame = Instance.new("Frame")
+headerFrame.Name = "Header"
+headerFrame.Parent = mainFrame
+headerFrame.Size = UDim2.new(1, 0, 0, 40)
+headerFrame.Position = UDim2.new(0, 0, 0, 0)
+headerFrame.BackgroundColor3 = Color3.fromRGB(35, 40, 50)
+headerFrame.BorderSizePixel = 0
+
+-- Header Corner
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 8)
+headerCorner.Parent = headerFrame
+
+-- Title Label
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "Title"
+titleLabel.Parent = headerFrame
+titleLabel.Size = UDim2.new(1, -80, 1, 0)
+titleLabel.Position = UDim2.new(0, 10, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Open chatbot"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextScaled = true
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Font = Enum.Font.GothamBold
+
+-- Minimize Button
+local minimizeButton = Instance.new("TextButton")
+minimizeButton.Name = "MinimizeButton"
+minimizeButton.Parent = headerFrame
+minimizeButton.Size = UDim2.new(0, 30, 0, 30)
+minimizeButton.Position = UDim2.new(1, -65, 0, 5)
+minimizeButton.BackgroundColor3 = Color3.fromRGB(60, 65, 75)
+minimizeButton.BorderSizePixel = 0
+minimizeButton.Text = "□"
+minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeButton.TextScaled = true
+minimizeButton.Font = Enum.Font.Gotham
+
+local minimizeCorner = Instance.new("UICorner")
+minimizeCorner.CornerRadius = UDim.new(0, 4)
+minimizeCorner.Parent = minimizeButton
+
+-- Close Button
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Parent = headerFrame
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -30, 0, 5)
+closeButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+closeButton.BorderSizePixel = 0
+closeButton.Text = "×"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextScaled = true
+closeButton.Font = Enum.Font.GothamBold
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 4)
+closeCorner.Parent = closeButton
+
+-- Chat Label
+local chatLabel = Instance.new("TextLabel")
+chatLabel.Name = "ChatLabel"
+chatLabel.Parent = mainFrame
+chatLabel.Size = UDim2.new(0, 50, 0, 25)
+chatLabel.Position = UDim2.new(0, 10, 0, 50)
+chatLabel.BackgroundTransparency = 1
+chatLabel.Text = "Chat"
+chatLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+chatLabel.TextScaled = true
+chatLabel.TextXAlignment = Enum.TextXAlignment.Left
+chatLabel.Font = Enum.Font.Gotham
+
+-- Chat Messages ScrollingFrame
+local chatScrollFrame = Instance.new("ScrollingFrame")
+chatScrollFrame.Name = "ChatScroll"
+chatScrollFrame.Parent = mainFrame
+chatScrollFrame.Size = UDim2.new(1, -20, 1, -120)
+chatScrollFrame.Position = UDim2.new(0, 10, 0, 80)
+chatScrollFrame.BackgroundColor3 = Color3.fromRGB(35, 40, 50)
+chatScrollFrame.BorderSizePixel = 0
+chatScrollFrame.ScrollBarThickness = 8
+chatScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 105, 115)
+
+local chatScrollCorner = Instance.new("UICorner")
+chatScrollCorner.CornerRadius = UDim.new(0, 6)
+chatScrollCorner.Parent = chatScrollFrame
+
+-- UIListLayout cho chat messages
+local chatListLayout = Instance.new("UIListLayout")
+chatListLayout.Parent = chatScrollFrame
+chatListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+chatListLayout.Padding = UDim.new(0, 5)
+
+-- Input Frame
+local inputFrame = Instance.new("Frame")
+inputFrame.Name = "InputFrame"
+inputFrame.Parent = mainFrame
+inputFrame.Size = UDim2.new(1, -20, 0, 40)
+inputFrame.Position = UDim2.new(0, 10, 1, -50)
+inputFrame.BackgroundColor3 = Color3.fromRGB(55, 60, 70)
+inputFrame.BorderSizePixel = 0
+
+local inputCorner = Instance.new("UICorner")
+inputCorner.CornerRadius = UDim.new(0, 6)
+inputCorner.Parent = inputFrame
+
+-- Input TextBox
+local inputBox = Instance.new("TextBox")
+inputBox.Name = "InputBox"
+inputBox.Parent = inputFrame
+inputBox.Size = UDim2.new(1, -20, 1, -10)
+inputBox.Position = UDim2.new(0, 10, 0, 5)
+inputBox.BackgroundTransparency = 1
+inputBox.Text = ""
+inputBox.PlaceholderText = "Type message here..."
+inputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+inputBox.PlaceholderColor3 = Color3.fromRGB(150, 155, 165)
+inputBox.TextScaled = true
+inputBox.TextXAlignment = Enum.TextXAlignment.Left
+inputBox.Font = Enum.Font.Gotham
+inputBox.ClearTextOnFocus = false
+
+-- Biến để theo dõi trạng thái
+local isMinimized = false
+local chatMessages = {}
+
+-- Hàm tạo tin nhắn chat
+function createChatMessage(sender, message, isUser)
+    local messageFrame = Instance.new("Frame")
+    messageFrame.Name = "Message"
+    messageFrame.Parent = chatScrollFrame
+    messageFrame.Size = UDim2.new(1, -10, 0, 0)
+    messageFrame.BackgroundTransparency = 1
+    messageFrame.AutomaticSize = Enum.AutomaticSize.Y
+    
+    local messageLabel = Instance.new("TextLabel")
+    messageLabel.Name = "MessageText"
+    messageLabel.Parent = messageFrame
+    messageLabel.Size = UDim2.new(1, -10, 0, 0)
+    messageLabel.Position = UDim2.new(0, 5, 0, 0)
+    messageLabel.BackgroundTransparency = 1
+    messageLabel.Text = sender .. ": " .. message
+    messageLabel.TextColor3 = isUser and Color3.fromRGB(100, 200, 255) or Color3.fromRGB(255, 255, 255)
+    messageLabel.TextXAlignment = Enum.TextXAlignment.Left
+    messageLabel.TextYAlignment = Enum.TextYAlignment.Top
+    messageLabel.Font = Enum.Font.Gotham
+    messageLabel.TextSize = 14
+    messageLabel.TextWrapped = true
+    messageLabel.AutomaticSize = Enum.AutomaticSize.Y
+    
+    messageFrame.Size = UDim2.new(1, -10, 0, messageLabel.AbsoluteSize.Y + 5)
+    
+    -- Scroll xuống cuối
+    chatScrollFrame.CanvasSize = UDim2.new(0, 0, 0, chatListLayout.AbsoluteContentSize.Y)
+    chatScrollFrame.CanvasPosition = Vector2.new(0, chatScrollFrame.AbsoluteCanvasSize.Y)
+end
+
+-- Hàm minimize/restore
+function toggleMinimize()
+    local targetSize = isMinimized and UDim2.new(0, 400, 0, 500) or UDim2.new(0, 400, 0, 40)
+    local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = targetSize})
+    tween:Play()
+    isMinimized = not isMinimized
+end
+
+-- Hàm đóng chat
+function closeChat()
+    local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0)})
+    tween:Play()
+    tween.Completed:Connect(function()
+        screenGui:Destroy()
+    end)
+end
+
+-- Hàm xử lý tin nhắn
+function sendMessage()
+    local message = inputBox.Text
+    if message ~= "" then
+        createChatMessage("You", message, true)
+        inputBox.Text = ""
+        
+        -- Giả lập phản hồi bot (bạn có thể thay thế bằng logic thực tế)
+        wait(1)
+        local responses = {
+            "Hello! How can I help you?",
+            "That's interesting!",
+            "I understand what you mean.",
+            "Can you tell me more about that?",
+            "Thanks for sharing!"
+        }
+        local randomResponse = responses[math.random(1, #responses)]
+        createChatMessage("Bot", randomResponse, false)
+    end
+end
+
+-- Kết nối events
+closeButton.MouseButton1Click:Connect(closeChat)
+minimizeButton.MouseButton1Click:Connect(toggleMinimize)
+inputBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        sendMessage()
+    end
+end)
+
+-- Hover effects cho buttons
+closeButton.MouseEnter:Connect(function()
+    closeButton.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+end)
+
+closeButton.MouseLeave:Connect(function()
+    closeButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+end)
+
+minimizeButton.MouseEnter:Connect(function()
+    minimizeButton.BackgroundColor3 = Color3.fromRGB(80, 85, 95)
+end)
+
+minimizeButton.MouseLeave:Connect(function()
+    minimizeButton.BackgroundColor3 = Color3.fromRGB(60, 65, 75)
+end)
+
+-- Tin nhắn chào mừng
+createChatMessage("System", "Welcome to the chatbot! Type a message to start.", false)
