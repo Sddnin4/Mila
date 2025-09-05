@@ -205,6 +205,85 @@ function closeChat()
     end)
 end
 
+-- AI Logic để phân tích và trả lời chính xác
+function analyzeMessage(userMessage)
+    local msg = string.lower(userMessage)
+    
+    -- Chào hỏi
+    if string.find(msg, "hello") or string.find(msg, "hi") or string.find(msg, "chào") or string.find(msg, "xin chào") then
+        return {
+            "Xin chào! Tôi có thể giúp gì cho bạn?",
+            "Chào bạn! Hôm nay thế nào?",
+            "Hello! Rất vui được gặp bạn! 😊",
+            "Hi there! Cần hỗ trợ gì không?"
+        }
+    end
+    
+    -- Hỏi về thời gian
+    if string.find(msg, "time") or string.find(msg, "giờ") or string.find(msg, "thời gian") then
+        return {
+            "Hiện tại tôi không thể xem được thời gian chính xác, nhưng bạn có thể check trên thiết bị nhé!",
+            "Thời gian trôi qua nhanh quá! Bạn đang làm gì vậy?",
+            "Time flies when you're having fun! ⏰"
+        }
+    end
+    
+    -- Hỏi về Roblox/Game
+    if string.find(msg, "roblox") or string.find(msg, "game") or string.find(msg, "script") or string.find(msg, "code") then
+        return {
+            "Roblox thật tuyệt! Bạn đang develop game gì không?",
+            "Scripting Lua trong Roblox rất thú vị! Cần help gì không?",
+            "Game development cần patience và creativity! 🎮",
+            "Bạn có publish game nào trên Roblox chưa?",
+            "Studio Roblox có nhiều tool mạnh! Bạn dùng cái nào nhiều nhất?"
+        }
+    end
+    
+    -- Hỏi về học tập
+    if string.find(msg, "học") or string.find(msg, "study") or string.find(msg, "school") or string.find(msg, "bài tập") then
+        return {
+            "Học tập quan trọng! Bạn đang học môn gì khó nhất?",
+            "Study smart, not just hard! Có technique nào hiệu quả không?",
+            "Break time cũng cần thiết khi học! 📚",
+            "Bạn có study group không? Học nhóm có hiệu quả hơn!",
+            "Motivation học tập đôi khi khó maintain, nhưng đừng bỏ cuộc!"
+        }
+    end
+    
+    -- Hỏi về cảm xúc
+    if string.find(msg, "sad") or string.find(msg, "buồn") or string.find(msg, "upset") or string.find(msg, "stress") then
+        return {
+            "Tôi hiểu cảm giác đó. Có gì bạn muốn chia sẻ không? 💙",
+            "Mọi thứ sẽ ổn thôi! Bad days make good days better!",
+            "Take a deep breath. Bạn đã overcome nhiều thứ rồi! 💪",
+            "Cần ai đó lắng nghe không? Tôi ở đây! 👂"
+        }
+    end
+    
+    -- Hỏi về tương lai
+    if string.find(msg, "future") or string.find(msg, "tương lai") or string.find(msg, "dream") or string.find(msg, "ước mơ") then
+        return {
+            "Tương lai được tạo nên từ những gì bạn làm hôm nay! ✨",
+            "Dreams without action chỉ là wishes. Plan và execute thôi!",
+            "Bạn có goals cụ thể cho năm nay không?",
+            "Future is bright nếu bạn work hard for it! 🌟"
+        }
+    end
+    
+    -- Hỏi về AI/Bot
+    if string.find(msg, "ai") or string.find(msg, "robot") or string.find(msg, "bot") or string.find(msg, "thông minh") then
+        return {
+            "AI chỉ là tool để hỗ trợ, con người vẫn là center! 🤖",
+            "Tôi cố gắng học và improve từ mỗi conversation!",
+            "Intelligence thật sự là khả năng adapt và learn!",
+            "Bạn nghĩ gì về future of AI?"
+        }
+    end
+    
+    -- Default intelligent responses
+    return nil
+end
+
 -- Hàm xử lý tin nhắn
 function sendMessage()
     local message = inputBox.Text
@@ -212,10 +291,136 @@ function sendMessage()
         createChatMessage("You", message, true)
         inputBox.Text = ""
         
-        -- Giả lập phản hồi bot với rất nhiều câu trả lời
-        wait(math.random(1, 3)) -- Random delay để realistic hơn
+        -- AI phân tích tin nhắn và trả lời phù hợp
+        wait(math.random(1, 2))
         
-        local responses = {
+        local specificResponse = analyzeMessage(message)
+        if specificResponse then
+            local response = specificResponse[math.random(1, #specificResponse)]
+            createChatMessage("Bot", response, false)
+        else
+            -- Intelligent General Responses (khi không match specific topic)
+            local responses = {
+                -- Phản hồi thông minh và phù hợp
+                "Thú vị! Bạn có thể elaborate thêm không?",
+                "Tôi hiểu point của bạn. Có experience nào liên quan không?",
+                "That makes sense! Bạn đã research về điều này chưa?",
+                "Good thinking! Approach này có pros and cons gì?",
+                "Perspective hay đấy! Có alternative nào khác không?",
+                "Valid point! Evidence supporting điều này là gì?",
+                "Insightful! Điều này apply trong real life như nào?",
+                "Logical reasoning! Bạn có examples cụ thể không?",
+                "Analytical thinking tốt! Next step sẽ là gì?",
+                "Critical thinking on point! Có contradictions nào không?",
+                
+                -- Câu hỏi để hiểu sâu hơn
+                "Interesting! Tại sao bạn lại nghĩ vậy?",
+                "Tell me more! Background story là gì?",
+                "Curious! Điều này affect bạn như nào?",
+                "Intriguing! Bạn discover ra điều này khi nào?",
+                "Fascinating! Process thinking của bạn ra sao?",
+                "Compelling! Evidence nào convince bạn nhất?",
+                "Thought-provoking! Implications lâu dài là gì?",
+                "Mind-opening! Bạn có change perspective không?",
+                "Eye-opening! Lesson learned gì từ điều này?",
+                "Enlightening! Impact đến decision making ra sao?",
+                
+                -- Phản hồi học hỏi
+                "Thanks for sharing! Tôi học được điều mới!",
+                "Valuable insight! Điều này broaden perspective tôi!",
+                "Educational! Tôi sẽ remember điều này!",
+                "Informative! Context này rất useful!",
+                "Knowledge gained! Tôi appreciate input của bạn!",
+                "Learning moment! Điều này add to database tôi!",
+                "Wisdom shared! Understanding tôi deep hơn rồi!",
+                "Intellectual exchange! Conversation này meaningful!",
+                "Data processed! Information này valuable!",
+                "Neural network updated! 🧠💡",
+                
+                -- Phản hồi sáng tạo
+                "Creative angle! Bạn có brainstorm thêm ideas không?",
+                "Innovative thinking! Out-of-the-box approach!",
+                "Original concept! Bạn develop idea này như nào?",
+                "Unique perspective! Fresh take on topic!",
+                "Inventive approach! Problem-solving skills tốt!",
+                "Imaginative! Creativity flows natural với bạn!",
+                "Artistic mindset! Aesthetic appreciation high!",
+                "Visionary thinking! Future-oriented perspective!",
+                "Design thinking! User-centric approach!",
+                "Innovation potential! Entrepreneurial spirit!",
+                
+                -- Phản hồi khen ngợi có ý nghĩa
+                "Impressive analysis! Critical thinking skills strong!",
+                "Excellent reasoning! Logic chain rất clear!",
+                "Outstanding insight! Depth of understanding profound!",
+                "Remarkable observation! Attention to detail tốt!",
+                "Brilliant connection! Pattern recognition skills!",
+                "Exceptional thinking! Complex ideas simplified well!",
+                "Superior logic! Argument structure solid!",
+                "Advanced reasoning! Abstract thinking ability!",
+                "Professional analysis! Research skills evident!",
+                "Expert-level insight! Knowledge integration tốt!",
+                
+                -- Câu hỏi mở rộng tư duy
+                "What if scenario khác sẽ ra sao?",
+                "How about từ different angle?",
+                "Consider alternative: điều gì sẽ happen?",
+                "Hypothetically speaking: best case scenario?",
+                "In ideal world: solution hoàn hảo là gì?",
+                "Playing devil's advocate: counterargument?",
+                "From opposing viewpoint: valid concerns gì?",
+                "Long-term perspective: consequences ra sao?",
+                "Bigger picture: context rộng hơn như nào?",
+                "Deeper level: root cause thật sự là gì?",
+                
+                -- Phản hồi khuyến khích suy nghĩ
+                "Thought experiment: thử approach khác?",
+                "Mental model: framework nào apply được?",
+                "Cognitive bias: có influence decision không?",
+                "Metacognition: thinking about thinking!",
+                "Systems thinking: interconnections ra sao?",
+                "First principles: fundamental assumptions gì?",
+                "Occam's razor: simplest explanation là gì?",
+                "Cost-benefit analysis: trade-offs như nào?",
+                "Risk assessment: potential downsides?",
+                "Opportunity cost: alternatives bỏ lỡ gì?",
+                
+                -- Phản hồi về learning và growth
+                "Growth mindset! Continuous learning important!",
+                "Skill development! Practice makes progress!",
+                "Knowledge acquisition! Curiosity drives success!",
+                "Intellectual humility! Always room to improve!",
+                "Lifelong learning! Adapt and evolve!",
+                "Cognitive flexibility! Mental agility!",
+                "Information processing! Quality over quantity!",
+                "Critical evaluation! Source credibility matters!",
+                "Evidence-based thinking! Facts over opinions!",
+                "Scientific method! Hypothesis, test, conclude!",
+                
+                -- Phản hồi về problem-solving
+                "Problem-solving approach systematic!",
+                "Root cause analysis! Dig deeper!",
+                "Solution-oriented thinking! Action-focused!",
+                "Troubleshooting mindset! Debug process!",
+                "Optimization thinking! Efficiency matters!",
+                "Resource allocation! Prioritization key!",
+                "Constraint identification! Limitations awareness!",
+                "Implementation strategy! Execution planning!",
+                "Iteration cycle! Continuous improvement!",
+                "Feedback loop! Learn and adjust!",
+                
+                -- Phản hồi về communication
+                "Clear communication! Message delivered well!",
+                "Articulation skills! Expression precise!",
+                "Listening actively! Understanding shows!",
+                "Empathy evident! Perspective-taking ability!",
+                "Diplomatic approach! Respectful discourse!",
+                "Constructive feedback! Growth-oriented!",
+                "Collaborative spirit! Teamwork mindset!",
+                "Conflict resolution! Win-win solutions!",
+                "Persuasion techniques! Influence positive!",
+                "Storytelling power! Narrative engagement!"
+            }
             -- Chào hỏi & Giới thiệu
             "Xin chào! Tôi có thể giúp gì cho bạn?",
             "Chào bạn! Hôm nay thế nào?",
