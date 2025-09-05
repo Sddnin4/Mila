@@ -207,42 +207,12 @@ end
 
 -- Translation Dictionary
 local translations = {
-    ["english"] = {
-        hello = "Hello! How can I help you?",
-        goodbye = "Goodbye! Have a great day!",
-        thanks = "You're welcome!",
-        help = "I'm here to help you!"
-    },
     ["vietnamese"] = {
-        hello = "Xin chào! Tôi có thể giúp gì cho bạn?",
-        goodbye = "Tạm biệt! Chúc bạn một ngày tốt lành!",
-        thanks = "Không có gì!",
-        help = "Tôi ở đây để giúp bạn!"
+        Xin Chào = "Xin chào! Tôi có thể giúp gì cho bạn?",
+        Tạm Biệt = "Tạm biệt! Chúc bạn một ngày tốt lành!",
+        Cảm ơn = "Không có gì!",
+        Giúp tôi = "Tôi ở đây để giúp bạn!"
     },
-    ["japanese"] = {
-        hello = "こんにちは！何かお手伝いできますか？",
-        goodbye = "さようなら！良い一日を！",
-        thanks = "どういたしまして！",
-        help = "お手伝いします！"
-    },
-    ["korean"] = {
-        hello = "안녕하세요! 어떻게 도와드릴까요?",
-        goodbye = "안녕히 가세요! 좋은 하루 되세요!",
-        thanks = "천만에요!",
-        help = "도와드리겠습니다!"
-    },
-    ["spanish"] = {
-        hello = "¡Hola! ¿Cómo puedo ayudarte?",
-        goodbye = "¡Adiós! ¡Que tengas un gran día!",
-        thanks = "¡De nada!",
-        help = "¡Estoy aquí para ayudarte!"
-    },
-    ["french"] = {
-        hello = "Salut! Comment puis-je vous aider?",
-        goodbye = "Au revoir! Passez une excellente journée!",
-        thanks = "De rien!",
-        help = "Je suis là pour vous aider!"
-    }
 }
 
 -- Advanced AI Logic với machine learning simulation
@@ -256,18 +226,16 @@ function analyzeMessage(userMessage)
     -- Translation requests
     if string.find(msg, "translate") or string.find(msg, "dịch") or string.find(msg, "번역") or string.find(msg, "翻訳") then
         return {
-            "Tôi có thể dịch sang: English, Vietnamese, Japanese, Korean, Spanish, French!",
-            "Bạn muốn dịch câu nào? Ví dụ: 'dịch hello sang tiếng Việt'",
-            "Translation service ready! Which language do you need?",
-            "Dịch thuật là specialty của tôi! Hãy thử đi!"
+            "Tôi có thể nói được tiếng: Vietnamese!",
+            "Bạn muốn làm gì cho ngày hôm nay? Ví dụ: 'Bạn khoẻ không'",
         }
     end
     
     -- Weather and time queries with intelligent responses
-    if string.find(msg, "weather") or string.find(msg, "thời tiết") or string.find(msg, "rain") or string.find(msg, "sun") then
+    if string.find(msg, "Bão") or string.find(msg, "thời tiết") or string.find(msg, "mưa") or string.find(msg, "mặt trời") then
         return {
-            "Tôi không thể check weather realtime, nhưng bạn có thể dùng weather app!",
-            "Weather affects mood rất nhiều! Hôm nay bạn cảm thấy thế nào?",
+            "Tôi không thể kiểm tra thời tiết theo thời gian thực, nhưng bạn có thể dùng weather app!",
+            "Thời tiết ảnh hưởng đến tâm trạng rất nhiều! Hôm nay bạn cảm thấy thế nào?",
             "Climate change đang impact weather patterns globally!",
             "Favorite season của bạn là gì và tại sao?"
         }
@@ -276,8 +244,8 @@ function analyzeMessage(userMessage)
     -- Math and calculation requests
     if string.find(msg, "math") or string.find(msg, "calculate") or string.find(msg, "toán") or string.find(msg, "tính") then
         return {
-            "Tôi có thể giúp basic math! Ví dụ: 2+2=4, 5*3=15",
-            "Mathematics là language of universe! Bạn thích môn nào nhất?",
+            "Tôi có thể giúp bạn môn toán! Ví dụ: 2+2=4, 5*3=15",
+            "Bạn thích toán vì sao! Bạn thích môn nào nhất?",
             "Problem-solving in math develops logical thinking!",
             "Calculus, Algebra, hay Geometry - cái nào interesting nhất?"
         }
