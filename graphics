@@ -1108,19 +1108,19 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- Auto-enhancement on startup
-spawn(function()
-    wait(2)
-    enhancedLighting()
-    showNotification("🤖 Auto-enhancement activated!", Color3.fromRGB(0, 255, 127))
-end)
+-- Auto-enhancement disabled - let users choose
+-- spawn(function()
+--     wait(2)
+--     enhancedLighting()
+--     showNotification("🤖 Auto-enhancement activated!", Color3.fromRGB(0, 255, 127))
+-- end)
 
 -- Welcome sequence
 spawn(function()
     wait(1)
     showNotification("🎮 Graphics Master V4 Ready!", Color3.fromRGB(70, 130, 180), 4)
     wait(2)
-    showNotification("✨ Tab 1: Enhancement | 🚀 Tab 2: Performance", Color3.fromRGB(255, 215, 0), 3)
+    showNotification("✨ Choose your graphics mode!", Color3.fromRGB(255, 215, 0), 3)
     wait(1)
     showNotification("⌨️ Hotkeys F1-F8 | ✕ to hide UI", Color3.fromRGB(0, 191, 255), 3)
 end)
@@ -1141,4 +1141,5 @@ print("⌨️  Enhanced Hotkeys: F1=Ultra, F2=Extreme, F3=Anti-Lag, F4=Toggle UI
 print("🔄 Background processes continue running when UI is hidden")
 print("📊 Real-time FPS monitoring with color indicators")
 print("🎯 Click ✕ to hide UI, click floating 🎮 to restore")
+print("👤 No auto-enhancement - users choose their preferred settings")
 print("🌟 Made by Graphics Enhancement Team - V4.0 Dual Tab Edition")
