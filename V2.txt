@@ -251,7 +251,7 @@ local loadingSpinner = Instance.new("TextLabel")
 loadingSpinner.Size = UDim2.new(1, 0, 0, 30)
 loadingSpinner.Position = UDim2.new(0, 0, 0, 40)
 loadingSpinner.BackgroundTransparency = 1
-loadingSpinner.Text = "🥰"
+loadingSpinner.Text = "🥰🇻🇳"
 loadingSpinner.TextColor3 = Color3.new(1, 1, 1)
 loadingSpinner.TextSize = 20
 loadingSpinner.Font = Enum.Font.Gotham
@@ -391,21 +391,126 @@ welcomeText.TextYAlignment = Enum.TextYAlignment.Top
 welcomeText.TextWrapped = true
 welcomeText.Parent = welcomeFrame
 
-local otherContent = Instance.new("Frame")
+local otherContent = Instance.new("ScrollingFrame")
 otherContent.Name = "OtherContent"
 otherContent.Size = UDim2.new(1, 0, 1, 0)
 otherContent.BackgroundTransparency = 1
+otherContent.ScrollBarThickness = 6
+otherContent.CanvasSize = UDim2.new(0, 0, 0, 200)
 otherContent.Visible = false
 otherContent.Parent = contentArea
 
-local otherLabel = Instance.new("TextLabel")
-otherLabel.Size = UDim2.new(1, 0, 1, 0)
-otherLabel.BackgroundTransparency = 1
-otherLabel.Text = "Other Tab - Coming Soon!"
-otherLabel.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-otherLabel.TextSize = 16
-otherLabel.Font = Enum.Font.Gotham
-otherLabel.Parent = otherContent
+-- Other Tab Header
+local otherHeader = Instance.new("TextLabel")
+otherHeader.Size = UDim2.new(1, 0, 0, 30)
+otherHeader.Position = UDim2.new(0, 0, 0, 5)
+otherHeader.BackgroundTransparency = 1
+otherHeader.Text = "🔧 Other Features"
+otherHeader.TextColor3 = Color3.new(0.2, 0.2, 0.2)
+otherHeader.TextSize = 14
+otherHeader.Font = Enum.Font.GothamBold
+otherHeader.Parent = otherContent
+
+-- Music Feature
+local musicFrame = Instance.new("Frame")
+musicFrame.Size = UDim2.new(1, -10, 0, 80)
+musicFrame.Position = UDim2.new(0, 5, 0, 40)
+musicFrame.BackgroundColor3 = Color3.new(0.95, 0.9, 1)
+musicFrame.BorderSizePixel = 0
+musicFrame.Parent = otherContent
+
+local musicCorner = Instance.new("UICorner")
+musicCorner.CornerRadius = UDim.new(0, 8)
+musicCorner.Parent = musicFrame
+
+-- Music Icon and Title
+local musicIcon = Instance.new("TextLabel")
+musicIcon.Size = UDim2.new(0, 30, 0, 30)
+musicIcon.Position = UDim2.new(0, 10, 0, 10)
+musicIcon.BackgroundTransparency = 1
+musicIcon.Text = "🎵"
+musicIcon.TextColor3 = Color3.new(0.4, 0.2, 0.6)
+musicIcon.TextSize = 20
+musicIcon.Font = Enum.Font.Gotham
+musicIcon.Parent = musicFrame
+
+local musicTitle = Instance.new("TextLabel")
+musicTitle.Size = UDim2.new(1, -50, 0, 25)
+musicTitle.Position = UDim2.new(0, 45, 0, 8)
+musicTitle.BackgroundTransparency = 1
+musicTitle.Text = "Music Player"
+musicTitle.TextColor3 = Color3.new(0.3, 0.1, 0.5)
+musicTitle.TextSize = 12
+musicTitle.Font = Enum.Font.GothamBold
+musicTitle.TextXAlignment = Enum.TextXAlignment.Left
+musicTitle.Parent = musicFrame
+
+local musicDesc = Instance.new("TextLabel")
+musicDesc.Size = UDim2.new(1, -50, 0, 20)
+musicDesc.Position = UDim2.new(0, 45, 0, 30)
+musicDesc.BackgroundTransparency = 1
+musicDesc.Text = "Play music with ID system"
+musicDesc.TextColor3 = Color3.new(0.4, 0.4, 0.4)
+musicDesc.TextSize = 10
+musicDesc.Font = Enum.Font.Gotham
+musicDesc.TextXAlignment = Enum.TextXAlignment.Left
+musicDesc.Parent = musicFrame
+
+-- Music Button
+local musicButton = Instance.new("TextButton")
+musicButton.Size = UDim2.new(0, 100, 0, 25)
+musicButton.Position = UDim2.new(0, 45, 0, 50)
+musicButton.BackgroundColor3 = Color3.new(0.6, 0.4, 0.8)
+musicButton.Text = "🎶 Open Music"
+musicButton.TextColor3 = Color3.new(1, 1, 1)
+musicButton.TextSize = 10
+musicButton.Font = Enum.Font.Gotham
+musicButton.Parent = musicFrame
+
+local musicBtnCorner = Instance.new("UICorner")
+musicBtnCorner.CornerRadius = UDim.new(0, 5)
+musicBtnCorner.Parent = musicButton
+
+-- Music Button Events
+musicButton.MouseButton1Click:Connect(function()
+    spawn(function()
+        showLoadingAnimation("Music Player")
+    end)
+    
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Sddnin4/Mila/refs/heads/main/Music%20ID"))()
+    end)
+end)
+
+-- Music Button Hover Effects
+musicButton.MouseEnter:Connect(function()
+    musicButton.BackgroundColor3 = Color3.new(0.5, 0.3, 0.7)
+end)
+
+musicButton.MouseLeave:Connect(function()
+    musicButton.BackgroundColor3 = Color3.new(0.6, 0.4, 0.8)
+end)
+
+-- Coming Soon Feature (placeholder for future features)
+local comingSoonFrame = Instance.new("Frame")
+comingSoonFrame.Size = UDim2.new(1, -10, 0, 60)
+comingSoonFrame.Position = UDim2.new(0, 5, 0, 130)
+comingSoonFrame.BackgroundColor3 = Color3.new(0.98, 0.98, 0.98)
+comingSoonFrame.BorderSizePixel = 0
+comingSoonFrame.Parent = otherContent
+
+local comingSoonCorner = Instance.new("UICorner")
+comingSoonCorner.CornerRadius = UDim.new(0, 8)
+comingSoonCorner.Parent = comingSoonFrame
+
+local comingSoonText = Instance.new("TextLabel")
+comingSoonText.Size = UDim2.new(1, 0, 1, 0)
+comingSoonText.BackgroundTransparency = 1
+comingSoonText.Text = "🚀 More features coming soon..."
+comingSoonText.TextColor3 = Color3.new(0.5, 0.5, 0.5)
+comingSoonText.TextSize = 12
+comingSoonText.Font = Enum.Font.Gotham
+comingSoonText.Parent = comingSoonFrame
 
 -- Player List (small, integrated)
 local playerFrame = Instance.new("Frame")
