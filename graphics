@@ -1,5 +1,5 @@
--- ROBLOX ADVANCED GRAPHICS ENHANCEMENT SCRIPT V1.0
--- Script cải thiện đồ họa với UI ngang và hệ thống X để ẩn
+-- ROBLOX ADVANCED GRAPHICS ENHANCEMENT SCRIPT V4.0
+-- UI đẹp với 2 tab: Tăng Đồ Họa & Giảm Đồ Họa
 
 local RunService = game:GetService("RunService")
 local Lighting = game:GetService("Lighting")
@@ -14,375 +14,343 @@ local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 local camera = Workspace.CurrentCamera
 
--- Settings lưu trữ (sẽ được giữ khi ẩn UI)
+-- Settings lưu trữ
 local settings = {
     autoEnhance = true,
     fpsBoost = true,
     qualityLevel = "High",
-    customLighting = true,
     particleOptimize = true,
-    textureOptimize = false,
     soundOptimize = true,
-    uiVisible = true
+    uiVisible = true,
+    currentTab = "enhance" -- "enhance" or "performance"
 }
 
--- Variables cho background processes
-local backgroundProcesses = {}
+-- Background processes
 local fpsMonitor = nil
-local autoOptimizer = nil
+local backgroundProcesses = {}
 
--- Tạo GUI chính với layout ngang
+-- Tạo GUI chính với thiết kế hiện đại
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "AdvancedGraphicsBoosterV3"
+screenGui.Name = "GraphicsBoosterV4_" .. math.random(1000, 9999)
 screenGui.Parent = playerGui
 screenGui.ResetOnSpawn = false
 
--- Main Frame ngang
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 800, 0, 120)
-frame.Position = UDim2.new(0.5, -400, 0, 10)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-frame.BorderSizePixel = 0
-frame.Parent = screenGui
+-- Main Container
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 450, 0, 320)
+mainFrame.Position = UDim2.new(0.5, -225, 0.5, -160)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
 
--- Bo góc cho frame
-local frameCorner = Instance.new("UICorner")
-frameCorner.CornerRadius = UDim.new(0, 15)
-frameCorner.Parent = frame
+-- Glass morphism effect
+local blur = Instance.new("UICorner")
+blur.CornerRadius = UDim.new(0, 20)
+blur.Parent = mainFrame
 
--- Gradient background
-local gradient = Instance.new("UIGradient")
-gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 65)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(35, 35, 50)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 25, 35))
+local frameGradient = Instance.new("UIGradient")
+frameGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 45)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(25, 25, 40)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 25))
 })
-gradient.Rotation = 90
-gradient.Parent = frame
+frameGradient.Rotation = 135
+frameGradient.Parent = mainFrame
 
--- Drop shadow effect
-local shadow = Instance.new("Frame")
-shadow.Size = UDim2.new(1, 10, 1, 10)
-shadow.Position = UDim2.new(0, -5, 0, -5)
-shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-shadow.BackgroundTransparency = 0.7
-shadow.ZIndex = -1
-shadow.Parent = frame
+-- Glowing border effect
+local glowFrame = Instance.new("Frame")
+glowFrame.Size = UDim2.new(1, 4, 1, 4)
+glowFrame.Position = UDim2.new(0, -2, 0, -2)
+glowFrame.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+glowFrame.BackgroundTransparency = 0.7
+glowFrame.BorderSizePixel = 0
+glowFrame.ZIndex = -1
+glowFrame.Parent = mainFrame
 
-local shadowCorner = Instance.new("UICorner")
-shadowCorner.CornerRadius = UDim.new(0, 15)
-shadowCorner.Parent = shadow
+local glowCorner = Instance.new("UICorner")
+glowCorner.CornerRadius = UDim.new(0, 22)
+glowCorner.Parent = glowFrame
 
--- Dragging system
-local dragging = false
-local dragStart = nil
-local startPos = nil
+-- Animated glow effect
+local glowTween = TweenService:Create(glowFrame,
+    TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+    {BackgroundTransparency = 0.3}
+)
+glowTween:Play()
 
-frame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = frame.Position
-        
-        local dragTween = TweenService:Create(frame, 
-            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {BackgroundTransparency = 0.1}
-        )
-        dragTween:Play()
-    end
-end)
+-- Header Section
+local headerFrame = Instance.new("Frame")
+headerFrame.Size = UDim2.new(1, 0, 0, 60)
+headerFrame.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+headerFrame.BorderSizePixel = 0
+headerFrame.Parent = mainFrame
 
-frame.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, 
-                                 startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
+local headerGradient = Instance.new("UIGradient")
+headerGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 160, 220)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(70, 130, 180))
+})
+headerGradient.Rotation = 45
+headerGradient.Parent = headerFrame
 
-frame.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-        
-        local releaseTween = TweenService:Create(frame,
-            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {BackgroundTransparency = 0}
-        )
-        releaseTween:Play()
-    end
-end)
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 20)
+headerCorner.Parent = headerFrame
 
--- Title Section (trái)
-local titleFrame = Instance.new("Frame")
-titleFrame.Size = UDim2.new(0, 200, 1, 0)
-titleFrame.Position = UDim2.new(0, 0, 0, 0)
-titleFrame.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
-titleFrame.BorderSizePixel = 0
-titleFrame.Parent = frame
-
-local titleCorner = Instance.new("UICorner")
-titleCorner.CornerRadius = UDim.new(0, 15)
-titleCorner.Parent = titleFrame
-
+-- Title với animation
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -40, 0.6, 0)
-title.Position = UDim2.new(0, 10, 0, 0)
+title.Size = UDim2.new(0.7, 0, 1, 0)
+title.Position = UDim2.new(0, 15, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "🚀 GRAPHICS BOOSTER V3"
+title.Text = "🎮 GRAPHICS MASTER V4"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.Parent = titleFrame
+title.Parent = headerFrame
 
--- X Button để ẩn UI
+-- Close button với hiệu ứng đẹp
 local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -35, 0, 5)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 95, 95)
+closeButton.Size = UDim2.new(0, 40, 0, 40)
+closeButton.Position = UDim2.new(1, -50, 0, 10)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
 closeButton.BorderSizePixel = 0
 closeButton.Text = "✕"
 closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 closeButton.TextScaled = true
 closeButton.Font = Enum.Font.GothamBold
-closeButton.Parent = titleFrame
+closeButton.Parent = headerFrame
 
 local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 15)
+closeCorner.CornerRadius = UDim.new(0, 20)
 closeCorner.Parent = closeButton
 
--- FPS Display trong title
+-- Close button hover effect
+closeButton.MouseEnter:Connect(function()
+    local hoverTween = TweenService:Create(closeButton,
+        TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {BackgroundColor3 = Color3.fromRGB(255, 100, 100), Size = UDim2.new(0, 42, 0, 42)}
+    )
+    hoverTween:Play()
+end)
+
+closeButton.MouseLeave:Connect(function()
+    local leaveTween = TweenService:Create(closeButton,
+        TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {BackgroundColor3 = Color3.fromRGB(255, 70, 70), Size = UDim2.new(0, 40, 0, 40)}
+    )
+    leaveTween:Play()
+end)
+
+-- Tab System
+local tabFrame = Instance.new("Frame")
+tabFrame.Size = UDim2.new(1, -20, 0, 50)
+tabFrame.Position = UDim2.new(0, 10, 0, 70)
+tabFrame.BackgroundTransparency = 1
+tabFrame.Parent = mainFrame
+
+-- Tab buttons
+local enhanceTab = Instance.new("TextButton")
+enhanceTab.Size = UDim2.new(0.48, 0, 1, 0)
+enhanceTab.Position = UDim2.new(0, 0, 0, 0)
+enhanceTab.BackgroundColor3 = Color3.fromRGB(50, 200, 100)
+enhanceTab.BorderSizePixel = 0
+enhanceTab.Text = "✨ TĂNG ĐỒ HỌA"
+enhanceTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+enhanceTab.TextScaled = true
+enhanceTab.Font = Enum.Font.GothamBold
+enhanceTab.Parent = tabFrame
+
+local enhanceCorner = Instance.new("UICorner")
+enhanceCorner.CornerRadius = UDim.new(0, 15)
+enhanceCorner.Parent = enhanceTab
+
+local performanceTab = Instance.new("TextButton")
+performanceTab.Size = UDim2.new(0.48, 0, 1, 0)
+performanceTab.Position = UDim2.new(0.52, 0, 0, 0)
+performanceTab.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
+performanceTab.BorderSizePixel = 0
+performanceTab.Text = "🚀 GIẢM ĐỒ HỌA"
+performanceTab.TextColor3 = Color3.fromRGB(200, 200, 200)
+performanceTab.TextScaled = true
+performanceTab.Font = Enum.Font.GothamBold
+performanceTab.Parent = tabFrame
+
+local performanceCorner = Instance.new("UICorner")
+performanceCorner.CornerRadius = UDim.new(0, 15)
+performanceCorner.Parent = performanceTab
+
+-- Content Frame cho tabs
+local contentFrame = Instance.new("Frame")
+contentFrame.Size = UDim2.new(1, -20, 0, 180)
+contentFrame.Position = UDim2.new(0, 10, 0, 130)
+contentFrame.BackgroundTransparency = 1
+contentFrame.Parent = mainFrame
+
+-- Enhance Tab Content
+local enhanceContent = Instance.new("ScrollingFrame")
+enhanceContent.Size = UDim2.new(1, 0, 1, 0)
+enhanceContent.BackgroundTransparency = 1
+enhanceContent.BorderSizePixel = 0
+enhanceContent.ScrollBarThickness = 6
+enhanceContent.ScrollBarImageColor3 = Color3.fromRGB(70, 130, 180)
+enhanceContent.Visible = true
+enhanceContent.Parent = contentFrame
+
+local enhanceLayout = Instance.new("UIGridLayout")
+enhanceLayout.CellSize = UDim2.new(0, 130, 0, 40)
+enhanceLayout.CellPadding = UDim2.new(0, 8, 0, 8)
+enhanceLayout.SortOrder = Enum.SortOrder.LayoutOrder
+enhanceLayout.Parent = enhanceContent
+
+-- Performance Tab Content  
+local performanceContent = Instance.new("ScrollingFrame")
+performanceContent.Size = UDim2.new(1, 0, 1, 0)
+performanceContent.BackgroundTransparency = 1
+performanceContent.BorderSizePixel = 0
+performanceContent.ScrollBarThickness = 6
+performanceContent.ScrollBarImageColor3 = Color3.fromRGB(70, 130, 180)
+performanceContent.Visible = false
+performanceContent.Parent = contentFrame
+
+local performanceLayout = Instance.new("UIGridLayout")
+performanceLayout.CellSize = UDim2.new(0, 130, 0, 40)
+performanceLayout.CellPadding = UDim2.new(0, 8, 0, 8)
+performanceLayout.SortOrder = Enum.SortOrder.LayoutOrder
+performanceLayout.Parent = performanceContent
+
+-- Status Bar
+local statusFrame = Instance.new("Frame")
+statusFrame.Size = UDim2.new(1, -20, 0, 25)
+statusFrame.Position = UDim2.new(0, 10, 1, -35)
+statusFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+statusFrame.BorderSizePixel = 0
+statusFrame.Parent = mainFrame
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(0, 12)
+statusCorner.Parent = statusFrame
+
 local fpsLabel = Instance.new("TextLabel")
-fpsLabel.Size = UDim2.new(1, -10, 0.4, 0)
-fpsLabel.Position = UDim2.new(0, 10, 0.6, 0)
+fpsLabel.Size = UDim2.new(0.5, 0, 1, 0)
 fpsLabel.BackgroundTransparency = 1
-fpsLabel.Text = "📊 FPS: --  📡 Ping: --ms"
+fpsLabel.Text = "📊 FPS: --"
 fpsLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
 fpsLabel.TextScaled = true
 fpsLabel.Font = Enum.Font.GothamSemibold
 fpsLabel.TextXAlignment = Enum.TextXAlignment.Left
-fpsLabel.Parent = titleFrame
+fpsLabel.Parent = statusFrame
 
--- Main Controls Section (giữa)
-local controlsFrame = Instance.new("Frame")
-controlsFrame.Size = UDim2.new(0, 450, 1, -20)
-controlsFrame.Position = UDim2.new(0, 210, 0, 10)
-controlsFrame.BackgroundTransparency = 1
-controlsFrame.Parent = frame
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(0.5, 0, 1, 0)
+statusLabel.Position = UDim2.new(0.5, 0, 0, 0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "⚡ Ready"
+statusLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
+statusLabel.TextScaled = true
+statusLabel.Font = Enum.Font.GothamSemibold
+statusLabel.TextXAlignment = Enum.TextXAlignment.Right
+statusLabel.Parent = statusFrame
 
--- ScrollingFrame cho controls ngang
-local scrollFrame = Instance.new("ScrollingFrame")
-scrollFrame.Size = UDim2.new(1, 0, 1, 0)
-scrollFrame.Position = UDim2.new(0, 0, 0, 0)
-scrollFrame.BackgroundTransparency = 1
-scrollFrame.BorderSizePixel = 0
-scrollFrame.ScrollBarThickness = 4
-scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(70, 130, 180)
-scrollFrame.ScrollingDirection = Enum.ScrollingDirection.X
-scrollFrame.Parent = controlsFrame
+-- Dragging functionality
+local dragging = false
+local dragStart = nil
+local startPos = nil
 
--- UIListLayout ngang cho buttons
-local listLayout = Instance.new("UIListLayout")
-listLayout.FillDirection = Enum.FillDirection.Horizontal
-listLayout.Padding = UDim.new(0, 8)
-listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-listLayout.Parent = scrollFrame
+headerFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+    end
+end)
 
--- Settings Panel (phải)
-local settingsFrame = Instance.new("Frame")
-settingsFrame.Size = UDim2.new(0, 130, 1, -20)
-settingsFrame.Position = UDim2.new(1, -140, 0, 10)
-settingsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-settingsFrame.BorderSizePixel = 0
-settingsFrame.Parent = frame
+headerFrame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, 
+                                     startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
 
-local settingsCorner = Instance.new("UICorner")
-settingsCorner.CornerRadius = UDim.new(0, 10)
-settingsCorner.Parent = settingsFrame
+headerFrame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
 
--- Hàm tạo button ngang nhỏ gọn
-local function createCompactButton(text, icon, callback, color, layoutOrder)
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0, 90, 0, 40)
-    button.BackgroundColor3 = color or Color3.fromRGB(70, 130, 180)
-    button.BorderSizePixel = 0
-    button.Text = icon
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.TextScaled = true
-    button.Font = Enum.Font.GothamBold
-    button.LayoutOrder = layoutOrder or 0
-    button.Parent = scrollFrame
-    
-    local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 8)
-    buttonCorner.Parent = button
-    
-    -- Tooltip
-    local tooltip = Instance.new("TextLabel")
-    tooltip.Size = UDim2.new(0, 80, 0, 20)
-    tooltip.Position = UDim2.new(0.5, -40, 0, -25)
-    tooltip.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    tooltip.BackgroundTransparency = 0.2
-    tooltip.BorderSizePixel = 0
-    tooltip.Text = text
-    tooltip.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tooltip.TextScaled = true
-    tooltip.Font = Enum.Font.Gotham
-    tooltip.Visible = false
-    tooltip.Parent = button
-    
-    local tooltipCorner = Instance.new("UICorner")
-    tooltipCorner.CornerRadius = UDim.new(0, 4)
-    tooltipCorner.Parent = tooltip
-    
-    -- Hover effects
-    button.MouseEnter:Connect(function()
-        tooltip.Visible = true
-        local hoverTween = TweenService:Create(button,
-            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {
-                BackgroundColor3 = Color3.fromRGB(
-                    math.min(255, color.R * 255 + 30),
-                    math.min(255, color.G * 255 + 30),
-                    math.min(255, color.B * 255 + 30)
-                ),
-                Size = UDim2.new(0, 95, 0, 42)
-            }
-        )
-        hoverTween:Play()
-    end)
-    
-    button.MouseLeave:Connect(function()
-        tooltip.Visible = false
-        local leaveTween = TweenService:Create(button,
-            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {
-                BackgroundColor3 = color,
-                Size = UDim2.new(0, 90, 0, 40)
-            }
-        )
-        leaveTween:Play()
-    end)
-    
-    -- Click effect
-    button.MouseButton1Click:Connect(function()
-        local clickTween = TweenService:Create(button,
-            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
-            {Size = UDim2.new(0, 88, 0, 38)}
-        )
-        clickTween:Play()
-        
-        clickTween.Completed:Connect(function()
-            local returnTween = TweenService:Create(button,
-                TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-                {Size = UDim2.new(0, 90, 0, 40)}
-            )
-            returnTween:Play()
-        end)
-        
-        callback()
-    end)
-    
-    return button
-end
-
--- Hàm tạo toggle switch nhỏ
-local function createMiniToggle(text, defaultValue, callback, yPos)
-    local toggleFrame = Instance.new("Frame")
-    toggleFrame.Size = UDim2.new(1, -10, 0, 15)
-    toggleFrame.Position = UDim2.new(0, 5, 0, yPos)
-    toggleFrame.BackgroundTransparency = 1
-    toggleFrame.Parent = settingsFrame
-    
-    local toggleLabel = Instance.new("TextLabel")
-    toggleLabel.Size = UDim2.new(0.6, 0, 1, 0)
-    toggleLabel.BackgroundTransparency = 1
-    toggleLabel.Text = text
-    toggleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    toggleLabel.TextScaled = true
-    toggleLabel.Font = Enum.Font.Gotham
-    toggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    toggleLabel.Parent = toggleFrame
-    
-    local toggleButton = Instance.new("TextButton")
-    toggleButton.Size = UDim2.new(0, 30, 0, 12)
-    toggleButton.Position = UDim2.new(1, -32, 0, 2)
-    toggleButton.BackgroundColor3 = defaultValue and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(100, 100, 100)
-    toggleButton.BorderSizePixel = 0
-    toggleButton.Text = defaultValue and "ON" or "OFF"
-    toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    toggleButton.TextScaled = true
-    toggleButton.Font = Enum.Font.GothamBold
-    toggleButton.Parent = toggleFrame
-    
-    local toggleBtnCorner = Instance.new("UICorner")
-    toggleBtnCorner.CornerRadius = UDim.new(0, 6)
-    toggleBtnCorner.Parent = toggleButton
-    
-    local isToggled = defaultValue
-    
-    toggleButton.MouseButton1Click:Connect(function()
-        isToggled = not isToggled
-        
-        local newColor = isToggled and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(100, 100, 100)
-        local newText = isToggled and "ON" or "OFF"
-        
-        local toggleTween = TweenService:Create(toggleButton,
-            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {BackgroundColor3 = newColor}
-        )
-        toggleTween:Play()
-        
-        toggleButton.Text = newText
-        callback(isToggled)
-    end)
-    
-    return toggleFrame
-end
-
--- Enhanced notification system
+-- Enhanced Notification System
 local function showNotification(text, color, duration)
     duration = duration or 3
     
     local notification = Instance.new("Frame")
-    notification.Size = UDim2.new(0, 300, 0, 50)
-    notification.Position = UDim2.new(0.5, -150, 0, -60)
+    notification.Size = UDim2.new(0, 350, 0, 60)
+    notification.Position = UDim2.new(0.5, -175, 0, -70)
     notification.BackgroundColor3 = color or Color3.fromRGB(0, 150, 0)
     notification.BorderSizePixel = 0
     notification.BackgroundTransparency = 1
     notification.Parent = screenGui
     
     local notifCorner = Instance.new("UICorner")
-    notifCorner.CornerRadius = UDim.new(0, 10)
+    notifCorner.CornerRadius = UDim.new(0, 15)
     notifCorner.Parent = notification
     
+    local notifGradient = Instance.new("UIGradient")
+    notifGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, color),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(
+            math.max(0, color.R * 255 - 40) / 255,
+            math.max(0, color.G * 255 - 40) / 255,
+            math.max(0, color.B * 255 - 40) / 255
+        ))
+    })
+    notifGradient.Rotation = 45
+    notifGradient.Parent = notification
+    
+    local notifIcon = Instance.new("TextLabel")
+    notifIcon.Size = UDim2.new(0, 60, 1, 0)
+    notifIcon.BackgroundTransparency = 1
+    notifIcon.Text = "✨"
+    notifIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+    notifIcon.TextScaled = true
+    notifIcon.Font = Enum.Font.GothamBold
+    notifIcon.Parent = notification
+    
     local notifText = Instance.new("TextLabel")
-    notifText.Size = UDim2.new(1, -10, 1, 0)
-    notifText.Position = UDim2.new(0, 5, 0, 0)
+    notifText.Size = UDim2.new(1, -70, 1, 0)
+    notifText.Position = UDim2.new(0, 60, 0, 0)
     notifText.BackgroundTransparency = 1
     notifText.Text = text
     notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
     notifText.TextScaled = true
     notifText.Font = Enum.Font.GothamSemibold
+    notifText.TextXAlignment = Enum.TextXAlignment.Left
     notifText.Parent = notification
     
     -- Slide in animation
     local slideIn = TweenService:Create(notification,
-        TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+        TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
         {
-            Position = UDim2.new(0.5, -150, 0, 140),
+            Position = UDim2.new(0.5, -175, 0, 30),
             BackgroundTransparency = 0
         }
     )
     slideIn:Play()
     
+    -- Icon spin
+    local iconSpin = TweenService:Create(notifIcon,
+        TweenInfo.new(0.8, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out),
+        {Rotation = 360}
+    )
+    iconSpin:Play()
+    
     spawn(function()
         wait(duration)
         
         local slideOut = TweenService:Create(notification,
-            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
             {
-                Position = UDim2.new(0.5, -150, 0, -60),
+                Position = UDim2.new(0.5, -175, 0, -70),
                 BackgroundTransparency = 1
             }
         )
@@ -394,204 +362,617 @@ local function showNotification(text, color, duration)
     end)
 end
 
--- Advanced Lighting Functions (sẽ chạy ngầm)
+-- Advanced Button Creator
+local function createAdvancedButton(text, icon, callback, color, parent, layoutOrder)
+    local button = Instance.new("TextButton")
+    button.BackgroundColor3 = color or Color3.fromRGB(70, 130, 180)
+    button.BorderSizePixel = 0
+    button.Text = ""
+    button.LayoutOrder = layoutOrder or 0
+    button.Parent = parent
+    
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 12)
+    buttonCorner.Parent = button
+    
+    -- Gradient effect
+    local buttonGradient = Instance.new("UIGradient")
+    buttonGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, color),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(
+            math.max(0, color.R * 255 - 20) / 255,
+            math.max(0, color.G * 255 - 20) / 255,
+            math.max(0, color.B * 255 - 20) / 255
+        ))
+    })
+    buttonGradient.Rotation = 45
+    buttonGradient.Parent = button
+    
+    -- Icon
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Text = icon
+    iconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    iconLabel.TextScaled = true
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.Parent = button
+    
+    -- Text
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, -4, 0.5, 0)
+    textLabel.Position = UDim2.new(0, 2, 0.5, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = text
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.TextScaled = true
+    textLabel.Font = Enum.Font.Gotham
+    textLabel.Parent = button
+    
+    -- Hover effects
+    button.MouseEnter:Connect(function()
+        local hoverTween = TweenService:Create(button,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Size = UDim2.new(0, 135, 0, 45)}
+        )
+        hoverTween:Play()
+        
+        local iconHover = TweenService:Create(iconLabel,
+            TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+            {Rotation = 10}
+        )
+        iconHover:Play()
+    end)
+    
+    button.MouseLeave:Connect(function()
+        local leaveTween = TweenService:Create(button,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Size = UDim2.new(0, 130, 0, 40)}
+        )
+        leaveTween:Play()
+        
+        local iconLeave = TweenService:Create(iconLabel,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Rotation = 0}
+        )
+        iconLeave:Play()
+    end)
+    
+    -- Click effect
+    button.MouseButton1Click:Connect(function()
+        local clickTween = TweenService:Create(button,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+            {Size = UDim2.new(0, 125, 0, 35)}
+        )
+        clickTween:Play()
+        
+        local iconClick = TweenService:Create(iconLabel,
+            TweenInfo.new(0.2, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out),
+            {Size = UDim2.new(1.2, 0, 0.6, 0)}
+        )
+        iconClick:Play()
+        
+        iconClick.Completed:Connect(function()
+            local returnTween = TweenService:Create(iconLabel,
+                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Size = UDim2.new(1, 0, 0.5, 0)}
+            )
+            returnTween:Play()
+        end)
+        
+        clickTween.Completed:Connect(function()
+            local returnTween = TweenService:Create(button,
+                TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Size = UDim2.new(0, 130, 0, 40)}
+            )
+            returnTween:Play()
+        end)
+        
+        callback()
+    end)
+    
+    return button
+end
+
+-- Graphics Enhancement Functions
 local function ultraLighting()
+    statusLabel.Text = "🔄 Applying Ultra..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    
     Lighting.Brightness = 3
     Lighting.Ambient = Color3.fromRGB(80, 80, 100)
     Lighting.OutdoorAmbient = Color3.fromRGB(150, 150, 180)
     Lighting.Technology = Enum.Technology.Future
     Lighting.GlobalShadows = true
-    Lighting.ShadowSoftness = 0.3
+    Lighting.ShadowSoftness = 0.4
     
+    -- Ultra ColorCorrection
     local colorCorrection = Lighting:FindFirstChild("UltraColorCorrection") or Instance.new("ColorCorrectionEffect")
     colorCorrection.Name = "UltraColorCorrection"
-    colorCorrection.Brightness = 0.15
-    colorCorrection.Contrast = 0.3
-    colorCorrection.Saturation = 0.4
+    colorCorrection.Brightness = 0.2
+    colorCorrection.Contrast = 0.4
+    colorCorrection.Saturation = 0.5
     colorCorrection.TintColor = Color3.fromRGB(255, 250, 240)
     colorCorrection.Parent = Lighting
     
+    -- Ultra Bloom
     local bloom = Lighting:FindFirstChild("UltraBloom") or Instance.new("BloomEffect")
     bloom.Name = "UltraBloom"
-    bloom.Intensity = 0.8
-    bloom.Size = 30
-    bloom.Threshold = 0.8
+    bloom.Intensity = 1
+    bloom.Size = 35
+    bloom.Threshold = 0.7
     bloom.Parent = Lighting
     
+    -- SunRays
     local sunRays = Lighting:FindFirstChild("SunRays") or Instance.new("SunRaysEffect")
     sunRays.Name = "SunRays"
-    sunRays.Intensity = 0.3
-    sunRays.Spread = 0.5
+    sunRays.Intensity = 0.4
+    sunRays.Spread = 0.6
     sunRays.Parent = Lighting
     
-    showNotification("✨ Ultra Lighting activated!", Color3.fromRGB(255, 215, 0))
+    -- DepthOfField
+    local depthOfField = Lighting:FindFirstChild("DepthOfField") or Instance.new("DepthOfFieldEffect")
+    depthOfField.Name = "DepthOfField"
+    depthOfField.FarIntensity = 0.3
+    depthOfField.FocusDistance = 60
+    depthOfField.InFocusRadius = 25
+    depthOfField.NearIntensity = 0.4
+    depthOfField.Parent = Lighting
+    
+    settings.qualityLevel = "Ultra"
+    statusLabel.Text = "✨ Ultra Active"
+    statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+    showNotification("✨ Ultra Lighting Activated!", Color3.fromRGB(255, 215, 0))
 end
 
-local function extremePerformanceMode()
-    for _, obj in pairs(Lighting:GetChildren()) do
-        if obj:IsA("PostEffect") and obj.Name ~= "ColorCorrection" then
-            obj.Enabled = false
-        end
-    end
+local function cinematicLighting()
+    statusLabel.Text = "🔄 Cinematic Mode..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
     
-    for _, obj in pairs(Workspace:GetDescendants()) do
-        if obj:IsA("BasePart") then
-            obj.Material = Enum.Material.SmoothPlastic
-            obj.TopSurface = Enum.SurfaceType.Smooth
-            obj.BottomSurface = Enum.SurfaceType.Smooth
-        elseif obj:IsA("ParticleEmitter") then
-            obj.Rate = math.min(obj.Rate, 20)
-            obj.Lifetime = NumberRange.new(0.5, 1)
-        end
-    end
+    Lighting.Brightness = 1.8
+    Lighting.Ambient = Color3.fromRGB(40, 45, 60)
+    Lighting.OutdoorAmbient = Color3.fromRGB(120, 140, 170)
+    Lighting.Technology = Enum.Technology.Future
+    Lighting.GlobalShadows = true
+    Lighting.ShadowSoftness = 0.3
     
-    showNotification("🚀 Extreme Performance Mode!", Color3.fromRGB(255, 69, 0))
+    local colorCorrection = Lighting:FindFirstChild("CinematicGrade") or Instance.new("ColorCorrectionEffect")
+    colorCorrection.Name = "CinematicGrade"
+    colorCorrection.Brightness = -0.05
+    colorCorrection.Contrast = 0.5
+    colorCorrection.Saturation = 0.3
+    colorCorrection.TintColor = Color3.fromRGB(220, 230, 255)
+    colorCorrection.Parent = Lighting
+    
+    local bloom = Lighting:FindFirstChild("CinematicBloom") or Instance.new("BloomEffect")
+    bloom.Name = "CinematicBloom"
+    bloom.Intensity = 0.7
+    bloom.Size = 25
+    bloom.Threshold = 1.1
+    bloom.Parent = Lighting
+    
+    settings.qualityLevel = "Cinematic"
+    statusLabel.Text = "🎬 Cinematic"
+    statusLabel.TextColor3 = Color3.fromRGB(138, 43, 226)
+    showNotification("🎬 Cinematic Mode Enabled!", Color3.fromRGB(138, 43, 226))
 end
 
-local function aiAntiLag()
-    local lagSources = {}
+local function enhancedLighting()
+    statusLabel.Text = "🔄 Enhancing..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
     
-    for _, obj in pairs(Workspace:GetDescendants()) do
-        if obj:IsA("Script") and obj.Disabled == false then
-            table.insert(lagSources, obj)
-        elseif obj:IsA("ParticleEmitter") and obj.Rate > 100 then
-            table.insert(lagSources, obj)
-        elseif obj:IsA("Sound") and obj.Volume > 0.5 and not obj.Playing then
-            table.insert(lagSources, obj)
-        end
-    end
-    
-    for _, source in pairs(lagSources) do
-        if source:IsA("ParticleEmitter") then
-            source.Rate = math.min(source.Rate, 50)
-        elseif source:IsA("Sound") then
-            source.Volume = source.Volume * 0.7
-        end
-    end
-    
-    showNotification("🤖 AI Anti-Lag: " .. #lagSources .. " optimized!", Color3.fromRGB(0, 191, 255))
-end
-
-local function enhanceLighting()
     Lighting.Brightness = 2.5
-    Lighting.Ambient = Color3.fromRGB(60, 60, 70)
-    Lighting.OutdoorAmbient = Color3.fromRGB(140, 140, 160)
+    Lighting.Ambient = Color3.fromRGB(60, 60, 80)
+    Lighting.OutdoorAmbient = Color3.fromRGB(130, 130, 160)
     Lighting.Technology = Enum.Technology.Future
     Lighting.GlobalShadows = true
     Lighting.ShadowSoftness = 0.2
     
-    local colorCorrection = Lighting:FindFirstChild("ColorCorrection") or Instance.new("ColorCorrectionEffect")
-    colorCorrection.Name = "ColorCorrection"
+    local colorCorrection = Lighting:FindFirstChild("EnhancedCorrection") or Instance.new("ColorCorrectionEffect")
+    colorCorrection.Name = "EnhancedCorrection"
     colorCorrection.Brightness = 0.1
-    colorCorrection.Contrast = 0.2
-    colorCorrection.Saturation = 0.3
+    colorCorrection.Contrast = 0.25
+    colorCorrection.Saturation = 0.35
     colorCorrection.Parent = Lighting
     
-    local bloom = Lighting:FindFirstChild("Bloom") or Instance.new("BloomEffect")
-    bloom.Name = "Bloom"
+    local bloom = Lighting:FindFirstChild("EnhancedBloom") or Instance.new("BloomEffect")
+    bloom.Name = "EnhancedBloom"
     bloom.Intensity = 0.6
     bloom.Size = 28
     bloom.Threshold = 0.9
     bloom.Parent = Lighting
     
-    showNotification("✅ Enhanced Lighting applied!", Color3.fromRGB(0, 255, 127))
+    settings.qualityLevel = "Enhanced"
+    statusLabel.Text = "✅ Enhanced"
+    statusLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
+    showNotification("✅ Enhanced Lighting Applied!", Color3.fromRGB(0, 255, 127))
+end
+
+local function realisticLighting()
+    statusLabel.Text = "🔄 Realistic Mode..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    
+    Lighting.Brightness = 2
+    Lighting.Ambient = Color3.fromRGB(70, 70, 85)
+    Lighting.OutdoorAmbient = Color3.fromRGB(110, 110, 130)
+    Lighting.Technology = Enum.Technology.Future
+    Lighting.GlobalShadows = true
+    Lighting.ShadowSoftness = 0.15
+    
+    local colorCorrection = Lighting:FindFirstChild("RealisticCorrection") or Instance.new("ColorCorrectionEffect")
+    colorCorrection.Name = "RealisticCorrection"
+    colorCorrection.Brightness = 0
+    colorCorrection.Contrast = 0.15
+    colorCorrection.Saturation = 0.1
+    colorCorrection.Parent = Lighting
+    
+    settings.qualityLevel = "Realistic"
+    statusLabel.Text = "🌍 Realistic"
+    statusLabel.TextColor3 = Color3.fromRGB(34, 139, 34)
+    showNotification("🌍 Realistic Lighting Set!", Color3.fromRGB(34, 139, 34))
 end
 
 local function fullbrightMode()
+    statusLabel.Text = "🔄 Fullbright..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    
     Lighting.Brightness = 10
     Lighting.Ambient = Color3.new(1, 1, 1)
     Lighting.OutdoorAmbient = Color3.new(1, 1, 1)
-    showNotification("💡 Fullbright enabled!", Color3.fromRGB(255, 255, 0))
-end
-
-local function resetLighting()
-    Lighting.Brightness = 1
-    Lighting.Ambient = Color3.fromRGB(70, 70, 70)
-    Lighting.OutdoorAmbient = Color3.fromRGB(70, 70, 70)
-    Lighting.Technology = Enum.Technology.Compatibility
     Lighting.GlobalShadows = false
     
+    settings.qualityLevel = "Fullbright"
+    statusLabel.Text = "💡 Fullbright"
+    statusLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+    showNotification("💡 Fullbright Mode Activated!", Color3.fromRGB(255, 255, 0))
+end
+
+local function nightVision()
+    statusLabel.Text = "🔄 Night Vision..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    
+    Lighting.Brightness = 5
+    Lighting.Ambient = Color3.fromRGB(0, 100, 0)
+    Lighting.OutdoorAmbient = Color3.fromRGB(0, 150, 0)
+    Lighting.Technology = Enum.Technology.Future
+    
+    local colorCorrection = Lighting:FindFirstChild("NightVision") or Instance.new("ColorCorrectionEffect")
+    colorCorrection.Name = "NightVision"
+    colorCorrection.Brightness = 0.3
+    colorCorrection.Contrast = 0.4
+    colorCorrection.Saturation = -0.5
+    colorCorrection.TintColor = Color3.fromRGB(0, 255, 0)
+    colorCorrection.Parent = Lighting
+    
+    settings.qualityLevel = "Night Vision"
+    statusLabel.Text = "🔍 Night Vision"
+    statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    showNotification("🔍 Night Vision Enabled!", Color3.fromRGB(0, 255, 0))
+end
+
+-- Weather Effects
+local function rainWeather()
+    local colorCorrection = Lighting:FindFirstChild("RainWeather") or Instance.new("ColorCorrectionEffect")
+    colorCorrection.Name = "RainWeather"
+    colorCorrection.Brightness = -0.25
+    colorCorrection.Contrast = 0.1
+    colorCorrection.Saturation = -0.4
+    colorCorrection.TintColor = Color3.fromRGB(180, 200, 255)
+    colorCorrection.Parent = Lighting
+    
+    Lighting.Ambient = Color3.fromRGB(80, 90, 110)
+    Lighting.OutdoorAmbient = Color3.fromRGB(100, 120, 150)
+    
+    showNotification("🌧️ Rain Weather Applied!", Color3.fromRGB(70, 130, 180))
+end
+
+local function sunsetWeather()
+    local colorCorrection = Lighting:FindFirstChild("SunsetWeather") or Instance.new("ColorCorrectionEffect")
+    colorCorrection.Name = "SunsetWeather"
+    colorCorrection.Brightness = 0.15
+    colorCorrection.Contrast = 0.35
+    colorCorrection.Saturation = 0.45
+    colorCorrection.TintColor = Color3.fromRGB(255, 180, 120)
+    colorCorrection.Parent = Lighting
+    
+    Lighting.Ambient = Color3.fromRGB(180, 120, 80)
+    Lighting.OutdoorAmbient = Color3.fromRGB(220, 150, 100)
+    
+    showNotification("🌅 Sunset Atmosphere!", Color3.fromRGB(255, 165, 0))
+end
+
+-- Performance Enhancement Functions
+local function extremePerformance()
+    statusLabel.Text = "🔄 Extreme Boost..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    
+    -- Clear all effects
     for _, effect in pairs(Lighting:GetChildren()) do
         if effect:IsA("PostEffect") then
             effect:Destroy()
         end
     end
     
-    showNotification("🔄 Reset complete!", Color3.fromRGB(255, 165, 0))
-end
-
--- Weather effects
-local function rainWeather()
-    local colorCorrection = Lighting:FindFirstChild("WeatherRain") or Instance.new("ColorCorrectionEffect")
-    colorCorrection.Name = "WeatherRain"
-    colorCorrection.Brightness = -0.2
-    colorCorrection.Contrast = 0.1
-    colorCorrection.Saturation = -0.3
-    colorCorrection.TintColor = Color3.fromRGB(200, 220, 255)
-    colorCorrection.Parent = Lighting
+    Lighting.Technology = Enum.Technology.Compatibility
+    Lighting.GlobalShadows = false
+    Lighting.Brightness = 1
+    Lighting.Ambient = Color3.fromRGB(178, 178, 178)
+    Lighting.OutdoorAmbient = Color3.fromRGB(178, 178, 178)
     
-    Lighting.Ambient = Color3.fromRGB(100, 120, 140)
-    showNotification("🌧️ Rain weather!", Color3.fromRGB(70, 130, 180))
-end
-
-local function sunsetMode()
-    local colorCorrection = Lighting:FindFirstChild("WeatherSunset") or Instance.new("ColorCorrectionEffect")
-    colorCorrection.Name = "WeatherSunset"
-    colorCorrection.Brightness = 0.1
-    colorCorrection.Contrast = 0.3
-    colorCorrection.Saturation = 0.4
-    colorCorrection.TintColor = Color3.fromRGB(255, 200, 150)
-    colorCorrection.Parent = Lighting
+    -- Optimize all parts
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            obj.Material = Enum.Material.SmoothPlastic
+            obj.TopSurface = Enum.SurfaceType.Smooth
+            obj.BottomSurface = Enum.SurfaceType.Smooth
+            obj.CastShadow = false
+        elseif obj:IsA("MeshPart") then
+            obj.RenderFidelity = Enum.RenderFidelity.Performance
+        elseif obj:IsA("ParticleEmitter") then
+            obj.Rate = math.min(obj.Rate, 10)
+            obj.Lifetime = NumberRange.new(0.3, 0.8)
+        elseif obj:IsA("Fire") or obj:IsA("Smoke") then
+            obj.Enabled = false
+        end
+    end
     
-    Lighting.Ambient = Color3.fromRGB(200, 150, 100)
-    showNotification("🌅 Sunset mode!", Color3.fromRGB(255, 165, 0))
+    settings.qualityLevel = "Extreme Performance"
+    statusLabel.Text = "🚀 Extreme Mode"
+    statusLabel.TextColor3 = Color3.fromRGB(255, 69, 0)
+    showNotification("🚀 Extreme Performance Boost!", Color3.fromRGB(255, 69, 0))
 end
 
--- Camera effects
-local function smoothCamera()
-    camera.FieldOfView = 70
-    showNotification("📷 Smooth camera!", Color3.fromRGB(255, 20, 147))
+local function performanceMode()
+    statusLabel.Text = "🔄 Performance..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    
+    -- Remove heavy effects
+    for _, effect in pairs(Lighting:GetChildren()) do
+        if effect:IsA("BloomEffect") or effect:IsA("SunRaysEffect") or effect:IsA("DepthOfFieldEffect") then
+            effect:Destroy()
+        end
+    end
+    
+    Lighting.Technology = Enum.Technology.ShadowMap
+    Lighting.GlobalShadows = true
+    Lighting.ShadowSoftness = 0
+    Lighting.Brightness = 1.5
+    
+    -- Optimize particles
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("ParticleEmitter") then
+            obj.Rate = math.min(obj.Rate, 25)
+        elseif obj:IsA("MeshPart") then
+            obj.RenderFidelity = Enum.RenderFidelity.Performance
+        end
+    end
+    
+    settings.qualityLevel = "Performance"
+    statusLabel.Text = "⚡ Performance"
+    statusLabel.TextColor3 = Color3.fromRGB(255, 140, 0)
+    showNotification("⚡ Performance Mode Active!", Color3.fromRGB(255, 140, 0))
 end
 
--- Tạo tất cả buttons ngang
-createCompactButton("Ultra", "✨", ultraLighting, Color3.fromRGB(255, 215, 0), 1)
-createCompactButton("Performance", "🚀", extremePerformanceMode, Color3.fromRGB(255, 69, 0), 2)
-createCompactButton("AI Lag", "🤖", aiAntiLag, Color3.fromRGB(0, 191, 255), 3)
-createCompactButton("Enhanced", "🌟", enhanceLighting, Color3.fromRGB(70, 130, 180), 4)
-createCompactButton("Fullbright", "💡", fullbrightMode, Color3.fromRGB(255, 255, 0), 5)
-createCompactButton("Rain", "🌧️", rainWeather, Color3.fromRGB(70, 130, 180), 6)
-createCompactButton("Sunset", "🌅", sunsetMode, Color3.fromRGB(255, 165, 0), 7)
-createCompactButton("Camera", "📷", smoothCamera, Color3.fromRGB(255, 20, 147), 8)
-createCompactButton("Reset", "🔄", resetLighting, Color3.fromRGB(255, 69, 0), 9)
+local function fpsBoostMode()
+    statusLabel.Text = "🔄 FPS Boost..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    
+    -- Texture optimization
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("Texture") or obj:IsA("Decal") then
+            obj.StudsPerTileU = obj.StudsPerTileU * 1.5
+            obj.StudsPerTileV = obj.StudsPerTileV * 1.5
+        elseif obj:IsA("SurfaceGui") then
+            obj.Face = Enum.NormalId.Front
+        elseif obj:IsA("ParticleEmitter") then
+            obj.Rate = math.min(obj.Rate, 20)
+            obj.Lifetime = NumberRange.new(0.5, 1.2)
+        end
+    end
+    
+    -- Sound optimization
+    SoundService.AmbientReverb = Enum.ReverbType.NoReverb
+    for _, sound in pairs(Workspace:GetDescendants()) do
+        if sound:IsA("Sound") and sound.Volume > 0.6 then
+            sound.Volume = 0.4
+        end
+    end
+    
+    settings.qualityLevel = "FPS Boost"
+    statusLabel.Text = "📈 FPS Boost"
+    statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    showNotification("📈 FPS Boost Applied!", Color3.fromRGB(0, 255, 0))
+end
 
--- Settings toggles
-local settingsTitle = Instance.new("TextLabel")
-settingsTitle.Size = UDim2.new(1, 0, 0, 20)
-settingsTitle.Position = UDim2.new(0, 0, 0, 5)
-settingsTitle.BackgroundTransparency = 1
-settingsTitle.Text = "⚙️ Settings"
-settingsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-settingsTitle.TextScaled = true
-settingsTitle.Font = Enum.Font.GothamBold
-settingsTitle.Parent = settingsFrame
+local function lowEndMode()
+    statusLabel.Text = "🔄 Low-End Mode..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    
+    -- Minimal settings
+    Lighting.Technology = Enum.Technology.Compatibility
+    Lighting.GlobalShadows = false
+    Lighting.Brightness = 1
+    
+    -- Remove all effects
+    for _, effect in pairs(Lighting:GetChildren()) do
+        if effect:IsA("PostEffect") then
+            effect:Destroy()
+        end
+    end
+    
+    -- Aggressive optimization
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            obj.Material = Enum.Material.Plastic
+            obj.CastShadow = false
+            obj.CanCollide = obj.CanCollide -- Keep collision but optimize
+        elseif obj:IsA("MeshPart") then
+            obj.RenderFidelity = Enum.RenderFidelity.Performance
+        elseif obj:IsA("UnionOperation") then
+            obj.UsePartColor = true
+        elseif obj:IsA("ParticleEmitter") then
+            obj.Enabled = false
+        elseif obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Explosion") then
+            obj.Enabled = false
+        end
+    end
+    
+    settings.qualityLevel = "Low-End"
+    statusLabel.Text = "📱 Low-End"
+    statusLabel.TextColor3 = Color3.fromRGB(128, 128, 128)
+    showNotification("📱 Low-End Mode Optimized!", Color3.fromRGB(128, 128, 128))
+end
 
-createMiniToggle("Auto", settings.autoEnhance, function(value)
-    settings.autoEnhance = value
-end, 25)
+local function antiLag()
+    statusLabel.Text = "🔄 Anti-Lag..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    
+    local lagSources = 0
+    
+    -- Detect and fix lag sources
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("Script") and obj.Disabled == false and not obj:IsDescendantOf(player.PlayerGui) then
+            lagSources = lagSources + 1
+        elseif obj:IsA("ParticleEmitter") and obj.Rate > 100 then
+            obj.Rate = 30
+            lagSources = lagSources + 1
+        elseif obj:IsA("Sound") and obj.Volume > 0.7 and not obj.Playing then
+            obj.Volume = 0.4
+            lagSources = lagSources + 1
+        elseif obj:IsA("Explosion") then
+            obj.Visible = false
+            lagSources = lagSources + 1
+        elseif obj:IsA("Fire") and obj.Size > 10 then
+            obj.Size = 5
+            lagSources = lagSources + 1
+        end
+    end
+    
+    -- Memory cleanup
+    wait(0.5)
+    for i = 1, 5 do
+        game:GetService("RunService").Heartbeat:Wait()
+    end
+    
+    settings.qualityLevel = "Anti-Lag"
+    statusLabel.Text = "🛡️ Anti-Lag"
+    statusLabel.TextColor3 = Color3.fromRGB(0, 191, 255)
+    showNotification("🛡️ Anti-Lag: " .. lagSources .. " sources fixed!", Color3.fromRGB(0, 191, 255))
+end
 
-createMiniToggle("FPS+", settings.fpsBoost, function(value)
-    settings.fpsBoost = value
-end, 42)
+local function resetAll()
+    statusLabel.Text = "🔄 Resetting..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    
+    -- Reset lighting to default
+    Lighting.Brightness = 1
+    Lighting.Ambient = Color3.fromRGB(70, 70, 70)
+    Lighting.OutdoorAmbient = Color3.fromRGB(70, 70, 70)
+    Lighting.Technology = Enum.Technology.Compatibility
+    Lighting.GlobalShadows = false
+    Lighting.ShadowSoftness = 0.2
+    
+    -- Remove all custom effects
+    for _, effect in pairs(Lighting:GetChildren()) do
+        if effect:IsA("PostEffect") and (effect.Name:find("Ultra") or effect.Name:find("Enhanced") or 
+           effect.Name:find("Cinematic") or effect.Name:find("Weather") or effect.Name:find("Night")) then
+            effect:Destroy()
+        end
+    end
+    
+    settings.qualityLevel = "Default"
+    statusLabel.Text = "⚡ Ready"
+    statusLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
+    showNotification("🔄 All Settings Reset!", Color3.fromRGB(255, 165, 0))
+end
 
-createMiniToggle("Particles", settings.particleOptimize, function(value)
-    settings.particleOptimize = value
-end, 59)
+-- Tab switching functionality
+local function switchToTab(tabName)
+    settings.currentTab = tabName
+    
+    if tabName == "enhance" then
+        enhanceTab.BackgroundColor3 = Color3.fromRGB(50, 200, 100)
+        enhanceTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+        performanceTab.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
+        performanceTab.TextColor3 = Color3.fromRGB(200, 200, 200)
+        
+        enhanceContent.Visible = true
+        performanceContent.Visible = false
+    else
+        performanceTab.BackgroundColor3 = Color3.fromRGB(255, 100, 50)
+        performanceTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+        enhanceTab.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
+        enhanceTab.TextColor3 = Color3.fromRGB(200, 200, 200)
+        
+        performanceContent.Visible = true
+        enhanceContent.Visible = false
+    end
+end
 
-createMiniToggle("Sound", settings.soundOptimize, function(value)
-    settings.soundOptimize = value
-end, 76)
+-- Tab click events
+enhanceTab.MouseButton1Click:Connect(function()
+    if settings.currentTab ~= "enhance" then
+        switchToTab("enhance")
+        
+        local tabTween = TweenService:Create(enhanceTab,
+            TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+            {Size = UDim2.new(0.48, 5, 1, 5)}
+        )
+        tabTween:Play()
+        
+        tabTween.Completed:Connect(function()
+            local returnTween = TweenService:Create(enhanceTab,
+                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Size = UDim2.new(0.48, 0, 1, 0)}
+            )
+            returnTween:Play()
+        end)
+    end
+end)
 
--- FPS và Performance Monitoring (chạy ngầm)
+performanceTab.MouseButton1Click:Connect(function()
+    if settings.currentTab ~= "performance" then
+        switchToTab("performance")
+        
+        local tabTween = TweenService:Create(performanceTab,
+            TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+            {Size = UDim2.new(0.48, 5, 1, 5)}
+        )
+        tabTween:Play()
+        
+        tabTween.Completed:Connect(function()
+            local returnTween = TweenService:Create(performanceTab,
+                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Size = UDim2.new(0.48, 0, 1, 0)}
+            )
+            returnTween:Play()
+        end)
+    end
+end)
+
+-- Create Enhanced Graphics Buttons (Tab 1)
+createAdvancedButton("Ultra", "✨", ultraLighting, Color3.fromRGB(255, 215, 0), enhanceContent, 1)
+createAdvancedButton("Cinematic", "🎬", cinematicLighting, Color3.fromRGB(138, 43, 226), enhanceContent, 2)
+createAdvancedButton("Enhanced", "🌟", enhancedLighting, Color3.fromRGB(70, 130, 180), enhanceContent, 3)
+createAdvancedButton("Realistic", "🌍", realisticLighting, Color3.fromRGB(34, 139, 34), enhanceContent, 4)
+createAdvancedButton("Fullbright", "💡", fullbrightMode, Color3.fromRGB(255, 255, 0), enhanceContent, 5)
+createAdvancedButton("Night Vision", "🔍", nightVision, Color3.fromRGB(0, 255, 0), enhanceContent, 6)
+createAdvancedButton("Rain", "🌧️", rainWeather, Color3.fromRGB(70, 130, 180), enhanceContent, 7)
+createAdvancedButton("Sunset", "🌅", sunsetWeather, Color3.fromRGB(255, 165, 0), enhanceContent, 8)
+
+-- Create Performance Buttons (Tab 2)
+createAdvancedButton("Extreme", "🚀", extremePerformance, Color3.fromRGB(255, 69, 0), performanceContent, 1)
+createAdvancedButton("Performance", "⚡", performanceMode, Color3.fromRGB(255, 140, 0), performanceContent, 2)
+createAdvancedButton("FPS Boost", "📈", fpsBoostMode, Color3.fromRGB(0, 255, 0), performanceContent, 3)
+createAdvancedButton("Low-End", "📱", lowEndMode, Color3.fromRGB(128, 128, 128), performanceContent, 4)
+createAdvancedButton("Anti-Lag", "🛡️", antiLag, Color3.fromRGB(0, 191, 255), performanceContent, 5)
+createAdvancedButton("Reset All", "🔄", resetAll, Color3.fromRGB(255, 165, 0), performanceContent, 6)
+
+-- Update canvas sizes
+enhanceContent.CanvasSize = UDim2.new(0, 0, 0, math.ceil(8/3) * 48) -- 8 buttons, 3 columns
+performanceContent.CanvasSize = UDim2.new(0, 0, 0, math.ceil(6/3) * 48) -- 6 buttons, 3 columns
+
+-- FPS Monitor
 local fps = 0
 local frameTime = tick()
 local frameCount = 0
@@ -603,342 +984,161 @@ fpsMonitor = RunService.Heartbeat:Connect(function()
         frameTime = tick()
         frameCount = 0
         
-        if settings.uiVisible then
-            fpsLabel.Text = "📊 FPS: " .. fps .. "  📡 Ping: " .. math.random(20, 150) .. "ms"
-            
-            if fps >= 55 then
-                fpsLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-            elseif fps >= 40 then
-                fpsLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-            elseif fps >= 25 then
-                fpsLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
-            else
-                fpsLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-            end
+        fpsLabel.Text = "📊 FPS: " .. fps
+        
+        -- Dynamic FPS coloring
+        if fps >= 50 then
+            fpsLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+        elseif fps >= 35 then
+            fpsLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+        elseif fps >= 20 then
+            fpsLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+        else
+            fpsLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
         end
     end
 end)
 
--- Auto-optimizer (chạy ngầm)
-autoOptimizer = spawn(function()
-    while wait(10) do
-        if settings.autoEnhance and fps < 25 then
-            extremePerformanceMode()
-        end
-        
-        if settings.particleOptimize then
-            for _, obj in pairs(Workspace:GetDescendants()) do
-                if obj:IsA("ParticleEmitter") and obj.Rate > 60 then
-                    obj.Rate = 30
-                end
-            end
-        end
-        
-        if settings.soundOptimize then
-            for _, sound in pairs(Workspace:GetDescendants()) do
-                if sound:IsA("Sound") and sound.Volume > 0.8 and not sound.Playing then
-                    sound.Volume = 0.6
-                end
-            end
-        end
-    end
-end)
-
--- Toggle UI visibility với X button
+-- Close/Hide UI System
 closeButton.MouseButton1Click:Connect(function()
     settings.uiVisible = not settings.uiVisible
     
-    if settings.uiVisible then
-        -- Show UI
-        frame.Visible = true
-        local showTween = TweenService:Create(frame,
-            TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+    if not settings.uiVisible then
+        -- Hide UI with animation
+        local hideTween = TweenService:Create(mainFrame,
+            TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In),
             {
-                Position = UDim2.new(0.5, -400, 0, 10),
-                BackgroundTransparency = 0
-            }
-        )
-        showTween:Play()
-        closeButton.Text = "✕"
-        showNotification("👁️ UI Shown - Functions still running!", Color3.fromRGB(0, 255, 127))
-    else
-        -- Hide UI but keep functions running
-        local hideTween = TweenService:Create(frame,
-            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
-            {
-                Position = UDim2.new(0.5, -400, 0, -130),
-                BackgroundTransparency = 1
+                Position = UDim2.new(0.5, -225, 0, -350),
+                Size = UDim2.new(0, 400, 0, 280)
             }
         )
         hideTween:Play()
         
         hideTween.Completed:Connect(function()
-            frame.Visible = false
+            mainFrame.Visible = false
         end)
         
-        showNotification("🔍 UI Hidden - All functions still active!", Color3.fromRGB(255, 165, 0))
+        -- Create floating indicator
+        local floatingButton = Instance.new("TextButton")
+        floatingButton.Size = UDim2.new(0, 50, 0, 50)
+        floatingButton.Position = UDim2.new(1, -60, 0, 10)
+        floatingButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+        floatingButton.BorderSizePixel = 0
+        floatingButton.Text = "🎮"
+        floatingButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        floatingButton.TextScaled = true
+        floatingButton.Font = Enum.Font.GothamBold
+        floatingButton.BackgroundTransparency = 0.2
+        floatingButton.Parent = screenGui
         
-        -- Tạo mini indicator khi UI ẩn
-        local miniIndicator = Instance.new("TextButton")
-        miniIndicator.Size = UDim2.new(0, 40, 0, 40)
-        miniIndicator.Position = UDim2.new(1, -50, 0, 10)
-        miniIndicator.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
-        miniIndicator.BorderSizePixel = 0
-        miniIndicator.Text = "🚀"
-        miniIndicator.TextColor3 = Color3.fromRGB(255, 255, 255)
-        miniIndicator.TextScaled = true
-        miniIndicator.Font = Enum.Font.GothamBold
-        miniIndicator.BackgroundTransparency = 0.3
-        miniIndicator.Parent = screenGui
+        local floatingCorner = Instance.new("UICorner")
+        floatingCorner.CornerRadius = UDim.new(0, 25)
+        floatingCorner.Parent = floatingButton
         
-        local miniCorner = Instance.new("UICorner")
-        miniCorner.CornerRadius = UDim.new(0, 20)
-        miniCorner.Parent = miniIndicator
+        -- Floating button animations
+        local floatTween = TweenService:Create(floatingButton,
+            TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+            {
+                Position = UDim2.new(1, -60, 0, 20),
+                BackgroundTransparency = 0.5
+            }
+        )
+        floatTween:Play()
         
-        -- Click để show lại UI
-        miniIndicator.MouseButton1Click:Connect(function()
+        -- Click to show UI again
+        floatingButton.MouseButton1Click:Connect(function()
             settings.uiVisible = true
-            frame.Visible = true
+            mainFrame.Visible = true
             
-            local showTween = TweenService:Create(frame,
-                TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+            local showTween = TweenService:Create(mainFrame,
+                TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
                 {
-                    Position = UDim2.new(0.5, -400, 0, 10),
-                    BackgroundTransparency = 0
+                    Position = UDim2.new(0.5, -225, 0.5, -160),
+                    Size = UDim2.new(0, 450, 0, 320)
                 }
             )
             showTween:Play()
             
-            miniIndicator:Destroy()
+            floatTween:Cancel()
+            floatingButton:Destroy()
             showNotification("👁️ UI Restored!", Color3.fromRGB(0, 255, 127))
         end)
         
-        -- Pulse animation cho mini indicator
-        local pulseTween = TweenService:Create(miniIndicator,
-            TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
-            {BackgroundTransparency = 0.7}
-        )
-        pulseTween:Play()
+        showNotification("🔍 UI Hidden - All functions active!", Color3.fromRGB(255, 165, 0))
     end
 end)
 
--- Update canvas size for horizontal scroll
-scrollFrame.CanvasSize = UDim2.new(0, listLayout.AbsoluteContentSize.X + 10, 0, 0)
-listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    scrollFrame.CanvasSize = UDim2.new(0, listLayout.AbsoluteContentSize.X + 10, 0, 0)
+-- Background optimization (runs even when UI hidden)
+spawn(function()
+    while true do
+        wait(15)
+        if settings.fpsBoost and fps < 25 then
+            -- Auto performance boost when FPS is low
+            for _, obj in pairs(Workspace:GetDescendants()) do
+                if obj:IsA("ParticleEmitter") and obj.Rate > 50 then
+                    obj.Rate = 20
+                elseif obj:IsA("Sound") and obj.Volume > 0.5 and not obj.Playing then
+                    obj.Volume = 0.3
+                end
+            end
+        end
+    end
 end)
 
--- Hotkey system (hoạt động kể cả khi UI ẩn)
+-- Hotkeys (work even when UI hidden)
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     
     if input.KeyCode == Enum.KeyCode.F1 then
         ultraLighting()
     elseif input.KeyCode == Enum.KeyCode.F2 then
-        extremePerformanceMode()
+        extremePerformance()
     elseif input.KeyCode == Enum.KeyCode.F3 then
-        aiAntiLag()
+        antiLag()
     elseif input.KeyCode == Enum.KeyCode.F4 then
-        -- Toggle UI visibility
-        closeButton:Fire("MouseButton1Click")
+        closeButton.MouseButton1Click:Fire()
     elseif input.KeyCode == Enum.KeyCode.F5 then
-        resetLighting()
+        resetAll()
     elseif input.KeyCode == Enum.KeyCode.F6 then
         fullbrightMode()
+    elseif input.KeyCode == Enum.KeyCode.F7 then
+        fpsBoostMode()
+    elseif input.KeyCode == Enum.KeyCode.F8 then
+        switchToTab(settings.currentTab == "enhance" and "performance" or "enhance")
     end
 end)
-
--- Background processes để đảm bảo script vẫn hoạt động khi UI ẩn
-local function backgroundEnhancement()
-    while true do
-        wait(30) -- Check mỗi 30 giây
-        
-        if settings.autoEnhance and fps < 20 then
-            extremePerformanceMode()
-            if not settings.uiVisible then
-                showNotification("🤖 Auto-boost applied (Background)", Color3.fromRGB(255, 69, 0))
-            end
-        end
-        
-        -- Memory cleanup
-        for i = 1, 3 do
-            game:GetService("RunService").Heartbeat:Wait()
-        end
-    end
-end
-
--- Anti-detection system
-local function antiDetection()
-    -- Rename script randomly
-    screenGui.Name = "PlayerGui_" .. math.random(1000, 9999)
-    
-    -- Hide from developer console
-    pcall(function()
-        screenGui.Parent = game:GetService("CoreGui")
-    end)
-    
-    if screenGui.Parent ~= game:GetService("CoreGui") then
-        screenGui.Parent = playerGui
-    end
-end
-
--- Advanced background particle optimization
-local function advancedParticleOptimizer()
-    while true do
-        wait(15)
-        if settings.particleOptimize then
-            local optimizedCount = 0
-            for _, obj in pairs(Workspace:GetDescendants()) do
-                if obj:IsA("ParticleEmitter") then
-                    if obj.Rate > 50 then
-                        obj.Rate = 30
-                        optimizedCount = optimizedCount + 1
-                    end
-                    if obj.Lifetime.Max > 3 then
-                        obj.Lifetime = NumberRange.new(obj.Lifetime.Min, 2)
-                    end
-                elseif obj:IsA("Fire") then
-                    obj.Size = math.min(obj.Size, 5)
-                elseif obj:IsA("Smoke") then
-                    obj.Size = math.min(obj.Size, 3)
-                end
-            end
-            
-            if optimizedCount > 0 and not settings.uiVisible then
-                showNotification("🎆 " .. optimizedCount .. " particles optimized", Color3.fromRGB(138, 43, 226))
-            end
-        end
-    end
-end
-
--- Sound optimization background process
-local function advancedSoundOptimizer()
-    while true do
-        wait(20)
-        if settings.soundOptimize then
-            local optimizedSounds = 0
-            for _, sound in pairs(Workspace:GetDescendants()) do
-                if sound:IsA("Sound") then
-                    if sound.Volume > 0.7 and not sound.Playing then
-                        sound.Volume = 0.5
-                        optimizedSounds = optimizedSounds + 1
-                    end
-                    if sound.RollOffMode == Enum.RollOffMode.Linear then
-                        sound.RollOffMode = Enum.RollOffMode.InverseTapered
-                    end
-                end
-            end
-            
-            if optimizedSounds > 0 and not settings.uiVisible then
-                showNotification("🔊 " .. optimizedSounds .. " sounds optimized", Color3.fromRGB(255, 140, 0))
-            end
-        end
-    end
-end
-
--- Texture quality manager
-local function textureQualityManager()
-    while true do
-        wait(25)
-        if settings.textureOptimize then
-            for _, obj in pairs(Workspace:GetDescendants()) do
-                if obj:IsA("MeshPart") then
-                    obj.RenderFidelity = Enum.RenderFidelity.Performance
-                elseif obj:IsA("UnionOperation") then
-                    obj.UsePartColor = true
-                elseif obj:IsA("Texture") or obj:IsA("Decal") then
-                    obj.StudsPerTileU = math.max(obj.StudsPerTileU, 2)
-                    obj.StudsPerTileV = math.max(obj.StudsPerTileV, 2)
-                end
-            end
-        end
-    end
-end
-
--- Performance monitor với auto-adjustment
-local function performanceMonitor()
-    local fpsHistory = {}
-    while true do
-        wait(5)
-        table.insert(fpsHistory, fps)
-        
-        if #fpsHistory > 12 then -- Keep 1 minute of history
-            table.remove(fpsHistory, 1)
-        end
-        
-        -- Calculate average FPS
-        local avgFPS = 0
-        for _, f in ipairs(fpsHistory) do
-            avgFPS = avgFPS + f
-        end
-        avgFPS = avgFPS / #fpsHistory
-        
-        -- Auto-adjust quality based on performance
-        if avgFPS < 20 and settings.fpsBoost then
-            extremePerformanceMode()
-            if not settings.uiVisible then
-                showNotification("⚡ Auto-performance boost activated", Color3.fromRGB(255, 69, 0))
-            end
-        elseif avgFPS > 50 and settings.qualityLevel == "Performance" then
-            enhanceLighting()
-            if not settings.uiVisible then
-                showNotification("✨ Quality restored due to good FPS", Color3.fromRGB(0, 255, 127))
-            end
-        end
-    end
-end
-
--- Start all background processes
-spawn(backgroundEnhancement)
-spawn(antiDetection)
-spawn(advancedParticleOptimizer)
-spawn(advancedSoundOptimizer) 
-spawn(textureQualityManager)
-spawn(performanceMonitor)
 
 -- Auto-enhancement on startup
 spawn(function()
-    wait(3)
-    if settings.autoEnhance then
-        enhanceLighting()
-        showNotification("🤖 Auto-enhancement started!", Color3.fromRGB(0, 255, 127))
-    end
+    wait(2)
+    enhancedLighting()
+    showNotification("🤖 Auto-enhancement activated!", Color3.fromRGB(0, 255, 127))
 end)
 
--- Cleanup function khi player leaves
+-- Welcome sequence
+spawn(function()
+    wait(1)
+    showNotification("🎮 Graphics Master V4 Ready!", Color3.fromRGB(70, 130, 180), 4)
+    wait(2)
+    showNotification("✨ Tab 1: Enhancement | 🚀 Tab 2: Performance", Color3.fromRGB(255, 215, 0), 3)
+    wait(1)
+    showNotification("⌨️ Hotkeys F1-F8 | ✕ to hide UI", Color3.fromRGB(0, 191, 255), 3)
+end)
+
+-- Cleanup on exit
 game.Players.PlayerRemoving:Connect(function(plr)
     if plr == player then
-        -- Disconnect all background processes
         if fpsMonitor then fpsMonitor:Disconnect() end
-        if autoOptimizer then autoOptimizer:Disconnect() end
-        
-        -- Clean up lighting effects
-        for _, effect in pairs(Lighting:GetChildren()) do
-            if effect:IsA("PostEffect") and (effect.Name:find("Ultra") or effect.Name:find("Weather")) then
-                effect:Destroy()
-            end
-        end
     end
 end)
 
--- Welcome messages
-spawn(function()
-    wait(2)
-    showNotification("🚀 Advanced Graphics Booster V3 Ready!", Color3.fromRGB(70, 130, 180), 4)
-    wait(2)
-    showNotification("✕ Click X to hide UI (functions stay active!)", Color3.fromRGB(255, 215, 0), 3)
-    wait(1)
-    showNotification("⌨️ Hotkeys: F1-F6 work even when hidden!", Color3.fromRGB(0, 191, 255), 3)
-end)
-
--- Final setup message
-print("🚀 Advanced Graphics Booster V1.0 - HORIZONTAL UI VERSION")
-print("📱 Horizontal layout with compact controls")
-print("✕ Click X button to hide UI - all functions remain active!")
-print("🔄 Background processes: FPS monitor, auto-optimization, particle/sound management")
-print("⌨️  Hotkeys (work when UI hidden): F1=Ultra, F2=Performance, F3=AI-Lag, F4=Toggle UI, F5=Reset, F6=Fullbright")
-print("🎯 Settings toggles on the right panel")
-print("📊 Real-time FPS and ping display")
-print("🤖 Anti-detection and memory management included")
-print("⚡ All background optimizations continue running when UI is closed")
-print("🎮 Made by Advanced Graphics Enhancement Team - V1.0 Horizontal Edition")
+-- Final logs
+print("🎮 Graphics Master V4.0 - Beautiful Dual Tab Interface")
+print("✨ Tab 1: TĂNG ĐỒ HỌA - Ultra, Cinematic, Enhanced, Realistic, Fullbright, Night Vision, Weather")
+print("🚀 Tab 2: GIẢM ĐỒ HỌA - Extreme, Performance, FPS Boost, Low-End, Anti-Lag, Reset")
+print("🎨 Modern UI with glassmorphism, smooth animations, and glowing effects")
+print("⌨️  Enhanced Hotkeys: F1=Ultra, F2=Extreme, F3=Anti-Lag, F4=Toggle UI, F5=Reset, F6=Fullbright, F7=FPS Boost, F8=Switch Tab")
+print("🔄 Background processes continue running when UI is hidden")
+print("📊 Real-time FPS monitoring with color indicators")
+print("🎯 Click ✕ to hide UI, click floating 🎮 to restore")
+print("🌟 Made by Graphics Enhancement Team - V4.0 Dual Tab Edition")
