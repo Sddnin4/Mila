@@ -595,4 +595,39 @@ local startPos = nil
 
 local function makeDraggable(frame)
     frame.InputBegan:Connect(function(input)
-        if input.UserInputType =
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+        end
+    end)
+    
+    frame.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+    
+    frame.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+end
+
+makeDraggable(headerFrame)
+makeDraggable(minimizedFrame)
+
+print("🎵 Music Player với Tab Danh Sách đã được tải!")
+print("✨ Danh sách nhạc đã được cập nhật:")
+print("   - 15 bài nhạc mới")
+print("   - Bao gồm: Raining 🌮, Fart, Get out!, Dare, v.v.")
+print("   - Tab 'Nhập ID': Nhập ID thủ công") 
+print("   - Tab 'Danh Sách': Tìm kiếm và phát nhạc")
+print("   - Click ▶️ để phát bài từ danh sách")
