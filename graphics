@@ -932,7 +932,7 @@ spawn(function()
 end)
 
 -- Final setup message
-print("🚀 Advanced Graphics Booster V3.0 - HORIZONTAL UI VERSION")
+print("🚀 Advanced Graphics Booster V1.0 - HORIZONTAL UI VERSION")
 print("📱 Horizontal layout with compact controls")
 print("✕ Click X button to hide UI - all functions remain active!")
 print("🔄 Background processes: FPS monitor, auto-optimization, particle/sound management")
