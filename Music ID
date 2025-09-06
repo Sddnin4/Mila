@@ -1,4 +1,4 @@
--- Roblox Music Player UI Script (Compact Style)
+-- Roblox Music Player UI Script (With Playlist Tab)
 -- Tạo bởi Mila
 
 local Players = game:GetService("Players")
@@ -8,21 +8,39 @@ local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
+-- Danh sách nhạc mẫu (có thể thêm/sửa)
+local musicLibrary = {
+    {name = "Raining 🌮", id = "142376088"},
+    {name = "Fart", id = "4809574295"},
+    {name = "Get out!", id = "18900008907"},
+    {name = "Dare", id = "139188421510869"},
+    {name = "The World", id = "1836847994"},
+    {name = "Turks and CaiCos", id = "105615035181825"},
+    {name = "My Way", id = "1837856940"},
+    {name = "Clash Royale", id = "109699229726518"},
+    {name = "Holiday", id = "1836006159"},
+    {name = "Metamorphosis Remix", id = "15689451063"},
+    {name = "🫡", id = "1845922899"},
+    {name = "Bình Bucu", id = "7000891754"},
+    {name = "Anh bạn à!", id = "7108789306"},
+    {name = "Cải Lương", id = "1843400900"},
+    {name = "Đám ma", id = "1845920681"},
+}
+
 -- Tạo ScreenGui
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "MusicPlayerGui"
 screenGui.Parent = playerGui
 
--- Tạo main frame
+-- Tạo main frame (tăng kích thước để chứa tabs)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 280, 0, 140)
-mainFrame.Position = UDim2.new(0.5, -140, 0.5, -70)
+mainFrame.Size = UDim2.new(0, 380, 0, 300)
+mainFrame.Position = UDim2.new(0.5, -190, 0.5, -150)
 mainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 
--- Tạo corner cho main frame
 local mainCorner = Instance.new("UICorner")
 mainCorner.CornerRadius = UDim.new(0, 8)
 mainCorner.Parent = mainFrame
@@ -40,58 +58,124 @@ local blurCorner = Instance.new("UICorner")
 blurCorner.CornerRadius = UDim.new(0, 8)
 blurCorner.Parent = blurFrame
 
--- Tạo title label
+-- Header với title và control buttons
+local headerFrame = Instance.new("Frame")
+headerFrame.Size = UDim2.new(1, 0, 0, 40)
+headerFrame.Position = UDim2.new(0, 0, 0, 0)
+headerFrame.BackgroundTransparency = 1
+headerFrame.Parent = mainFrame
+
 local titleLabel = Instance.new("TextLabel")
-titleLabel.Name = "TitleLabel"
-titleLabel.Size = UDim2.new(0, 80, 0, 25)
-titleLabel.Position = UDim2.new(0, 15, 0, 15)
+titleLabel.Size = UDim2.new(0, 120, 1, 0)
+titleLabel.Position = UDim2.new(0, 15, 0, 0)
 titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "Music ID"
+titleLabel.Text = "🎵 Music Player"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.TextSize = 16
-titleLabel.Font = Enum.Font.Gotham
+titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-titleLabel.Parent = mainFrame
+titleLabel.Parent = headerFrame
 
--- Tạo nút minimize
+-- Nút minimize
 local minimizeButton = Instance.new("TextButton")
-minimizeButton.Name = "MinimizeButton"
 minimizeButton.Size = UDim2.new(0, 30, 0, 25)
-minimizeButton.Position = UDim2.new(1, -70, 0, 10)
+minimizeButton.Position = UDim2.new(1, -70, 0, 7)
 minimizeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 minimizeButton.BorderSizePixel = 0
 minimizeButton.Text = "▢"
 minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 minimizeButton.TextSize = 14
 minimizeButton.Font = Enum.Font.GothamBold
-minimizeButton.Parent = mainFrame
+minimizeButton.Parent = headerFrame
 
 local minimizeCorner = Instance.new("UICorner")
 minimizeCorner.CornerRadius = UDim.new(0, 4)
 minimizeCorner.Parent = minimizeButton
 
--- Tạo nút close
+-- Nút close
 local closeButton = Instance.new("TextButton")
-closeButton.Name = "CloseButton"
 closeButton.Size = UDim2.new(0, 30, 0, 25)
-closeButton.Position = UDim2.new(1, -35, 0, 10)
+closeButton.Position = UDim2.new(1, -35, 0, 7)
 closeButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
 closeButton.BorderSizePixel = 0
 closeButton.Text = "✕"
 closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 closeButton.TextSize = 14
 closeButton.Font = Enum.Font.GothamBold
-closeButton.Parent = mainFrame
+closeButton.Parent = headerFrame
 
 local closeCorner = Instance.new("UICorner")
 closeCorner.CornerRadius = UDim.new(0, 4)
 closeCorner.Parent = closeButton
 
--- Tạo TextBox để nhập ID
+-- Tab buttons frame
+local tabFrame = Instance.new("Frame")
+tabFrame.Size = UDim2.new(1, -20, 0, 35)
+tabFrame.Position = UDim2.new(0, 10, 0, 45)
+tabFrame.BackgroundTransparency = 1
+tabFrame.Parent = mainFrame
+
+-- Tab 1: Manual Input
+local tab1Button = Instance.new("TextButton")
+tab1Button.Size = UDim2.new(0.5, -5, 1, 0)
+tab1Button.Position = UDim2.new(0, 0, 0, 0)
+tab1Button.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
+tab1Button.BorderSizePixel = 0
+tab1Button.Text = "Nhập ID"
+tab1Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+tab1Button.TextSize = 14
+tab1Button.Font = Enum.Font.GothamBold
+tab1Button.Parent = tabFrame
+
+local tab1Corner = Instance.new("UICorner")
+tab1Corner.CornerRadius = UDim.new(0, 6)
+tab1Corner.Parent = tab1Button
+
+-- Tab 2: Playlist
+local tab2Button = Instance.new("TextButton")
+tab2Button.Size = UDim2.new(0.5, -5, 1, 0)
+tab2Button.Position = UDim2.new(0.5, 5, 0, 0)
+tab2Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+tab2Button.BorderSizePixel = 0
+tab2Button.Text = "Danh Sách"
+tab2Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+tab2Button.TextSize = 14
+tab2Button.Font = Enum.Font.GothamBold
+tab2Button.Parent = tabFrame
+
+local tab2Corner = Instance.new("UICorner")
+tab2Corner.CornerRadius = UDim.new(0, 6)
+tab2Corner.Parent = tab2Button
+
+-- Content frame cho tabs
+local contentFrame = Instance.new("Frame")
+contentFrame.Size = UDim2.new(1, -20, 1, -90)
+contentFrame.Position = UDim2.new(0, 10, 0, 85)
+contentFrame.BackgroundTransparency = 1
+contentFrame.Parent = mainFrame
+
+-- TAB 1 CONTENT: Manual Input
+local tab1Content = Instance.new("Frame")
+tab1Content.Size = UDim2.new(1, 0, 1, 0)
+tab1Content.Position = UDim2.new(0, 0, 0, 0)
+tab1Content.BackgroundTransparency = 1
+tab1Content.Visible = true
+tab1Content.Parent = contentFrame
+
+local musicIdLabel = Instance.new("TextLabel")
+musicIdLabel.Size = UDim2.new(1, 0, 0, 20)
+musicIdLabel.Position = UDim2.new(0, 5, 0, 10)
+musicIdLabel.BackgroundTransparency = 1
+musicIdLabel.Text = "Music ID:"
+musicIdLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+musicIdLabel.TextSize = 14
+musicIdLabel.Font = Enum.Font.Gotham
+musicIdLabel.TextXAlignment = Enum.TextXAlignment.Left
+musicIdLabel.Parent = tab1Content
+
 local musicIdBox = Instance.new("TextBox")
-musicIdBox.Name = "MusicIdBox"
-musicIdBox.Size = UDim2.new(1, -30, 0, 35)
-musicIdBox.Position = UDim2.new(0, 15, 0, 45)
+musicIdBox.Size = UDim2.new(1, -10, 0, 35)
+musicIdBox.Position = UDim2.new(0, 5, 0, 35)
 musicIdBox.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 musicIdBox.BorderSizePixel = 1
 musicIdBox.BorderColor3 = Color3.fromRGB(100, 150, 200)
@@ -100,55 +184,110 @@ musicIdBox.Text = ""
 musicIdBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 musicIdBox.TextSize = 14
 musicIdBox.Font = Enum.Font.Gotham
-musicIdBox.ClearTextOnFocus = false
-musicIdBox.Parent = mainFrame
+musicIdBox.Parent = tab1Content
 
--- Corner cho TextBox
 local boxCorner = Instance.new("UICorner")
 boxCorner.CornerRadius = UDim.new(0, 6)
 boxCorner.Parent = musicIdBox
 
--- Tạo nút Play
-local playButton = Instance.new("TextButton")
-playButton.Name = "PlayButton"
-playButton.Size = UDim2.new(0.45, -10, 0, 35)
-playButton.Position = UDim2.new(0, 15, 0, 90)
-playButton.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
-playButton.BorderSizePixel = 0
-playButton.Text = "Play"
-playButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-playButton.TextSize = 14
-playButton.Font = Enum.Font.GothamBold
-playButton.Parent = mainFrame
+-- Control buttons for tab 1
+local controlFrame1 = Instance.new("Frame")
+controlFrame1.Size = UDim2.new(1, -10, 0, 40)
+controlFrame1.Position = UDim2.new(0, 5, 0, 85)
+controlFrame1.BackgroundTransparency = 1
+controlFrame1.Parent = tab1Content
 
--- Corner cho Play button
-local playCorner = Instance.new("UICorner")
-playCorner.CornerRadius = UDim.new(0, 6)
-playCorner.Parent = playButton
+local playButton1 = Instance.new("TextButton")
+playButton1.Size = UDim2.new(0.48, 0, 1, 0)
+playButton1.Position = UDim2.new(0, 0, 0, 0)
+playButton1.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
+playButton1.BorderSizePixel = 0
+playButton1.Text = "▶️ Play"
+playButton1.TextColor3 = Color3.fromRGB(255, 255, 255)
+playButton1.TextSize = 14
+playButton1.Font = Enum.Font.GothamBold
+playButton1.Parent = controlFrame1
 
--- Tạo nút Stop
-local stopButton = Instance.new("TextButton")
-stopButton.Name = "StopButton"
-stopButton.Size = UDim2.new(0.45, -10, 0, 35)
-stopButton.Position = UDim2.new(0.55, 5, 0, 90)
-stopButton.BackgroundColor3 = Color3.fromRGB(244, 67, 54)
-stopButton.BorderSizePixel = 0
-stopButton.Text = "Stop"
-stopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-stopButton.TextSize = 14
-stopButton.Font = Enum.Font.GothamBold
-stopButton.Parent = mainFrame
+local play1Corner = Instance.new("UICorner")
+play1Corner.CornerRadius = UDim.new(0, 6)
+play1Corner.Parent = playButton1
 
--- Corner cho Stop button
-local stopCorner = Instance.new("UICorner")
-stopCorner.CornerRadius = UDim.new(0, 6)
-stopCorner.Parent = stopButton
+local stopButton1 = Instance.new("TextButton")
+stopButton1.Size = UDim2.new(0.48, 0, 1, 0)
+stopButton1.Position = UDim2.new(0.52, 0, 0, 0)
+stopButton1.BackgroundColor3 = Color3.fromRGB(244, 67, 54)
+stopButton1.BorderSizePixel = 0
+stopButton1.Text = "⏹️ Stop"
+stopButton1.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopButton1.TextSize = 14
+stopButton1.Font = Enum.Font.GothamBold
+stopButton1.Parent = controlFrame1
 
--- Tạo minimized frame (thu gọn)
+local stop1Corner = Instance.new("UICorner")
+stop1Corner.CornerRadius = UDim.new(0, 6)
+stop1Corner.Parent = stopButton1
+
+-- TAB 2 CONTENT: Playlist
+local tab2Content = Instance.new("Frame")
+tab2Content.Size = UDim2.new(1, 0, 1, 0)
+tab2Content.Position = UDim2.new(0, 0, 0, 0)
+tab2Content.BackgroundTransparency = 1
+tab2Content.Visible = false
+tab2Content.Parent = contentFrame
+
+-- Search box cho playlist
+local searchLabel = Instance.new("TextLabel")
+searchLabel.Size = UDim2.new(1, 0, 0, 20)
+searchLabel.Position = UDim2.new(0, 5, 0, 5)
+searchLabel.BackgroundTransparency = 1
+searchLabel.Text = "Tìm kiếm:"
+searchLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+searchLabel.TextSize = 14
+searchLabel.Font = Enum.Font.Gotham
+searchLabel.TextXAlignment = Enum.TextXAlignment.Left
+searchLabel.Parent = tab2Content
+
+local searchBox = Instance.new("TextBox")
+searchBox.Size = UDim2.new(1, -10, 0, 30)
+searchBox.Position = UDim2.new(0, 5, 0, 25)
+searchBox.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+searchBox.BorderSizePixel = 1
+searchBox.BorderColor3 = Color3.fromRGB(100, 150, 200)
+searchBox.PlaceholderText = "Nhập tên bài hát để tìm..."
+searchBox.Text = ""
+searchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+searchBox.TextSize = 12
+searchBox.Font = Enum.Font.Gotham
+searchBox.Parent = tab2Content
+
+local searchCorner = Instance.new("UICorner")
+searchCorner.CornerRadius = UDim.new(0, 6)
+searchCorner.Parent = searchBox
+
+-- ScrollingFrame cho danh sách nhạc
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Size = UDim2.new(1, -10, 1, -65)
+scrollFrame.Position = UDim2.new(0, 5, 0, 60)
+scrollFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+scrollFrame.BorderSizePixel = 0
+scrollFrame.ScrollBarThickness = 6
+scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+scrollFrame.Parent = tab2Content
+
+local scrollCorner = Instance.new("UICorner")
+scrollCorner.CornerRadius = UDim.new(0, 6)
+scrollCorner.Parent = scrollFrame
+
+-- UIListLayout cho scroll frame
+local listLayout = Instance.new("UIListLayout")
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Padding = UDim.new(0, 2)
+listLayout.Parent = scrollFrame
+
+-- Minimized frame
 local minimizedFrame = Instance.new("Frame")
-minimizedFrame.Name = "MinimizedFrame"
-minimizedFrame.Size = UDim2.new(0, 120, 0, 35)
-minimizedFrame.Position = UDim2.new(0.5, -60, 0, 20)
+minimizedFrame.Size = UDim2.new(0, 150, 0, 35)
+minimizedFrame.Position = UDim2.new(0.5, -75, 0, 20)
 minimizedFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 minimizedFrame.BorderSizePixel = 0
 minimizedFrame.Visible = false
@@ -158,9 +297,7 @@ local minimizedCorner = Instance.new("UICorner")
 minimizedCorner.CornerRadius = UDim.new(0, 6)
 minimizedCorner.Parent = minimizedFrame
 
--- Nút restore trong minimized frame
 local restoreButton = Instance.new("TextButton")
-restoreButton.Name = "RestoreButton"
 restoreButton.Size = UDim2.new(1, -30, 1, 0)
 restoreButton.Position = UDim2.new(0, 0, 0, 0)
 restoreButton.BackgroundTransparency = 1
@@ -170,9 +307,7 @@ restoreButton.TextSize = 12
 restoreButton.Font = Enum.Font.Gotham
 restoreButton.Parent = minimizedFrame
 
--- Nút close trong minimized frame
 local minimizedCloseButton = Instance.new("TextButton")
-minimizedCloseButton.Name = "MinimizedCloseButton"
 minimizedCloseButton.Size = UDim2.new(0, 25, 0, 25)
 minimizedCloseButton.Position = UDim2.new(1, -27, 0, 5)
 minimizedCloseButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
@@ -187,11 +322,13 @@ local minimizedCloseCorner = Instance.new("UICorner")
 minimizedCloseCorner.CornerRadius = UDim.new(0, 4)
 minimizedCloseCorner.Parent = minimizedCloseButton
 
--- Biến lưu trữ âm thanh hiện tại
+-- SCRIPT LOGIC
 local currentSound = nil
 local isMinimized = false
+local currentTab = 1
+local filteredMusic = {}
 
--- Function để tạo âm thanh mới
+-- Function để tạo âm thanh
 local function createSound(musicId)
     if currentSound then
         currentSound:Destroy()
@@ -208,49 +345,46 @@ end
 
 -- Function để tạo thông báo
 local function createNotification(text, color)
-    local notification = Instance.new("TextLabel")
-    notification.Size = UDim2.new(0, 200, 0, 40)
-    notification.Position = UDim2.new(0.5, -100, 0, -50)
-    notification.BackgroundColor3 = color
-    notification.BorderSizePixel = 0
-    notification.Text = text
-    notification.TextColor3 = Color3.fromRGB(255, 255, 255)
-    notification.TextSize = 12
-    notification.Font = Enum.Font.Gotham
-    notification.Parent = screenGui
-    
-    local notifCorner = Instance.new("UICorner")
-    notifCorner.CornerRadius = UDim.new(0, 6)
-    notifCorner.Parent = notification
-    
-    -- Tween để ẩn thông báo
-    local showTween = TweenService:Create(notification, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -100, 0, 10)})
-    showTween:Play()
-    
-    wait(2)
-    local hideTween = TweenService:Create(notification, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -100, 0, -50)})
-    hideTween:Play()
-    hideTween.Completed:Connect(function()
-        notification:Destroy()
+    spawn(function()
+        local notification = Instance.new("TextLabel")
+        notification.Size = UDim2.new(0, 250, 0, 40)
+        notification.Position = UDim2.new(0.5, -125, 0, -50)
+        notification.BackgroundColor3 = color
+        notification.BorderSizePixel = 0
+        notification.Text = text
+        notification.TextColor3 = Color3.fromRGB(255, 255, 255)
+        notification.TextSize = 12
+        notification.Font = Enum.Font.Gotham
+        notification.Parent = screenGui
+        
+        local notifCorner = Instance.new("UICorner")
+        notifCorner.CornerRadius = UDim.new(0, 6)
+        notifCorner.Parent = notification
+        
+        local showTween = TweenService:Create(notification, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -125, 0, 10)})
+        showTween:Play()
+        
+        wait(3)
+        local hideTween = TweenService:Create(notification, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -125, 0, -50)})
+        hideTween:Play()
+        hideTween.Completed:Connect(function()
+            notification:Destroy()
+        end)
     end)
 end
 
--- Function để phát nhạc
-local function playMusic()
-    local musicId = musicIdBox.Text
+-- Function để phát nhạc từ ID
+local function playMusicFromId(musicId, songName)
     if musicId == "" then
-        spawn(function()
-            createNotification("Vui lòng nhập ID nhạc!", Color3.fromRGB(244, 67, 54))
-        end)
+        createNotification("ID nhạc không hợp lệ!", Color3.fromRGB(244, 67, 54))
         return
     end
     
     currentSound = createSound(musicId)
     currentSound:Play()
     
-    spawn(function()
-        createNotification("Đang phát nhạc!", Color3.fromRGB(76, 175, 80))
-    end)
+    local displayText = songName or "Đang phát nhạc ID: " .. musicId
+    createNotification("🎵 " .. displayText, Color3.fromRGB(76, 175, 80))
 end
 
 -- Function để dừng nhạc
@@ -259,19 +393,135 @@ local function stopMusic()
         currentSound:Stop()
         currentSound:Destroy()
         currentSound = nil
-        
-        spawn(function()
-            createNotification("Đã dừng nhạc!", Color3.fromRGB(158, 158, 158))
-        end)
+        createNotification("⏹️ Đã dừng nhạc!", Color3.fromRGB(158, 158, 158))
     end
 end
 
--- Function để minimize/restore UI
+-- Function để tạo playlist items
+local function createPlaylistItem(musicData, index)
+    local itemFrame = Instance.new("Frame")
+    itemFrame.Size = UDim2.new(1, -12, 0, 40)
+    itemFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    itemFrame.BorderSizePixel = 0
+    itemFrame.LayoutOrder = index
+    itemFrame.Parent = scrollFrame
+    
+    local itemCorner = Instance.new("UICorner")
+    itemCorner.CornerRadius = UDim.new(0, 4)
+    itemCorner.Parent = itemFrame
+    
+    -- Song name label
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, -50, 1, 0)
+    nameLabel.Position = UDim2.new(0, 10, 0, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = musicData.name
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.TextSize = 11
+    nameLabel.Font = Enum.Font.Gotham
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    nameLabel.Parent = itemFrame
+    
+    -- Play button
+    local playBtn = Instance.new("TextButton")
+    playBtn.Size = UDim2.new(0, 35, 0, 30)
+    playBtn.Position = UDim2.new(1, -40, 0, 5)
+    playBtn.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
+    playBtn.BorderSizePixel = 0
+    playBtn.Text = "▶️"
+    playBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    playBtn.TextSize = 10
+    playBtn.Font = Enum.Font.GothamBold
+    playBtn.Parent = itemFrame
+    
+    local playBtnCorner = Instance.new("UICorner")
+    playBtnCorner.CornerRadius = UDim.new(0, 4)
+    playBtnCorner.Parent = playBtn
+    
+    -- Play button click event
+    playBtn.MouseButton1Click:Connect(function()
+        playMusicFromId(musicData.id, musicData.name)
+    end)
+    
+    -- Hover effect cho item
+    itemFrame.MouseEnter:Connect(function()
+        local tween = TweenService:Create(itemFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(70, 70, 70)})
+        tween:Play()
+    end)
+    
+    itemFrame.MouseLeave:Connect(function()
+        local tween = TweenService:Create(itemFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)})
+        tween:Play()
+    end)
+    
+    return itemFrame
+end
+
+-- Function để update playlist hiển thị
+local function updatePlaylist()
+    -- Xóa tất cả items hiện tại
+    for _, child in pairs(scrollFrame:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
+        end
+    end
+    
+    -- Tạo items mới từ filteredMusic
+    for i, musicData in ipairs(filteredMusic) do
+        createPlaylistItem(musicData, i)
+    end
+    
+    -- Update canvas size
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, #filteredMusic * 42)
+end
+
+-- Function để filter nhạc
+local function filterMusic(searchText)
+    filteredMusic = {}
+    searchText = searchText:lower()
+    
+    if searchText == "" then
+        filteredMusic = musicLibrary
+    else
+        for _, music in ipairs(musicLibrary) do
+            if music.name:lower():find(searchText) then
+                table.insert(filteredMusic, music)
+            end
+        end
+    end
+    
+    updatePlaylist()
+end
+
+-- Initialize playlist
+filteredMusic = musicLibrary
+updatePlaylist()
+
+-- Function để switch tabs
+local function switchTab(tabNumber)
+    currentTab = tabNumber
+    
+    if tabNumber == 1 then
+        -- Tab 1: Manual Input
+        tab1Content.Visible = true
+        tab2Content.Visible = false
+        tab1Button.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
+        tab2Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    else
+        -- Tab 2: Playlist
+        tab1Content.Visible = false
+        tab2Content.Visible = true
+        tab1Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        tab2Button.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
+    end
+end
+
+-- Function để toggle minimize
 local function toggleMinimize()
     isMinimized = not isMinimized
     
     if isMinimized then
-        -- Minimize
         local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 0)})
         tween:Play()
         tween.Completed:Connect(function()
@@ -279,28 +529,37 @@ local function toggleMinimize()
             minimizedFrame.Visible = true
         end)
     else
-        -- Restore
         mainFrame.Visible = true
         minimizedFrame.Visible = false
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 280, 0, 140)})
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3), {Size = UDim2.new(0, 380, 0, 300)})
         tween:Play()
     end
 end
 
--- Kết nối các sự kiện
-playButton.MouseButton1Click:Connect(playMusic)
-stopButton.MouseButton1Click:Connect(stopMusic)
-minimizeButton.MouseButton1Click:Connect(toggleMinimize)
-restoreButton.MouseButton1Click:Connect(toggleMinimize)
+-- Event connections
+tab1Button.MouseButton1Click:Connect(function() switchTab(1) end)
+tab2Button.MouseButton1Click:Connect(function() switchTab(2) end)
 
--- Enter để phát nhạc
+playButton1.MouseButton1Click:Connect(function()
+    playMusicFromId(musicIdBox.Text)
+end)
+
+stopButton1.MouseButton1Click:Connect(stopMusic)
+
 musicIdBox.FocusLost:Connect(function(enterPressed)
     if enterPressed then
-        playMusic()
+        playMusicFromId(musicIdBox.Text)
     end
 end)
 
--- Đóng UI
+searchBox.Changed:Connect(function()
+    filterMusic(searchBox.Text)
+end)
+
+minimizeButton.MouseButton1Click:Connect(toggleMinimize)
+restoreButton.MouseButton1Click:Connect(toggleMinimize)
+
+-- Close UI function
 local function closeUI()
     if currentSound then
         currentSound:Destroy()
@@ -311,7 +570,7 @@ end
 closeButton.MouseButton1Click:Connect(closeUI)
 minimizedCloseButton.MouseButton1Click:Connect(closeUI)
 
--- Tạo hiệu ứng hover cho các nút
+-- Hover effects
 local function createHoverEffect(button, hoverColor, normalColor)
     button.MouseEnter:Connect(function()
         local tween = TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = hoverColor})
@@ -324,53 +583,16 @@ local function createHoverEffect(button, hoverColor, normalColor)
     end)
 end
 
--- Áp dụng hiệu ứng hover
-createHoverEffect(playButton, Color3.fromRGB(102, 187, 106), Color3.fromRGB(76, 175, 80))
-createHoverEffect(stopButton, Color3.fromRGB(239, 83, 80), Color3.fromRGB(244, 67, 54))
+createHoverEffect(playButton1, Color3.fromRGB(102, 187, 106), Color3.fromRGB(76, 175, 80))
+createHoverEffect(stopButton1, Color3.fromRGB(239, 83, 80), Color3.fromRGB(244, 67, 54))
 createHoverEffect(closeButton, Color3.fromRGB(200, 0, 0), Color3.fromRGB(170, 0, 0))
 createHoverEffect(minimizeButton, Color3.fromRGB(80, 80, 80), Color3.fromRGB(60, 60, 60))
-createHoverEffect(minimizedCloseButton, Color3.fromRGB(200, 0, 0), Color3.fromRGB(170, 0, 0))
 
--- Làm cho UI có thể di chuyển được
+-- Draggable functionality
 local dragging = false
 local dragStart = nil
 local startPos = nil
 
 local function makeDraggable(frame)
     frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = frame.Position
-        end
-    end)
-    
-    frame.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local delta = input.Position - dragStart
-            frame.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
-    
-    frame.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-end
-
--- Áp dụng kéo thả cho cả hai frame
-makeDraggable(mainFrame)
-makeDraggable(minimizedFrame)
-
-print("Music Player UI Compact đã được tải thành công!")
-print("Tính năng mới:")
-print("- UI gọn gàng như trong hình")
-print("- Nút thu gọn (minimize)")
-print("- Có thể kéo thả cả khi thu gọn")
-print("- Thông báo đẹp hơn")
+        if input.UserInputType =
