@@ -29,9 +29,9 @@ screenGui.ResetOnSpawn = false
 -- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 400, 0, 280)
-mainFrame.Position = UDim2.new(0.5, -200, 0.5, -140)
-mainFrame.BackgroundColor3 = Color3.new(0.95, 0.95, 0.98)
+mainFrame.Size = UDim2.new(0, 350, 0, 250)
+mainFrame.Position = UDim2.new(0.5, -175, 0.5, -125)
+mainFrame.BackgroundColor3 = Color3.new(0.9, 0.95, 1)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 mainFrame.Draggable = true
@@ -42,81 +42,41 @@ local mainCorner = Instance.new("UICorner")
 mainCorner.CornerRadius = UDim.new(0, 15)
 mainCorner.Parent = mainFrame
 
--- Top bar (red)
-local topBar = Instance.new("Frame")
-topBar.Size = UDim2.new(1, 0, 0, 8)
-topBar.Position = UDim2.new(0, 0, 0, 0)
-topBar.BackgroundColor3 = Color3.new(0.85, 0.4, 0.4)
-topBar.BorderSizePixel = 0
-topBar.Parent = mainFrame
+-- Background Gradient (Blue like in image)
+local backgroundFrame = Instance.new("Frame")
+backgroundFrame.Size = UDim2.new(1, 20, 1, 20)
+backgroundFrame.Position = UDim2.new(0, -10, 0, -10)
+backgroundFrame.BorderSizePixel = 0
+backgroundFrame.ZIndex = -1
+backgroundFrame.Parent = mainFrame
 
-local topCorner = Instance.new("UICorner")
-topCorner.CornerRadius = UDim.new(0, 15)
-topCorner.Parent = topBar
+local bgCorner = Instance.new("UICorner")
+bgCorner.CornerRadius = UDim.new(0, 20)
+bgCorner.Parent = backgroundFrame
 
--- Hide bottom corners of top bar
-local topBarBottom = Instance.new("Frame")
-topBarBottom.Size = UDim2.new(1, 0, 0, 8)
-topBarBottom.Position = UDim2.new(0, 0, 0, 4)
-topBarBottom.BackgroundColor3 = Color3.new(0.85, 0.4, 0.4)
-topBarBottom.BorderSizePixel = 0
-topBarBottom.Parent = topBar
+local bgGradient = Instance.new("UIGradient")
+bgGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.new(0.1, 0.3, 0.8)),
+    ColorSequenceKeypoint.new(1, Color3.new(0.3, 0.6, 1))
+}
+bgGradient.Rotation = 135
+bgGradient.Parent = backgroundFrame
 
--- Logo
-local logo = Instance.new("ImageLabel")
-logo.Size = UDim2.new(0, 30, 0, 30)
-logo.Position = UDim2.new(0, 15, 0, 15)
-logo.BackgroundColor3 = Color3.new(0.85, 0.4, 0.4)
-logo.BorderSizePixel = 0
-logo.Parent = mainFrame
+-- Inner white frame
+local innerFrame = Instance.new("Frame")
+innerFrame.Size = UDim2.new(1, -6, 1, -6)
+innerFrame.Position = UDim2.new(0, 3, 0, 3)
+innerFrame.BackgroundColor3 = Color3.new(0.98, 0.98, 0.98)
+innerFrame.BorderSizePixel = 0
+innerFrame.Parent = mainFrame
 
-local logoCorner = Instance.new("UICorner")
-logoCorner.CornerRadius = UDim.new(0, 8)
-logoCorner.Parent = logo
+local innerCorner = Instance.new("UICorner")
+innerCorner.CornerRadius = UDim.new(0, 12)
+innerCorner.Parent = innerFrame
 
-local logoText = Instance.new("TextLabel")
-logoText.Size = UDim2.new(1, 0, 1, 0)
-logoText.BackgroundTransparency = 1
-logoText.Text = "💖"
-logoText.TextColor3 = Color3.new(1, 1, 1)
-logoText.TextSize = 16
-logoText.Font = Enum.Font.GothamBold
-logoText.Parent = logo
-
--- Close buttons (top right)
-local closeArea = Instance.new("Frame")
-closeArea.Size = UDim2.new(0, 80, 0, 30)
-closeArea.Position = UDim2.new(1, -90, 0, 15)
-closeArea.BackgroundTransparency = 1
-closeArea.Parent = mainFrame
-
-local minimizeBtn = Instance.new("TextButton")
-minimizeBtn.Size = UDim2.new(0, 25, 0, 25)
-minimizeBtn.Position = UDim2.new(0, 0, 0, 2)
-minimizeBtn.BackgroundColor3 = Color3.new(1, 0.8, 0.4)
-minimizeBtn.Text = "-"
-minimizeBtn.TextColor3 = Color3.new(1, 1, 1)
-minimizeBtn.TextSize = 16
-minimizeBtn.Font = Enum.Font.GothamBold
-minimizeBtn.Parent = closeArea
-
-local minCorner = Instance.new("UICorner")
-minCorner.CornerRadius = UDim.new(1, 0)
-minCorner.Parent = minimizeBtn
-
-local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 25, 0, 25)
-closeBtn.Position = UDim2.new(0, 30, 0, 2)
-closeBtn.BackgroundColor3 = Color3.new(0.85, 0.4, 0.4)
-closeBtn.Text = "✕"
-closeBtn.TextColor3 = Color3.new(1, 1, 1)
-closeBtn.TextSize = 12
-closeBtn.Font = Enum.Font.GothamBold
-closeBtn.Parent = closeArea
-
-local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(1, 0)
-closeCorner.Parent = closeBtn
+-- Top bar (removed)
+-- Logo (removed)
+-- Close buttons (removed)
 
 -- Toggle Button (when minimized)
 local toggleButton = Instance.new("TextButton")
@@ -137,10 +97,10 @@ toggleCorner.Parent = toggleButton
 
 -- Tab Navigation
 local tabFrame = Instance.new("Frame")
-tabFrame.Size = UDim2.new(1, 0, 0, 40)
-tabFrame.Position = UDim2.new(0, 0, 0, 50)
+tabFrame.Size = UDim2.new(1, -20, 0, 35)
+tabFrame.Position = UDim2.new(0, 10, 0, 15)
 tabFrame.BackgroundTransparency = 1
-tabFrame.Parent = mainFrame
+tabFrame.Parent = innerFrame
 
 local tabs = {"Home", "Script", "Notifications", "Other"}
 local tabButtons = {}
@@ -149,39 +109,34 @@ for i, tabName in ipairs(tabs) do
     local tabButton = Instance.new("TextButton")
     tabButton.Size = UDim2.new(0.25, -5, 1, 0)
     tabButton.Position = UDim2.new((i-1) * 0.25, (i-1) * 2.5, 0, 0)
-    tabButton.BackgroundTransparency = 1
+    tabButton.BackgroundColor3 = tabName == "Home" and Color3.new(0.2, 0.4, 0.8) or Color3.new(1, 1, 1)
     tabButton.Text = tabName
-    tabButton.TextColor3 = tabName == "Home" and Color3.new(0.2, 0.4, 0.8) or Color3.new(0.5, 0.5, 0.5)
-    tabButton.TextSize = 12
+    tabButton.TextColor3 = tabName == "Home" and Color3.new(1, 1, 1) or Color3.new(0.5, 0.5, 0.5)
+    tabButton.TextSize = 11
     tabButton.Font = Enum.Font.Gotham
     tabButton.Parent = tabFrame
     
-    -- Tab underline
-    local underline = Instance.new("Frame")
-    underline.Size = UDim2.new(1, 0, 0, 2)
-    underline.Position = UDim2.new(0, 0, 1, 0)
-    underline.BackgroundColor3 = Color3.new(0.2, 0.4, 0.8)
-    underline.BorderSizePixel = 0
-    underline.Visible = tabName == "Home"
-    underline.Parent = tabButton
+    local tabCorner = Instance.new("UICorner")
+    tabCorner.CornerRadius = UDim.new(0, 8)
+    tabCorner.Parent = tabButton
     
-    tabButtons[tabName] = {button = tabButton, underline = underline}
+    tabButtons[tabName] = {button = tabButton}
 end
 
 -- Content Area
 local contentArea = Instance.new("Frame")
-contentArea.Size = UDim2.new(1, -20, 1, -110)
-contentArea.Position = UDim2.new(0, 10, 0, 100)
+contentArea.Size = UDim2.new(1, -20, 1, -65)
+contentArea.Position = UDim2.new(0, 10, 0, 55)
 contentArea.BackgroundTransparency = 1
-contentArea.Parent = mainFrame
+contentArea.Parent = innerFrame
 
 -- Home Tab Content
 local homeContent = Instance.new("ScrollingFrame")
 homeContent.Name = "HomeContent"
 homeContent.Size = UDim2.new(1, 0, 1, 0)
 homeContent.BackgroundTransparency = 1
-homeContent.ScrollBarThickness = 6
-homeContent.CanvasSize = UDim2.new(0, 0, 0, 300)
+homeContent.ScrollBarThickness = 4
+homeContent.CanvasSize = UDim2.new(0, 0, 0, 250)
 homeContent.Parent = contentArea
 
 -- Other Tab Contents (placeholder)
@@ -251,7 +206,7 @@ local loadingSpinner = Instance.new("TextLabel")
 loadingSpinner.Size = UDim2.new(1, 0, 0, 30)
 loadingSpinner.Position = UDim2.new(0, 0, 0, 40)
 loadingSpinner.BackgroundTransparency = 1
-loadingSpinner.Text = "🥰🇻🇳"
+loadingSpinner.Text = "☀️"
 loadingSpinner.TextColor3 = Color3.new(1, 1, 1)
 loadingSpinner.TextSize = 20
 loadingSpinner.Font = Enum.Font.Gotham
@@ -371,7 +326,7 @@ local welcomeTitle = Instance.new("TextLabel")
 welcomeTitle.Size = UDim2.new(1, -20, 0, 25)
 welcomeTitle.Position = UDim2.new(0, 10, 0, 8)
 welcomeTitle.BackgroundTransparency = 1
-welcomeTitle.Text = "💖 Welcome to Mila UI!"
+welcomeTitle.Text = "💖 Welcome to Mila!"
 welcomeTitle.TextColor3 = Color3.new(0.5, 0.2, 0.5)
 welcomeTitle.TextSize = 12
 welcomeTitle.Font = Enum.Font.GothamBold
@@ -556,7 +511,7 @@ local function createButton(name, text, position, callback, parent)
     
     local button = Instance.new("TextButton")
     button.Name = name
-    button.Size = UDim2.new(0, 100, 0, 25)
+    button.Size = UDim2.new(0, 95, 0, 25)
     button.Position = position
     button.BackgroundColor3 = Color3.new(0.85, 0.9, 1)
     button.Text = text
@@ -827,11 +782,11 @@ local function switchTab(tabName)
     -- Update tab buttons
     for name, tabData in pairs(tabButtons) do
         if name == tabName then
-            tabData.button.TextColor3 = Color3.new(0.2, 0.4, 0.8)
-            tabData.underline.Visible = true
+            tabData.button.BackgroundColor3 = Color3.new(0.2, 0.4, 0.8)
+            tabData.button.TextColor3 = Color3.new(1, 1, 1)
         else
+            tabData.button.BackgroundColor3 = Color3.new(1, 1, 1)
             tabData.button.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-            tabData.underline.Visible = false
         end
     end
     
@@ -892,43 +847,43 @@ local function loadFlyScript()
     end)
 end
 
--- Create Home Tab Buttons (2x3 grid)
-createButton("SpeedButton", "🏃 Speed", UDim2.new(0, 10, 0, 60), function()
+-- Create Home Tab Buttons (2x3 grid, smaller)
+createButton("SpeedButton", "🏃 Speed", UDim2.new(0, 8, 0, 60), function()
     local speed = tonumber(speedSlider.Text) or 16
     humanoid.WalkSpeed = speed
     speedLabel.Text = "Speed: " .. speed
 end)
 
-createButton("JumpButton", "🦘 Jump", UDim2.new(0, 120, 0, 60), function()
+createButton("JumpButton", "🦘 Jump", UDim2.new(0, 110, 0, 60), function()
     local jump = tonumber(jumpSlider.Text) or 50
     humanoid.JumpPower = jump
     jumpLabel.Text = "Jump: " .. jump
 end)
 
-createButton("NoclipButton", "👻 Noclip", UDim2.new(0, 230, 0, 60), function()
+createButton("NoclipButton", "👻 Noclip", UDim2.new(0, 212, 0, 60), function()
     toggleNoclip()
 end)
 
-createButton("FlyButton", "🕊️ Fly", UDim2.new(0, 10, 0, 95), function()
+createButton("FlyButton", "🕊️ Fly", UDim2.new(0, 8, 0, 95), function()
     loadFlyScript()
 end)
 
-createButton("InfiniteJumpButton", "♾️ Inf Jump", UDim2.new(0, 120, 0, 95), function()
+createButton("InfiniteJumpButton", "♾️ Inf Jump", UDim2.new(0, 110, 0, 95), function()
     toggleInfiniteJump()
 end)
 
-createButton("TeleportButton", "📍 Players", UDim2.new(0, 230, 0, 95), function()
+createButton("TeleportButton", "📍 Players", UDim2.new(0, 212, 0, 95), function()
     playerFrame.Visible = not playerFrame.Visible
     if playerFrame.Visible then
         updatePlayerList()
     end
 end)
 
-createButton("CameraButton", "📷 Reset Cam", UDim2.new(0, 10, 0, 130), function()
+createButton("CameraButton", "📷 Reset Cam", UDim2.new(0, 8, 0, 130), function()
     resetCamera()
 end)
 
-createButton("ResetButton", "🔄 Reset All", UDim2.new(0, 120, 0, 130), function()
+createButton("ResetButton", "🔄 Reset All", UDim2.new(0, 110, 0, 130), function()
     humanoid.WalkSpeed = originalWalkSpeed
     humanoid.JumpPower = originalJumpPower
     noclip = false
@@ -968,19 +923,7 @@ searchBox.Changed:Connect(function(property)
     end
 end)
 
--- Close/Toggle functionality
-closeBtn.MouseButton1Click:Connect(function()
-    mainFrame.Visible = false
-    toggleButton.Visible = true
-    playerFrame.Visible = false
-end)
-
-minimizeBtn.MouseButton1Click:Connect(function()
-    mainFrame.Visible = false
-    toggleButton.Visible = true
-    playerFrame.Visible = false
-end)
-
+-- Close/Toggle functionality (simplified)
 toggleButton.MouseButton1Click:Connect(function()
     mainFrame.Visible = true
     toggleButton.Visible = false
