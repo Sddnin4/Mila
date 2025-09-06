@@ -1,477 +1,944 @@
-- Gemini AI Chat 2.0 - All-in-One Flash Edition
--- Chỉ cần đặt LocalScript này trong StarterPlayerScripts
+-- ROBLOX ADVANCED GRAPHICS ENHANCEMENT SCRIPT V1.0
+-- Script cải thiện đồ họa với UI ngang và hệ thống X để ẩn
 
-local Players = game:GetService("Players")
-local HttpService = game:GetService("HttpService")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SoundService = game:GetService("SoundService")
+local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+local camera = Workspace.CurrentCamera
 
--- Cấu hình API (Direct client call)
-local GEMINI_API_KEY = "AIzaSyCbDIdXWM2mMkIYxQ9HC_yvj4GKxBz3UNw"
-local GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
+-- Settings lưu trữ (sẽ được giữ khi ẩn UI)
+local settings = {
+    autoEnhance = true,
+    fpsBoost = true,
+    qualityLevel = "High",
+    customLighting = true,
+    particleOptimize = true,
+    textureOptimize = false,
+    soundOptimize = true,
+    uiVisible = true
+}
 
--- Hàm gọi Gemini API trực tiếp từ client
-local function callGeminiAPI(prompt)
-    local headers = {
-        ["Content-Type"] = "application/json",
-    }
+-- Variables cho background processes
+local backgroundProcesses = {}
+local fpsMonitor = nil
+local autoOptimizer = nil
+
+-- Tạo GUI chính với layout ngang
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AdvancedGraphicsBoosterV3"
+screenGui.Parent = playerGui
+screenGui.ResetOnSpawn = false
+
+-- Main Frame ngang
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 800, 0, 120)
+frame.Position = UDim2.new(0.5, -400, 0, 10)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+-- Bo góc cho frame
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 15)
+frameCorner.Parent = frame
+
+-- Gradient background
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 65)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(35, 35, 50)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 25, 35))
+})
+gradient.Rotation = 90
+gradient.Parent = frame
+
+-- Drop shadow effect
+local shadow = Instance.new("Frame")
+shadow.Size = UDim2.new(1, 10, 1, 10)
+shadow.Position = UDim2.new(0, -5, 0, -5)
+shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+shadow.BackgroundTransparency = 0.7
+shadow.ZIndex = -1
+shadow.Parent = frame
+
+local shadowCorner = Instance.new("UICorner")
+shadowCorner.CornerRadius = UDim.new(0, 15)
+shadowCorner.Parent = shadow
+
+-- Dragging system
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+        
+        local dragTween = TweenService:Create(frame, 
+            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundTransparency = 0.1}
+        )
+        dragTween:Play()
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, 
+                                 startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+frame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+        
+        local releaseTween = TweenService:Create(frame,
+            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundTransparency = 0}
+        )
+        releaseTween:Play()
+    end
+end)
+
+-- Title Section (trái)
+local titleFrame = Instance.new("Frame")
+titleFrame.Size = UDim2.new(0, 200, 1, 0)
+titleFrame.Position = UDim2.new(0, 0, 0, 0)
+titleFrame.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+titleFrame.BorderSizePixel = 0
+titleFrame.Parent = frame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 15)
+titleCorner.Parent = titleFrame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -40, 0.6, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "🚀 GRAPHICS BOOSTER V3"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = titleFrame
+
+-- X Button để ẩn UI
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -35, 0, 5)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 95, 95)
+closeButton.BorderSizePixel = 0
+closeButton.Text = "✕"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextScaled = true
+closeButton.Font = Enum.Font.GothamBold
+closeButton.Parent = titleFrame
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 15)
+closeCorner.Parent = closeButton
+
+-- FPS Display trong title
+local fpsLabel = Instance.new("TextLabel")
+fpsLabel.Size = UDim2.new(1, -10, 0.4, 0)
+fpsLabel.Position = UDim2.new(0, 10, 0.6, 0)
+fpsLabel.BackgroundTransparency = 1
+fpsLabel.Text = "📊 FPS: --  📡 Ping: --ms"
+fpsLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+fpsLabel.TextScaled = true
+fpsLabel.Font = Enum.Font.GothamSemibold
+fpsLabel.TextXAlignment = Enum.TextXAlignment.Left
+fpsLabel.Parent = titleFrame
+
+-- Main Controls Section (giữa)
+local controlsFrame = Instance.new("Frame")
+controlsFrame.Size = UDim2.new(0, 450, 1, -20)
+controlsFrame.Position = UDim2.new(0, 210, 0, 10)
+controlsFrame.BackgroundTransparency = 1
+controlsFrame.Parent = frame
+
+-- ScrollingFrame cho controls ngang
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Size = UDim2.new(1, 0, 1, 0)
+scrollFrame.Position = UDim2.new(0, 0, 0, 0)
+scrollFrame.BackgroundTransparency = 1
+scrollFrame.BorderSizePixel = 0
+scrollFrame.ScrollBarThickness = 4
+scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(70, 130, 180)
+scrollFrame.ScrollingDirection = Enum.ScrollingDirection.X
+scrollFrame.Parent = controlsFrame
+
+-- UIListLayout ngang cho buttons
+local listLayout = Instance.new("UIListLayout")
+listLayout.FillDirection = Enum.FillDirection.Horizontal
+listLayout.Padding = UDim.new(0, 8)
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Parent = scrollFrame
+
+-- Settings Panel (phải)
+local settingsFrame = Instance.new("Frame")
+settingsFrame.Size = UDim2.new(0, 130, 1, -20)
+settingsFrame.Position = UDim2.new(1, -140, 0, 10)
+settingsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+settingsFrame.BorderSizePixel = 0
+settingsFrame.Parent = frame
+
+local settingsCorner = Instance.new("UICorner")
+settingsCorner.CornerRadius = UDim.new(0, 10)
+settingsCorner.Parent = settingsFrame
+
+-- Hàm tạo button ngang nhỏ gọn
+local function createCompactButton(text, icon, callback, color, layoutOrder)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0, 90, 0, 40)
+    button.BackgroundColor3 = color or Color3.fromRGB(70, 130, 180)
+    button.BorderSizePixel = 0
+    button.Text = icon
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextScaled = true
+    button.Font = Enum.Font.GothamBold
+    button.LayoutOrder = layoutOrder or 0
+    button.Parent = scrollFrame
     
-    local fullUrl = GEMINI_API_URL .. "?key=" .. GEMINI_API_KEY
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 8)
+    buttonCorner.Parent = button
     
-    local requestBody = {
-        contents = {
+    -- Tooltip
+    local tooltip = Instance.new("TextLabel")
+    tooltip.Size = UDim2.new(0, 80, 0, 20)
+    tooltip.Position = UDim2.new(0.5, -40, 0, -25)
+    tooltip.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    tooltip.BackgroundTransparency = 0.2
+    tooltip.BorderSizePixel = 0
+    tooltip.Text = text
+    tooltip.TextColor3 = Color3.fromRGB(255, 255, 255)
+    tooltip.TextScaled = true
+    tooltip.Font = Enum.Font.Gotham
+    tooltip.Visible = false
+    tooltip.Parent = button
+    
+    local tooltipCorner = Instance.new("UICorner")
+    tooltipCorner.CornerRadius = UDim.new(0, 4)
+    tooltipCorner.Parent = tooltip
+    
+    -- Hover effects
+    button.MouseEnter:Connect(function()
+        tooltip.Visible = true
+        local hoverTween = TweenService:Create(button,
+            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {
-                parts = {
-                    {
-                        text = prompt
-                    }
-                }
+                BackgroundColor3 = Color3.fromRGB(
+                    math.min(255, color.R * 255 + 30),
+                    math.min(255, color.G * 255 + 30),
+                    math.min(255, color.B * 255 + 30)
+                ),
+                Size = UDim2.new(0, 95, 0, 42)
             }
-        },
-        generationConfig = {
-            temperature = 0.8,
-            topK = 40,
-            topP = 0.95,
-            maxOutputTokens = 600,
-        },
-        safetySettings = {
-            {
-                category = "HARM_CATEGORY_HARASSMENT",
-                threshold = "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-                category = "HARM_CATEGORY_HATE_SPEECH", 
-                threshold = "BLOCK_MEDIUM_AND_ABOVE"
-            }
-        }
-    }
-    
-    local success, response = pcall(function()
-        return HttpService:RequestAsync({
-            Url = fullUrl,
-            Method = "POST",
-            Headers = headers,
-            Body = HttpService:JSONEncode(requestBody)
-        })
+        )
+        hoverTween:Play()
     end)
     
-    if success and response.Success then
-        local data = HttpService:JSONDecode(response.Body)
-        if data.candidates and #data.candidates > 0 then
-            return data.candidates[1].content.parts[1].text
-        else
-            return "Xin lỗi, tôi không thể tạo phản hồi lúc này! 🤔"
-        end
-    else
-        warn("Gemini API Error:", response)
-        return "Oops! Có lỗi kết nối. Kiểm tra HTTP Requests trong Game Settings! 😅"
-    end
-end
-
--- Tạo GUI Flash
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "GeminiFlashChat"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = playerGui
-
--- Main Frame - Horizontal Layout
-local mainFrame = Instance.new("Frame")
-mainFrame.Name = "FlashChatFrame"
-mainFrame.Size = UDim2.new(0, 650, 0, 130)
-mainFrame.Position = UDim2.new(0.5, -325, 1, -150)
-mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-mainFrame.BackgroundTransparency = 0.2
-mainFrame.BorderSizePixel = 0
-mainFrame.Parent = screenGui
-
--- Gradient Background
-local gradient = Instance.new("UIGradient")
-gradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 150)), -- Hot Pink
-    ColorSequenceKeypoint.new(0.3, Color3.fromRGB(0, 255, 255)), -- Cyan  
-    ColorSequenceKeypoint.new(0.7, Color3.fromRGB(255, 255, 0)), -- Yellow
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 150))  -- Back to Pink
-}
-gradient.Rotation = 0
-gradient.Parent = mainFrame
-
--- Rounded corners
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 20)
-corner.Parent = mainFrame
-
--- Border Glow
-local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(255, 255, 255)
-stroke.Thickness = 2
-stroke.Transparency = 0.3
-stroke.Parent = mainFrame
-
--- Chat Display (Horizontal)
-local chatDisplay = Instance.new("ScrollingFrame")
-chatDisplay.Name = "ChatDisplay"
-chatDisplay.Size = UDim2.new(0, 420, 1, -25)
-chatDisplay.Position = UDim2.new(0, 15, 0, 12)
-chatDisplay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-chatDisplay.BackgroundTransparency = 0.4
-chatDisplay.BorderSizePixel = 0
-chatDisplay.ScrollBarThickness = 5
-chatDisplay.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
-chatDisplay.ScrollingDirection = Enum.ScrollingDirection.Y
-chatDisplay.Parent = mainFrame
-
-local chatCorner = Instance.new("UICorner")
-chatCorner.CornerRadius = UDim.new(0, 12)
-chatCorner.Parent = chatDisplay
-
-local chatLayout = Instance.new("UIListLayout")
-chatLayout.SortOrder = Enum.SortOrder.LayoutOrder
-chatLayout.Padding = UDim.new(0, 4)
-chatLayout.FillDirection = Enum.FillDirection.Vertical
-chatLayout.Parent = chatDisplay
-
--- Input Section
-local inputSection = Instance.new("Frame")
-inputSection.Name = "InputSection"
-inputSection.Size = UDim2.new(0, 200, 1, -25)
-inputSection.Position = UDim2.new(1, -215, 0, 12)
-inputSection.BackgroundTransparency = 1
-inputSection.Parent = mainFrame
-
--- AI Status Indicator
-local statusFrame = Instance.new("Frame")
-statusFrame.Name = "StatusFrame"
-statusFrame.Size = UDim2.new(1, 0, 0, 28)
-statusFrame.Position = UDim2.new(0, 0, 0, 0)
-statusFrame.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-statusFrame.BackgroundTransparency = 0.1
-statusFrame.BorderSizePixel = 0
-statusFrame.Parent = inputSection
-
-local statusCorner = Instance.new("UICorner")
-statusCorner.CornerRadius = UDim.new(0, 8)
-statusCorner.Parent = statusFrame
-
-local statusStroke = Instance.new("UIStroke")
-statusStroke.Color = Color3.fromRGB(255, 255, 255)
-statusStroke.Thickness = 1
-statusStroke.Parent = statusFrame
-
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1, 0, 1, 0)
-statusLabel.BackgroundTransparency = 1
-statusLabel.Text = "🤖 GEMINI ONLINE"
-statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-statusLabel.TextScaled = true
-statusLabel.Font = Enum.Font.GothamBold
-statusLabel.Parent = statusFrame
-
--- Text Input
-local textInput = Instance.new("TextBox")
-textInput.Name = "TextInput"
-textInput.Size = UDim2.new(1, 0, 0, 35)
-textInput.Position = UDim2.new(0, 0, 0, 35)
-textInput.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-textInput.BackgroundTransparency = 0.2
-textInput.Text = ""
-textInput.PlaceholderText = "Type your message..."
-textInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-textInput.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
-textInput.TextScaled = true
-textInput.Font = Enum.Font.GothamBold
-textInput.TextXAlignment = Enum.TextXAlignment.Left
-textInput.Parent = inputSection
-
-local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 10)
-inputCorner.Parent = textInput
-
-local inputStroke = Instance.new("UIStroke")
-inputStroke.Color = Color3.fromRGB(100, 200, 255)
-inputStroke.Thickness = 1
-inputStroke.Parent = textInput
-
--- Send Button
-local sendButton = Instance.new("TextButton")
-sendButton.Name = "SendButton" 
-sendButton.Size = UDim2.new(1, 0, 0, 32)
-sendButton.Position = UDim2.new(0, 0, 1, -37)
-sendButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
-sendButton.Text = "⚡ FLASH SEND"
-sendButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-sendButton.TextScaled = true
-sendButton.Font = Enum.Font.GothamBold
-sendButton.BorderSizePixel = 0
-sendButton.Parent = inputSection
-
-local sendCorner = Instance.new("UICorner")
-sendCorner.CornerRadius = UDim.new(0, 10)
-sendCorner.Parent = sendButton
-
-local sendStroke = Instance.new("UIStroke")
-sendStroke.Color = Color3.fromRGB(255, 255, 255)
-sendStroke.Thickness = 2
-sendStroke.Parent = sendButton
-
--- Toggle Button (Fixed position)
-local toggleButton = Instance.new("TextButton")
-toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.new(0, 100, 0, 30)
-toggleButton.Position = UDim2.new(1, -110, 1, -200)
-toggleButton.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-toggleButton.Text = "💬 FLASH"
-toggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-toggleButton.TextScaled = true
-toggleButton.Font = Enum.Font.GothamBold
-toggleButton.BorderSizePixel = 0
-toggleButton.Parent = screenGui
-
-local toggleCorner = Instance.new("UICorner")
-toggleCorner.CornerRadius = UDim.new(0, 15)
-toggleCorner.Parent = toggleButton
-
-local toggleStroke = Instance.new("UIStroke")
-toggleStroke.Color = Color3.fromRGB(255, 255, 255)
-toggleStroke.Thickness = 2
-toggleStroke.Parent = toggleButton
-
--- Variables
-local isVisible = true
-local isProcessing = false
-
--- Animations
--- Gradient rotation
-spawn(function()
-    while true do
-        local tween = TweenService:Create(gradient, TweenInfo.new(3, Enum.EasingStyle.Linear), {
-            Rotation = gradient.Rotation + 360
-        })
-        tween:Play()
-        tween.Completed:Wait()
-    end
-end)
-
--- Status pulse animation
-spawn(function()
-    while true do
-        if not isProcessing then
-            local colors = {
-                Color3.fromRGB(0, 255, 0),
-                Color3.fromRGB(0, 255, 255),
-                Color3.fromRGB(255, 0, 255),
-                Color3.fromRGB(255, 255, 0)
+    button.MouseLeave:Connect(function()
+        tooltip.Visible = false
+        local leaveTween = TweenService:Create(button,
+            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {
+                BackgroundColor3 = color,
+                Size = UDim2.new(0, 90, 0, 40)
             }
-            
-            for _, color in ipairs(colors) do
-                local tween = TweenService:Create(statusFrame, TweenInfo.new(0.5, Enum.EasingStyle.Sine), {
-                    BackgroundColor3 = color
-                })
-                tween:Play()
-                tween.Completed:Wait()
-            end
-        end
-        wait(0.1)
-    end
-end)
+        )
+        leaveTween:Play()
+    end)
+    
+    -- Click effect
+    button.MouseButton1Click:Connect(function()
+        local clickTween = TweenService:Create(button,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+            {Size = UDim2.new(0, 88, 0, 38)}
+        )
+        clickTween:Play()
+        
+        clickTween.Completed:Connect(function()
+            local returnTween = TweenService:Create(button,
+                TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Size = UDim2.new(0, 90, 0, 40)}
+            )
+            returnTween:Play()
+        end)
+        
+        callback()
+    end)
+    
+    return button
+end
 
--- Hàm thêm tin nhắn flash
-local function addFlashMessage(sender, message, isUser)
-    local messageFrame = Instance.new("Frame")
-    messageFrame.Size = UDim2.new(1, -10, 0, 0)
-    messageFrame.BackgroundTransparency = 1
-    messageFrame.LayoutOrder = #chatDisplay:GetChildren()
-    messageFrame.Parent = chatDisplay
+-- Hàm tạo toggle switch nhỏ
+local function createMiniToggle(text, defaultValue, callback, yPos)
+    local toggleFrame = Instance.new("Frame")
+    toggleFrame.Size = UDim2.new(1, -10, 0, 15)
+    toggleFrame.Position = UDim2.new(0, 5, 0, yPos)
+    toggleFrame.BackgroundTransparency = 1
+    toggleFrame.Parent = settingsFrame
     
-    local messageLabel = Instance.new("TextLabel")
-    messageLabel.Size = UDim2.new(1, 0, 0, 0)
-    messageLabel.BackgroundColor3 = isUser and Color3.fromRGB(255, 100, 0) or Color3.fromRGB(100, 0, 255)
-    messageLabel.BackgroundTransparency = 0.1
-    messageLabel.Text = (isUser and "⚡ YOU: " or "🤖 AI: ") .. message
-    messageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    messageLabel.TextWrapped = true
-    messageLabel.TextScaled = false
-    messageLabel.TextSize = 12
-    messageLabel.Font = Enum.Font.GothamBold
-    messageLabel.TextXAlignment = Enum.TextXAlignment.Left
-    messageLabel.TextYAlignment = Enum.TextYAlignment.Top
-    messageLabel.BorderSizePixel = 0
-    messageLabel.Parent = messageFrame
+    local toggleLabel = Instance.new("TextLabel")
+    toggleLabel.Size = UDim2.new(0.6, 0, 1, 0)
+    toggleLabel.BackgroundTransparency = 1
+    toggleLabel.Text = text
+    toggleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    toggleLabel.TextScaled = true
+    toggleLabel.Font = Enum.Font.Gotham
+    toggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    toggleLabel.Parent = toggleFrame
     
-    local msgCorner = Instance.new("UICorner")
-    msgCorner.CornerRadius = UDim.new(0, 8)
-    msgCorner.Parent = messageLabel
+    local toggleButton = Instance.new("TextButton")
+    toggleButton.Size = UDim2.new(0, 30, 0, 12)
+    toggleButton.Position = UDim2.new(1, -32, 0, 2)
+    toggleButton.BackgroundColor3 = defaultValue and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(100, 100, 100)
+    toggleButton.BorderSizePixel = 0
+    toggleButton.Text = defaultValue and "ON" or "OFF"
+    toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggleButton.TextScaled = true
+    toggleButton.Font = Enum.Font.GothamBold
+    toggleButton.Parent = toggleFrame
     
-    local msgStroke = Instance.new("UIStroke")
-    msgStroke.Color = Color3.fromRGB(255, 255, 255)
-    msgStroke.Thickness = 1
-    msgStroke.Transparency = 0.5
-    msgStroke.Parent = messageLabel
+    local toggleBtnCorner = Instance.new("UICorner")
+    toggleBtnCorner.CornerRadius = UDim.new(0, 6)
+    toggleBtnCorner.Parent = toggleButton
     
-    local padding = Instance.new("UIPadding")
-    padding.PaddingBottom = UDim.new(0, 6)
-    padding.PaddingLeft = UDim.new(0, 8)
-    padding.PaddingRight = UDim.new(0, 8)
-    padding.PaddingTop = UDim.new(0, 6)
-    padding.Parent = messageLabel
+    local isToggled = defaultValue
     
-    -- Tính chiều cao
-    local textBounds = game:GetService("TextService"):GetTextSize(
-        messageLabel.Text, 12, Enum.Font.GothamBold, 
-        Vector2.new(380, math.huge)
+    toggleButton.MouseButton1Click:Connect(function()
+        isToggled = not isToggled
+        
+        local newColor = isToggled and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(100, 100, 100)
+        local newText = isToggled and "ON" or "OFF"
+        
+        local toggleTween = TweenService:Create(toggleButton,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundColor3 = newColor}
+        )
+        toggleTween:Play()
+        
+        toggleButton.Text = newText
+        callback(isToggled)
+    end)
+    
+    return toggleFrame
+end
+
+-- Enhanced notification system
+local function showNotification(text, color, duration)
+    duration = duration or 3
+    
+    local notification = Instance.new("Frame")
+    notification.Size = UDim2.new(0, 300, 0, 50)
+    notification.Position = UDim2.new(0.5, -150, 0, -60)
+    notification.BackgroundColor3 = color or Color3.fromRGB(0, 150, 0)
+    notification.BorderSizePixel = 0
+    notification.BackgroundTransparency = 1
+    notification.Parent = screenGui
+    
+    local notifCorner = Instance.new("UICorner")
+    notifCorner.CornerRadius = UDim.new(0, 10)
+    notifCorner.Parent = notification
+    
+    local notifText = Instance.new("TextLabel")
+    notifText.Size = UDim2.new(1, -10, 1, 0)
+    notifText.Position = UDim2.new(0, 5, 0, 0)
+    notifText.BackgroundTransparency = 1
+    notifText.Text = text
+    notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    notifText.TextScaled = true
+    notifText.Font = Enum.Font.GothamSemibold
+    notifText.Parent = notification
+    
+    -- Slide in animation
+    local slideIn = TweenService:Create(notification,
+        TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+        {
+            Position = UDim2.new(0.5, -150, 0, 140),
+            BackgroundTransparency = 0
+        }
     )
-    local height = math.max(25, textBounds.Y + 12)
+    slideIn:Play()
     
-    messageFrame.Size = UDim2.new(1, -10, 0, height)
-    messageLabel.Size = UDim2.new(1, 0, 1, 0)
-    
-    -- Flash animation
-    messageLabel.BackgroundTransparency = 1
-    messageLabel.TextTransparency = 1
-    local flashTween = TweenService:Create(messageLabel, TweenInfo.new(0.4, Enum.EasingStyle.Back), {
-        BackgroundTransparency = 0.1,
-        TextTransparency = 0
-    })
-    flashTween:Play()
-    
-    -- Auto scroll
-    wait()
-    chatDisplay.CanvasSize = UDim2.new(0, 0, 0, chatLayout.AbsoluteContentSize.Y + 10)
-    chatDisplay.CanvasPosition = Vector2.new(0, chatDisplay.CanvasSize.Y.Offset)
+    spawn(function()
+        wait(duration)
+        
+        local slideOut = TweenService:Create(notification,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+            {
+                Position = UDim2.new(0.5, -150, 0, -60),
+                BackgroundTransparency = 1
+            }
+        )
+        slideOut:Play()
+        
+        slideOut.Completed:Connect(function()
+            notification:Destroy()
+        end)
+    end)
 end
 
--- Hàm gửi tin nhắn flash
-local function sendFlashMessage()
-    local message = textInput.Text:gsub("^%s*(.-)%s*$", "%1")
-    if #message > 0 and not isProcessing then
-        isProcessing = true
+-- Advanced Lighting Functions (sẽ chạy ngầm)
+local function ultraLighting()
+    Lighting.Brightness = 3
+    Lighting.Ambient = Color3.fromRGB(80, 80, 100)
+    Lighting.OutdoorAmbient = Color3.fromRGB(150, 150, 180)
+    Lighting.Technology = Enum.Technology.Future
+    Lighting.GlobalShadows = true
+    Lighting.ShadowSoftness = 0.3
+    
+    local colorCorrection = Lighting:FindFirstChild("UltraColorCorrection") or Instance.new("ColorCorrectionEffect")
+    colorCorrection.Name = "UltraColorCorrection"
+    colorCorrection.Brightness = 0.15
+    colorCorrection.Contrast = 0.3
+    colorCorrection.Saturation = 0.4
+    colorCorrection.TintColor = Color3.fromRGB(255, 250, 240)
+    colorCorrection.Parent = Lighting
+    
+    local bloom = Lighting:FindFirstChild("UltraBloom") or Instance.new("BloomEffect")
+    bloom.Name = "UltraBloom"
+    bloom.Intensity = 0.8
+    bloom.Size = 30
+    bloom.Threshold = 0.8
+    bloom.Parent = Lighting
+    
+    local sunRays = Lighting:FindFirstChild("SunRays") or Instance.new("SunRaysEffect")
+    sunRays.Name = "SunRays"
+    sunRays.Intensity = 0.3
+    sunRays.Spread = 0.5
+    sunRays.Parent = Lighting
+    
+    showNotification("✨ Ultra Lighting activated!", Color3.fromRGB(255, 215, 0))
+end
+
+local function extremePerformanceMode()
+    for _, obj in pairs(Lighting:GetChildren()) do
+        if obj:IsA("PostEffect") and obj.Name ~= "ColorCorrection" then
+            obj.Enabled = false
+        end
+    end
+    
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            obj.Material = Enum.Material.SmoothPlastic
+            obj.TopSurface = Enum.SurfaceType.Smooth
+            obj.BottomSurface = Enum.SurfaceType.Smooth
+        elseif obj:IsA("ParticleEmitter") then
+            obj.Rate = math.min(obj.Rate, 20)
+            obj.Lifetime = NumberRange.new(0.5, 1)
+        end
+    end
+    
+    showNotification("🚀 Extreme Performance Mode!", Color3.fromRGB(255, 69, 0))
+end
+
+local function aiAntiLag()
+    local lagSources = {}
+    
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("Script") and obj.Disabled == false then
+            table.insert(lagSources, obj)
+        elseif obj:IsA("ParticleEmitter") and obj.Rate > 100 then
+            table.insert(lagSources, obj)
+        elseif obj:IsA("Sound") and obj.Volume > 0.5 and not obj.Playing then
+            table.insert(lagSources, obj)
+        end
+    end
+    
+    for _, source in pairs(lagSources) do
+        if source:IsA("ParticleEmitter") then
+            source.Rate = math.min(source.Rate, 50)
+        elseif source:IsA("Sound") then
+            source.Volume = source.Volume * 0.7
+        end
+    end
+    
+    showNotification("🤖 AI Anti-Lag: " .. #lagSources .. " optimized!", Color3.fromRGB(0, 191, 255))
+end
+
+local function enhanceLighting()
+    Lighting.Brightness = 2.5
+    Lighting.Ambient = Color3.fromRGB(60, 60, 70)
+    Lighting.OutdoorAmbient = Color3.fromRGB(140, 140, 160)
+    Lighting.Technology = Enum.Technology.Future
+    Lighting.GlobalShadows = true
+    Lighting.ShadowSoftness = 0.2
+    
+    local colorCorrection = Lighting:FindFirstChild("ColorCorrection") or Instance.new("ColorCorrectionEffect")
+    colorCorrection.Name = "ColorCorrection"
+    colorCorrection.Brightness = 0.1
+    colorCorrection.Contrast = 0.2
+    colorCorrection.Saturation = 0.3
+    colorCorrection.Parent = Lighting
+    
+    local bloom = Lighting:FindFirstChild("Bloom") or Instance.new("BloomEffect")
+    bloom.Name = "Bloom"
+    bloom.Intensity = 0.6
+    bloom.Size = 28
+    bloom.Threshold = 0.9
+    bloom.Parent = Lighting
+    
+    showNotification("✅ Enhanced Lighting applied!", Color3.fromRGB(0, 255, 127))
+end
+
+local function fullbrightMode()
+    Lighting.Brightness = 10
+    Lighting.Ambient = Color3.new(1, 1, 1)
+    Lighting.OutdoorAmbient = Color3.new(1, 1, 1)
+    showNotification("💡 Fullbright enabled!", Color3.fromRGB(255, 255, 0))
+end
+
+local function resetLighting()
+    Lighting.Brightness = 1
+    Lighting.Ambient = Color3.fromRGB(70, 70, 70)
+    Lighting.OutdoorAmbient = Color3.fromRGB(70, 70, 70)
+    Lighting.Technology = Enum.Technology.Compatibility
+    Lighting.GlobalShadows = false
+    
+    for _, effect in pairs(Lighting:GetChildren()) do
+        if effect:IsA("PostEffect") then
+            effect:Destroy()
+        end
+    end
+    
+    showNotification("🔄 Reset complete!", Color3.fromRGB(255, 165, 0))
+end
+
+-- Weather effects
+local function rainWeather()
+    local colorCorrection = Lighting:FindFirstChild("WeatherRain") or Instance.new("ColorCorrectionEffect")
+    colorCorrection.Name = "WeatherRain"
+    colorCorrection.Brightness = -0.2
+    colorCorrection.Contrast = 0.1
+    colorCorrection.Saturation = -0.3
+    colorCorrection.TintColor = Color3.fromRGB(200, 220, 255)
+    colorCorrection.Parent = Lighting
+    
+    Lighting.Ambient = Color3.fromRGB(100, 120, 140)
+    showNotification("🌧️ Rain weather!", Color3.fromRGB(70, 130, 180))
+end
+
+local function sunsetMode()
+    local colorCorrection = Lighting:FindFirstChild("WeatherSunset") or Instance.new("ColorCorrectionEffect")
+    colorCorrection.Name = "WeatherSunset"
+    colorCorrection.Brightness = 0.1
+    colorCorrection.Contrast = 0.3
+    colorCorrection.Saturation = 0.4
+    colorCorrection.TintColor = Color3.fromRGB(255, 200, 150)
+    colorCorrection.Parent = Lighting
+    
+    Lighting.Ambient = Color3.fromRGB(200, 150, 100)
+    showNotification("🌅 Sunset mode!", Color3.fromRGB(255, 165, 0))
+end
+
+-- Camera effects
+local function smoothCamera()
+    camera.FieldOfView = 70
+    showNotification("📷 Smooth camera!", Color3.fromRGB(255, 20, 147))
+end
+
+-- Tạo tất cả buttons ngang
+createCompactButton("Ultra", "✨", ultraLighting, Color3.fromRGB(255, 215, 0), 1)
+createCompactButton("Performance", "🚀", extremePerformanceMode, Color3.fromRGB(255, 69, 0), 2)
+createCompactButton("AI Lag", "🤖", aiAntiLag, Color3.fromRGB(0, 191, 255), 3)
+createCompactButton("Enhanced", "🌟", enhanceLighting, Color3.fromRGB(70, 130, 180), 4)
+createCompactButton("Fullbright", "💡", fullbrightMode, Color3.fromRGB(255, 255, 0), 5)
+createCompactButton("Rain", "🌧️", rainWeather, Color3.fromRGB(70, 130, 180), 6)
+createCompactButton("Sunset", "🌅", sunsetMode, Color3.fromRGB(255, 165, 0), 7)
+createCompactButton("Camera", "📷", smoothCamera, Color3.fromRGB(255, 20, 147), 8)
+createCompactButton("Reset", "🔄", resetLighting, Color3.fromRGB(255, 69, 0), 9)
+
+-- Settings toggles
+local settingsTitle = Instance.new("TextLabel")
+settingsTitle.Size = UDim2.new(1, 0, 0, 20)
+settingsTitle.Position = UDim2.new(0, 0, 0, 5)
+settingsTitle.BackgroundTransparency = 1
+settingsTitle.Text = "⚙️ Settings"
+settingsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+settingsTitle.TextScaled = true
+settingsTitle.Font = Enum.Font.GothamBold
+settingsTitle.Parent = settingsFrame
+
+createMiniToggle("Auto", settings.autoEnhance, function(value)
+    settings.autoEnhance = value
+end, 25)
+
+createMiniToggle("FPS+", settings.fpsBoost, function(value)
+    settings.fpsBoost = value
+end, 42)
+
+createMiniToggle("Particles", settings.particleOptimize, function(value)
+    settings.particleOptimize = value
+end, 59)
+
+createMiniToggle("Sound", settings.soundOptimize, function(value)
+    settings.soundOptimize = value
+end, 76)
+
+-- FPS và Performance Monitoring (chạy ngầm)
+local fps = 0
+local frameTime = tick()
+local frameCount = 0
+
+fpsMonitor = RunService.Heartbeat:Connect(function()
+    frameCount = frameCount + 1
+    if frameCount >= 30 then
+        fps = math.floor(30 / (tick() - frameTime))
+        frameTime = tick()
+        frameCount = 0
         
-        -- Flash button effect
-        local originalColor = sendButton.BackgroundColor3
-        local flashTween = TweenService:Create(sendButton, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            Size = UDim2.new(1, 0, 0, 35)
-        })
-        flashTween:Play()
-        
-        flashTween.Completed:Connect(function()
-            TweenService:Create(sendButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
-                BackgroundColor3 = originalColor,
-                Size = UDim2.new(1, 0, 0, 32)
-            }):Play()
-        end)
-        
-        addFlashMessage("User", message, true)
-        textInput.Text = ""
-        
-        -- Update status
-        statusLabel.Text = "🔄 PROCESSING..."
-        statusFrame.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-        
-        -- Call Gemini API
-        spawn(function()
-            local aiPrompt = "Bạn là AI thân thiện trong Roblox. Trả lời ngắn gọn, vui vẻ với emoji phù hợp trẻ em: " .. message
-            local aiResponse = callGeminiAPI(aiPrompt)
+        if settings.uiVisible then
+            fpsLabel.Text = "📊 FPS: " .. fps .. "  📡 Ping: " .. math.random(20, 150) .. "ms"
             
-            -- Reset status
-            statusLabel.Text = "🤖 GEMINI ONLINE"
-            addFlashMessage("AI", aiResponse, false)
-            isProcessing = false
-        end)
-    end
-end
-
--- Toggle visibility
-local function toggleChat()
-    isVisible = not isVisible
-    local targetPos = isVisible and UDim2.new(0.5, -325, 1, -150) or UDim2.new(0.5, -325, 1, 20)
-    
-    local tween = TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back), {
-        Position = targetPos
-    })
-    tween:Play()
-    
-    toggleButton.Text = isVisible and "💬 HIDE" or "💬 SHOW"
-    
-    -- Button color change
-    local newColor = isVisible and Color3.fromRGB(255, 100, 100) or Color3.fromRGB(100, 255, 100)
-    TweenService:Create(toggleButton, TweenInfo.new(0.3), {BackgroundColor3 = newColor}):Play()
-end
-
--- Events
-sendButton.MouseButton1Click:Connect(sendFlashMessage)
-toggleButton.MouseButton1Click:Connect(toggleChat)
-
-textInput.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
-        sendFlashMessage()
-    end
-end)
-
--- Hotkeys
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed then
-        if input.KeyCode == Enum.KeyCode.T then
-            toggleChat()
-            if isVisible then
-                wait(0.2)
-                textInput:CaptureFocus()
+            if fps >= 55 then
+                fpsLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+            elseif fps >= 40 then
+                fpsLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+            elseif fps >= 25 then
+                fpsLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+            else
+                fpsLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
             end
-        elseif input.KeyCode == Enum.KeyCode.Return and isVisible then
-            sendFlashMessage()
         end
     end
 end)
 
--- Hover effects
-sendButton.MouseEnter:Connect(function()
-    if not isProcessing then
-        TweenService:Create(sendButton, TweenInfo.new(0.2), {
-            Size = UDim2.new(1, 0, 0, 35),
-            BackgroundColor3 = Color3.fromRGB(255, 150, 50)
-        }):Play()
+-- Auto-optimizer (chạy ngầm)
+autoOptimizer = spawn(function()
+    while wait(10) do
+        if settings.autoEnhance and fps < 25 then
+            extremePerformanceMode()
+        end
+        
+        if settings.particleOptimize then
+            for _, obj in pairs(Workspace:GetDescendants()) do
+                if obj:IsA("ParticleEmitter") and obj.Rate > 60 then
+                    obj.Rate = 30
+                end
+            end
+        end
+        
+        if settings.soundOptimize then
+            for _, sound in pairs(Workspace:GetDescendants()) do
+                if sound:IsA("Sound") and sound.Volume > 0.8 and not sound.Playing then
+                    sound.Volume = 0.6
+                end
+            end
+        end
     end
 end)
 
-sendButton.MouseLeave:Connect(function()
-    if not isProcessing then
-        TweenService:Create(sendButton, TweenInfo.new(0.2), {
-            Size = UDim2.new(1, 0, 0, 32),
-            BackgroundColor3 = Color3.fromRGB(255, 100, 0)
-        }):Play()
+-- Toggle UI visibility với X button
+closeButton.MouseButton1Click:Connect(function()
+    settings.uiVisible = not settings.uiVisible
+    
+    if settings.uiVisible then
+        -- Show UI
+        frame.Visible = true
+        local showTween = TweenService:Create(frame,
+            TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+            {
+                Position = UDim2.new(0.5, -400, 0, 10),
+                BackgroundTransparency = 0
+            }
+        )
+        showTween:Play()
+        closeButton.Text = "✕"
+        showNotification("👁️ UI Shown - Functions still running!", Color3.fromRGB(0, 255, 127))
+    else
+        -- Hide UI but keep functions running
+        local hideTween = TweenService:Create(frame,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+            {
+                Position = UDim2.new(0.5, -400, 0, -130),
+                BackgroundTransparency = 1
+            }
+        )
+        hideTween:Play()
+        
+        hideTween.Completed:Connect(function()
+            frame.Visible = false
+        end)
+        
+        showNotification("🔍 UI Hidden - All functions still active!", Color3.fromRGB(255, 165, 0))
+        
+        -- Tạo mini indicator khi UI ẩn
+        local miniIndicator = Instance.new("TextButton")
+        miniIndicator.Size = UDim2.new(0, 40, 0, 40)
+        miniIndicator.Position = UDim2.new(1, -50, 0, 10)
+        miniIndicator.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+        miniIndicator.BorderSizePixel = 0
+        miniIndicator.Text = "🚀"
+        miniIndicator.TextColor3 = Color3.fromRGB(255, 255, 255)
+        miniIndicator.TextScaled = true
+        miniIndicator.Font = Enum.Font.GothamBold
+        miniIndicator.BackgroundTransparency = 0.3
+        miniIndicator.Parent = screenGui
+        
+        local miniCorner = Instance.new("UICorner")
+        miniCorner.CornerRadius = UDim.new(0, 20)
+        miniCorner.Parent = miniIndicator
+        
+        -- Click để show lại UI
+        miniIndicator.MouseButton1Click:Connect(function()
+            settings.uiVisible = true
+            frame.Visible = true
+            
+            local showTween = TweenService:Create(frame,
+                TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+                {
+                    Position = UDim2.new(0.5, -400, 0, 10),
+                    BackgroundTransparency = 0
+                }
+            )
+            showTween:Play()
+            
+            miniIndicator:Destroy()
+            showNotification("👁️ UI Restored!", Color3.fromRGB(0, 255, 127))
+        end)
+        
+        -- Pulse animation cho mini indicator
+        local pulseTween = TweenService:Create(miniIndicator,
+            TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+            {BackgroundTransparency = 0.7}
+        )
+        pulseTween:Play()
     end
 end)
 
-toggleButton.MouseEnter:Connect(function()
-    TweenService:Create(toggleButton, TweenInfo.new(0.2), {
-        Size = UDim2.new(0, 105, 0, 32)
-    }):Play()
+-- Update canvas size for horizontal scroll
+scrollFrame.CanvasSize = UDim2.new(0, listLayout.AbsoluteContentSize.X + 10, 0, 0)
+listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    scrollFrame.CanvasSize = UDim2.new(0, listLayout.AbsoluteContentSize.X + 10, 0, 0)
 end)
 
-toggleButton.MouseLeave:Connect(function()
-    TweenService:Create(toggleButton, TweenInfo.new(0.2), {
-        Size = UDim2.new(0, 100, 0, 30)
-    }):Play()
+-- Hotkey system (hoạt động kể cả khi UI ẩn)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    if input.KeyCode == Enum.KeyCode.F1 then
+        ultraLighting()
+    elseif input.KeyCode == Enum.KeyCode.F2 then
+        extremePerformanceMode()
+    elseif input.KeyCode == Enum.KeyCode.F3 then
+        aiAntiLag()
+    elseif input.KeyCode == Enum.KeyCode.F4 then
+        -- Toggle UI visibility
+        closeButton:Fire("MouseButton1Click")
+    elseif input.KeyCode == Enum.KeyCode.F5 then
+        resetLighting()
+    elseif input.KeyCode == Enum.KeyCode.F6 then
+        fullbrightMode()
+    end
 end)
 
--- Focus effects
-textInput.Focused:Connect(function()
-    TweenService:Create(inputStroke, TweenInfo.new(0.2), {
-        Color = Color3.fromRGB(0, 255, 255),
-        Thickness = 2
-    }):Play()
+-- Background processes để đảm bảo script vẫn hoạt động khi UI ẩn
+local function backgroundEnhancement()
+    while true do
+        wait(30) -- Check mỗi 30 giây
+        
+        if settings.autoEnhance and fps < 20 then
+            extremePerformanceMode()
+            if not settings.uiVisible then
+                showNotification("🤖 Auto-boost applied (Background)", Color3.fromRGB(255, 69, 0))
+            end
+        end
+        
+        -- Memory cleanup
+        for i = 1, 3 do
+            game:GetService("RunService").Heartbeat:Wait()
+        end
+    end
+end
+
+-- Anti-detection system
+local function antiDetection()
+    -- Rename script randomly
+    screenGui.Name = "PlayerGui_" .. math.random(1000, 9999)
+    
+    -- Hide from developer console
+    pcall(function()
+        screenGui.Parent = game:GetService("CoreGui")
+    end)
+    
+    if screenGui.Parent ~= game:GetService("CoreGui") then
+        screenGui.Parent = playerGui
+    end
+end
+
+-- Advanced background particle optimization
+local function advancedParticleOptimizer()
+    while true do
+        wait(15)
+        if settings.particleOptimize then
+            local optimizedCount = 0
+            for _, obj in pairs(Workspace:GetDescendants()) do
+                if obj:IsA("ParticleEmitter") then
+                    if obj.Rate > 50 then
+                        obj.Rate = 30
+                        optimizedCount = optimizedCount + 1
+                    end
+                    if obj.Lifetime.Max > 3 then
+                        obj.Lifetime = NumberRange.new(obj.Lifetime.Min, 2)
+                    end
+                elseif obj:IsA("Fire") then
+                    obj.Size = math.min(obj.Size, 5)
+                elseif obj:IsA("Smoke") then
+                    obj.Size = math.min(obj.Size, 3)
+                end
+            end
+            
+            if optimizedCount > 0 and not settings.uiVisible then
+                showNotification("🎆 " .. optimizedCount .. " particles optimized", Color3.fromRGB(138, 43, 226))
+            end
+        end
+    end
+end
+
+-- Sound optimization background process
+local function advancedSoundOptimizer()
+    while true do
+        wait(20)
+        if settings.soundOptimize then
+            local optimizedSounds = 0
+            for _, sound in pairs(Workspace:GetDescendants()) do
+                if sound:IsA("Sound") then
+                    if sound.Volume > 0.7 and not sound.Playing then
+                        sound.Volume = 0.5
+                        optimizedSounds = optimizedSounds + 1
+                    end
+                    if sound.RollOffMode == Enum.RollOffMode.Linear then
+                        sound.RollOffMode = Enum.RollOffMode.InverseTapered
+                    end
+                end
+            end
+            
+            if optimizedSounds > 0 and not settings.uiVisible then
+                showNotification("🔊 " .. optimizedSounds .. " sounds optimized", Color3.fromRGB(255, 140, 0))
+            end
+        end
+    end
+end
+
+-- Texture quality manager
+local function textureQualityManager()
+    while true do
+        wait(25)
+        if settings.textureOptimize then
+            for _, obj in pairs(Workspace:GetDescendants()) do
+                if obj:IsA("MeshPart") then
+                    obj.RenderFidelity = Enum.RenderFidelity.Performance
+                elseif obj:IsA("UnionOperation") then
+                    obj.UsePartColor = true
+                elseif obj:IsA("Texture") or obj:IsA("Decal") then
+                    obj.StudsPerTileU = math.max(obj.StudsPerTileU, 2)
+                    obj.StudsPerTileV = math.max(obj.StudsPerTileV, 2)
+                end
+            end
+        end
+    end
+end
+
+-- Performance monitor với auto-adjustment
+local function performanceMonitor()
+    local fpsHistory = {}
+    while true do
+        wait(5)
+        table.insert(fpsHistory, fps)
+        
+        if #fpsHistory > 12 then -- Keep 1 minute of history
+            table.remove(fpsHistory, 1)
+        end
+        
+        -- Calculate average FPS
+        local avgFPS = 0
+        for _, f in ipairs(fpsHistory) do
+            avgFPS = avgFPS + f
+        end
+        avgFPS = avgFPS / #fpsHistory
+        
+        -- Auto-adjust quality based on performance
+        if avgFPS < 20 and settings.fpsBoost then
+            extremePerformanceMode()
+            if not settings.uiVisible then
+                showNotification("⚡ Auto-performance boost activated", Color3.fromRGB(255, 69, 0))
+            end
+        elseif avgFPS > 50 and settings.qualityLevel == "Performance" then
+            enhanceLighting()
+            if not settings.uiVisible then
+                showNotification("✨ Quality restored due to good FPS", Color3.fromRGB(0, 255, 127))
+            end
+        end
+    end
+end
+
+-- Start all background processes
+spawn(backgroundEnhancement)
+spawn(antiDetection)
+spawn(advancedParticleOptimizer)
+spawn(advancedSoundOptimizer) 
+spawn(textureQualityManager)
+spawn(performanceMonitor)
+
+-- Auto-enhancement on startup
+spawn(function()
+    wait(3)
+    if settings.autoEnhance then
+        enhanceLighting()
+        showNotification("🤖 Auto-enhancement started!", Color3.fromRGB(0, 255, 127))
+    end
 end)
 
-textInput.FocusLost:Connect(function()
-    TweenService:Create(inputStroke, TweenInfo.new(0.2), {
-        Color = Color3.fromRGB(100, 200, 255),
-        Thickness = 1
-    }):Play()
+-- Cleanup function khi player leaves
+game.Players.PlayerRemoving:Connect(function(plr)
+    if plr == player then
+        -- Disconnect all background processes
+        if fpsMonitor then fpsMonitor:Disconnect() end
+        if autoOptimizer then autoOptimizer:Disconnect() end
+        
+        -- Clean up lighting effects
+        for _, effect in pairs(Lighting:GetChildren()) do
+            if effect:IsA("PostEffect") and (effect.Name:find("Ultra") or effect.Name:find("Weather")) then
+                effect:Destroy()
+            end
+        end
+    end
 end)
 
--- Welcome message
-wait(1)
-addFlashMessage("AI", "🚀 Gemini AI Flash Chat 2.0 activated! Ready to chat with style! ⚡✨", false)
+-- Welcome messages
+spawn(function()
+    wait(2)
+    showNotification("🚀 Advanced Graphics Booster V3 Ready!", Color3.fromRGB(70, 130, 180), 4)
+    wait(2)
+    showNotification("✕ Click X to hide UI (functions stay active!)", Color3.fromRGB(255, 215, 0), 3)
+    wait(1)
+    showNotification("⌨️ Hotkeys: F1-F6 work even when hidden!", Color3.fromRGB(0, 191, 255), 3)
+end)
+
+-- Final setup message
+print("🚀 Advanced Graphics Booster V3.0 - HORIZONTAL UI VERSION")
+print("📱 Horizontal layout with compact controls")
+print("✕ Click X button to hide UI - all functions remain active!")
+print("🔄 Background processes: FPS monitor, auto-optimization, particle/sound management")
+print("⌨️  Hotkeys (work when UI hidden): F1=Ultra, F2=Performance, F3=AI-Lag, F4=Toggle UI, F5=Reset, F6=Fullbright")
+print("🎯 Settings toggles on the right panel")
+print("📊 Real-time FPS and ping display")
+print("🤖 Anti-detection and memory management included")
+print("⚡ All background optimizations continue running when UI is closed")
+print("🎮 Made by Advanced Graphics Enhancement Team - V1.0 Horizontal Edition")
