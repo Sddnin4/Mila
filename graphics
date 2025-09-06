@@ -1,4 +1,4 @@
--- Gemini AI Chat 2.0 - All-in-One Flash Edition
+- Gemini AI Chat 2.0 - All-in-One Flash Edition
 -- Chỉ cần đặt LocalScript này trong StarterPlayerScripts
 
 local Players = game:GetService("Players")
