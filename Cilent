@@ -1,560 +1,441 @@
--- Roblox Chat UI Script với AI thông minh
+-- Roblox GUI Script với Tab System
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-local TextService = game:GetService("TextService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 -- Tạo ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ChatUI"
+screenGui.Name = "ClientGui"
+screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
-screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Main Frame (Chat Window) - Ngang và nhỏ
+-- Tạo Frame chính (tăng chiều cao để chứa nhiều nút hơn)
 local mainFrame = Instance.new("Frame")
-mainFrame.Name = "ChatFrame"
-mainFrame.Parent = screenGui
-mainFrame.Size = UDim2.new(0, 500, 0, 280)
-mainFrame.Position = UDim2.new(0.5, -250, 0.5, -140)
-mainFrame.BackgroundColor3 = Color3.fromRGB(45, 50, 60)
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 600, 0, 350)
+mainFrame.Position = UDim2.new(0.5, -300, 0.5, -175)
+mainFrame.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 mainFrame.BorderSizePixel = 0
-mainFrame.Active = true
-mainFrame.Draggable = true
+mainFrame.Parent = screenGui
 
--- Corner cho main frame
+-- Tạo UICorner cho mainFrame
 local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 8)
+mainCorner.CornerRadius = UDim.new(0, 10)
 mainCorner.Parent = mainFrame
 
--- Header Frame
-local headerFrame = Instance.new("Frame")
-headerFrame.Name = "Header"
-headerFrame.Parent = mainFrame
-headerFrame.Size = UDim2.new(1, 0, 0, 40)
-headerFrame.Position = UDim2.new(0, 0, 0, 0)
-headerFrame.BackgroundColor3 = Color3.fromRGB(35, 40, 50)
-headerFrame.BorderSizePixel = 0
+-- Tạo header bar
+local headerBar = Instance.new("Frame")
+headerBar.Name = "HeaderBar"
+headerBar.Size = UDim2.new(1, 0, 0, 50)
+headerBar.Position = UDim2.new(0, 0, 0, 0)
+headerBar.BackgroundTransparency = 1
+headerBar.Parent = mainFrame
 
--- Header Corner
-local headerCorner = Instance.new("UICorner")
-headerCorner.CornerRadius = UDim.new(0, 8)
-headerCorner.Parent = headerFrame
+-- Tạo header "Client"
+local clientLabel = Instance.new("TextLabel")
+clientLabel.Name = "ClientLabel"
+clientLabel.Size = UDim2.new(0, 200, 1, 0)
+clientLabel.Position = UDim2.new(0, 0, 0, 0)
+clientLabel.BackgroundTransparency = 1
+clientLabel.Text = "Client"
+clientLabel.TextColor3 = Color3.fromRGB(80, 80, 80)
+clientLabel.TextSize = 28
+clientLabel.Font = Enum.Font.SourceSansBold
+clientLabel.TextXAlignment = Enum.TextXAlignment.Left
+clientLabel.Parent = headerBar
 
--- Title Label
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Name = "Title"
-titleLabel.Parent = headerFrame
-titleLabel.Size = UDim2.new(1, -80, 1, 0)
-titleLabel.Position = UDim2.new(0, 10, 0, 0)
-titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "Open chatbot"
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextScaled = true
-titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-titleLabel.Font = Enum.Font.GothamBold
+-- Tạo UIPadding cho clientLabel
+local clientPadding = Instance.new("UIPadding")
+clientPadding.PaddingLeft = UDim.new(0, 20)
+clientPadding.Parent = clientLabel
 
--- Minimize Button
-local minimizeButton = Instance.new("TextButton")
-minimizeButton.Name = "MinimizeButton"
-minimizeButton.Parent = headerFrame
-minimizeButton.Size = UDim2.new(0, 30, 0, 30)
-minimizeButton.Position = UDim2.new(1, -65, 0, 5)
-minimizeButton.BackgroundColor3 = Color3.fromRGB(60, 65, 75)
-minimizeButton.BorderSizePixel = 0
-minimizeButton.Text = "□"
-minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-minimizeButton.TextScaled = true
-minimizeButton.Font = Enum.Font.Gotham
-
-local minimizeCorner = Instance.new("UICorner")
-minimizeCorner.CornerRadius = UDim.new(0, 4)
-minimizeCorner.Parent = minimizeButton
-
--- Close Button
+-- Tạo nút đóng (X)
 local closeButton = Instance.new("TextButton")
 closeButton.Name = "CloseButton"
-closeButton.Parent = headerFrame
 closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -30, 0, 5)
-closeButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+closeButton.Position = UDim2.new(1, -40, 0, 10)
+closeButton.BackgroundColor3 = Color3.fromRGB(220, 53, 69)
 closeButton.BorderSizePixel = 0
 closeButton.Text = "×"
 closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.TextScaled = true
-closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 18
+closeButton.Font = Enum.Font.SourceSansBold
+closeButton.Parent = headerBar
 
+-- Tạo UICorner cho closeButton
 local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 4)
+closeCorner.CornerRadius = UDim.new(0, 15)
 closeCorner.Parent = closeButton
 
--- Chat Label
-local chatLabel = Instance.new("TextLabel")
-chatLabel.Name = "ChatLabel"
-chatLabel.Parent = mainFrame
-chatLabel.Size = UDim2.new(0, 50, 0, 25)
-chatLabel.Position = UDim2.new(0, 10, 0, 50)
-chatLabel.BackgroundTransparency = 1
-chatLabel.Text = "Chat"
-chatLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-chatLabel.TextScaled = true
-chatLabel.TextXAlignment = Enum.TextXAlignment.Left
-chatLabel.Font = Enum.Font.Gotham
+-- Tạo container cho các tab
+local tabContainer = Instance.new("Frame")
+tabContainer.Name = "TabContainer"
+tabContainer.Size = UDim2.new(1, 0, 0, 40)
+tabContainer.Position = UDim2.new(0, 0, 0, 50)
+tabContainer.BackgroundTransparency = 1
+tabContainer.Parent = mainFrame
 
--- Chat Messages ScrollingFrame
-local chatScrollFrame = Instance.new("ScrollingFrame")
-chatScrollFrame.Name = "ChatScroll"
-chatScrollFrame.Parent = mainFrame
-chatScrollFrame.Size = UDim2.new(1, -20, 1, -120)
-chatScrollFrame.Position = UDim2.new(0, 10, 0, 80)
-chatScrollFrame.BackgroundColor3 = Color3.fromRGB(35, 40, 50)
-chatScrollFrame.BorderSizePixel = 0
-chatScrollFrame.ScrollBarThickness = 8
-chatScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 105, 115)
+-- Tạo UIPadding cho tabContainer
+local tabPadding = Instance.new("UIPadding")
+tabPadding.PaddingLeft = UDim.new(0, 20)
+tabPadding.PaddingRight = UDim.new(0, 20)
+tabPadding.Parent = tabContainer
 
-local chatScrollCorner = Instance.new("UICorner")
-chatScrollCorner.CornerRadius = UDim.new(0, 6)
-chatScrollCorner.Parent = chatScrollFrame
+-- Tạo tab "Global"
+local globalTab = Instance.new("TextButton")
+globalTab.Name = "GlobalTab"
+globalTab.Size = UDim2.new(0, 120, 0, 35)
+globalTab.Position = UDim2.new(0, 0, 0, 0)
+globalTab.BackgroundColor3 = Color3.fromRGB(51, 102, 204)
+globalTab.BorderSizePixel = 0
+globalTab.Text = "Global"
+globalTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+globalTab.TextSize = 16
+globalTab.Font = Enum.Font.SourceSansBold
+globalTab.Parent = tabContainer
 
--- UIListLayout cho chat messages
-local chatListLayout = Instance.new("UIListLayout")
-chatListLayout.Parent = chatScrollFrame
-chatListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-chatListLayout.Padding = UDim.new(0, 5)
+-- Tạo UICorner cho globalTab
+local globalTabCorner = Instance.new("UICorner")
+globalTabCorner.CornerRadius = UDim.new(0, 6)
+globalTabCorner.Parent = globalTab
 
--- Input Frame
-local inputFrame = Instance.new("Frame")
-inputFrame.Name = "InputFrame"
-inputFrame.Parent = mainFrame
-inputFrame.Size = UDim2.new(1, -20, 0, 40)
-inputFrame.Position = UDim2.new(0, 10, 1, -50)
-inputFrame.BackgroundColor3 = Color3.fromRGB(55, 60, 70)
-inputFrame.BorderSizePixel = 0
+-- Tạo tab "VNG"
+local vngTab = Instance.new("TextButton")
+vngTab.Name = "VNGTab"
+vngTab.Size = UDim2.new(0, 80, 0, 35)
+vngTab.Position = UDim2.new(0, 130, 0, 0)
+vngTab.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+vngTab.BorderSizePixel = 0
+vngTab.Text = "VNG"
+vngTab.TextColor3 = Color3.fromRGB(80, 80, 80)
+vngTab.TextSize = 16
+vngTab.Font = Enum.Font.SourceSans
+vngTab.Parent = tabContainer
 
-local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 6)
-inputCorner.Parent = inputFrame
+-- Tạo UICorner cho vngTab
+local vngTabCorner = Instance.new("UICorner")
+vngTabCorner.CornerRadius = UDim.new(0, 6)
+vngTabCorner.Parent = vngTab
 
--- Input TextBox
-local inputBox = Instance.new("TextBox")
-inputBox.Name = "InputBox"
-inputBox.Parent = inputFrame
-inputBox.Size = UDim2.new(1, -20, 1, -10)
-inputBox.Position = UDim2.new(0, 10, 0, 5)
-inputBox.BackgroundTransparency = 1
-inputBox.Text = ""
-inputBox.PlaceholderText = "Type message here..."
-inputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-inputBox.PlaceholderColor3 = Color3.fromRGB(150, 155, 165)
-inputBox.TextScaled = true
-inputBox.TextXAlignment = Enum.TextXAlignment.Left
-inputBox.Font = Enum.Font.Gotham
-inputBox.ClearTextOnFocus = false
+-- Tạo content container
+local contentContainer = Instance.new("Frame")
+contentContainer.Name = "ContentContainer"
+contentContainer.Size = UDim2.new(1, 0, 0, 250)
+contentContainer.Position = UDim2.new(0, 0, 0, 90)
+contentContainer.BackgroundTransparency = 1
+contentContainer.Parent = mainFrame
 
--- Biến để theo dõi trạng thái
-local isMinimized = false
-local chatMessages = {}
+-- Tạo UIPadding cho contentContainer
+local contentPadding = Instance.new("UIPadding")
+contentPadding.PaddingLeft = UDim.new(0, 20)
+contentPadding.PaddingRight = UDim.new(0, 20)
+contentPadding.PaddingTop = UDim.new(0, 10)
+contentPadding.Parent = contentContainer
 
--- Hàm tạo tin nhắn chat
-function createChatMessage(sender, message, isUser)
-    local messageFrame = Instance.new("Frame")
-    messageFrame.Name = "Message"
-    messageFrame.Parent = chatScrollFrame
-    messageFrame.Size = UDim2.new(1, -10, 0, 0)
-    messageFrame.BackgroundTransparency = 1
-    messageFrame.AutomaticSize = Enum.AutomaticSize.Y
+-- Tạo Global Content
+local globalContent = Instance.new("Frame")
+globalContent.Name = "GlobalContent"
+globalContent.Size = UDim2.new(1, 0, 1, 0)
+globalContent.Position = UDim2.new(0, 0, 0, 0)
+globalContent.BackgroundTransparency = 1
+globalContent.Visible = true
+globalContent.Parent = contentContainer
+
+-- Function để tạo executor button
+local function createExecutorButton(name, link, position, color, parent)
+    local button = Instance.new("TextButton")
+    button.Name = name .. "Button"
+    button.Size = UDim2.new(0, 120, 0, 35)
+    button.Position = position
+    button.BackgroundColor3 = color
+    button.BorderSizePixel = 0
+    button.Text = name
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextSize = 14
+    button.Font = Enum.Font.SourceSansBold
+    button.Parent = parent
+
+    -- Tạo UICorner
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = button
+
+    -- Hiệu ứng hover
+    local originalColor = color
+    local hoverColor = Color3.fromRGB(
+        math.max(0, color.R * 255 - 20),
+        math.max(0, color.G * 255 - 20),
+        math.max(0, color.B * 255 - 20)
+    )
     
-    local messageLabel = Instance.new("TextLabel")
-    messageLabel.Name = "MessageText"
-    messageLabel.Parent = messageFrame
-    messageLabel.Size = UDim2.new(1, -10, 0, 0)
-    messageLabel.Position = UDim2.new(0, 5, 0, 0)
-    messageLabel.BackgroundTransparency = 1
-    messageLabel.Text = sender .. ": " .. message
-    messageLabel.TextColor3 = isUser and Color3.fromRGB(100, 200, 255) or Color3.fromRGB(255, 255, 255)
-    messageLabel.TextXAlignment = Enum.TextXAlignment.Left
-    messageLabel.TextYAlignment = Enum.TextYAlignment.Top
-    messageLabel.Font = Enum.Font.Gotham
-    messageLabel.TextSize = 14
-    messageLabel.TextWrapped = true
-    messageLabel.AutomaticSize = Enum.AutomaticSize.Y
+    button.MouseEnter:Connect(function()
+        local tween = TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = hoverColor})
+        tween:Play()
+    end)
     
-    messageFrame.Size = UDim2.new(1, -10, 0, messageLabel.AbsoluteSize.Y + 5)
+    button.MouseLeave:Connect(function()
+        local tween = TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {BackgroundColor3 = originalColor})
+        tween:Play()
+    end)
+
+    -- Xử lý click
+    button.MouseButton1Click:Connect(function()
+        local success = pcall(function()
+            setclipboard(link)
+        end)
+        
+        if success then
+            updateStatusLabel("✓ " .. name .. " link đã được copy!")
+        else
+            updateStatusLabel("Link " .. name .. ": " .. link)
+        end
+        
+        print(name .. " clicked! Link: " .. link)
+    end)
     
-    -- Scroll xuống cuối
-    chatScrollFrame.CanvasSize = UDim2.new(0, 0, 0, chatListLayout.AbsoluteContentSize.Y)
-    chatScrollFrame.CanvasPosition = Vector2.new(0, chatScrollFrame.AbsoluteCanvasSize.Y)
+    return button
 end
 
--- Hàm minimize/restore
-function toggleMinimize()
-    local targetSize = isMinimized and UDim2.new(0, 500, 0, 280) or UDim2.new(0, 500, 0, 40)
-    local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = targetSize})
-    tween:Play()
-    isMinimized = not isMinimized
-end
-
--- Hàm đóng chat
-function closeChat()
-    local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0)})
-    tween:Play()
-    tween.Completed:Connect(function()
-        screenGui:Destroy()
+-- Function để cập nhật status label
+local function updateStatusLabel(text)
+    statusLabel.Text = text
+    statusLabel.TextColor3 = Color3.fromRGB(34, 139, 34)
+    
+    spawn(function()
+        wait(3)
+        statusLabel.Text = ""
     end)
 end
 
--- Translation Dictionary
-local translations = {
-    ["vietnamese"] = {
-        Xin Chào = "Xin chào! Tôi có thể giúp gì cho bạn?",
-        Tạm Biệt = "Tạm biệt! Chúc bạn một ngày tốt lành!",
-        Cảm ơn = "Không có gì!",
-        Giúp tôi = "Tôi ở đây để giúp bạn!"
-    },
-}
+-- Tạo các executor buttons cho Global tab
+local deltaX = createExecutorButton("Delta X", "https://deltaexploits.gg/delta-executor-android", 
+    UDim2.new(0, 0, 0, 10), Color3.fromRGB(138, 43, 226), globalContent)
 
--- Advanced AI Logic với machine learning simulation
-function analyzeMessage(userMessage)
-    local msg = string.lower(userMessage)
-    local words = {}
-    for word in string.gmatch(msg, "%S+") do
-        table.insert(words, word)
-    end
-    
-    -- Translation requests
-    if string.find(msg, "translate") or string.find(msg, "dịch") or string.find(msg, "번역") or string.find(msg, "翻訳") then
-        return {
-            "Tôi có thể nói được tiếng: Vietnamese!",
-            "Bạn muốn làm gì cho ngày hôm nay? Ví dụ: 'Bạn khoẻ không'",
-        }
-    end
-    
-    -- Weather and time queries with intelligent responses
-    if string.find(msg, "Bão") or string.find(msg, "thời tiết") or string.find(msg, "mưa") or string.find(msg, "mặt trời") then
-        return {
-            "Tôi không thể kiểm tra thời tiết theo thời gian thực, nhưng bạn có thể dùng weather app!",
-            "Thời tiết ảnh hưởng đến tâm trạng rất nhiều! Hôm nay bạn cảm thấy thế nào?",
-            "Climate change đang impact weather patterns globally!",
-            "Favorite season của bạn là gì và tại sao?"
-        }
-    end
-    
-    -- Math and calculation requests
-    if string.find(msg, "math") or string.find(msg, "calculate") or string.find(msg, "toán") or string.find(msg, "tính") then
-        return {
-            "Tôi có thể giúp bạn môn toán! Ví dụ: 2+2=4, 5*3=15",
-            "Bạn thích toán vì sao! Bạn thích môn nào nhất?",
-            "Problem-solving in math develops logical thinking!",
-            "Calculus, Algebra, hay Geometry - cái nào interesting nhất?"
-        }
-    end
-    
-    -- Programming and coding
-    if string.find(msg, "code") or string.find(msg, "programming") or string.find(msg, "lập trình") or string.find(msg, "python") or string.find(msg, "javascript") then
-        return {
-            "Coding là superpower của thời đại! Bạn học ngôn ngữ nào?",
-            "Debugging là 90% of programming! Patience is key!",
-            "Open source contribution giúp improve skills rất nhiều!",
-            "Algorithm thinking phát triển problem-solving ability!",
-            "Version control như Git rất important cho teamwork!"
-        }
-    end
-    
-    -- Food and cooking
-    if string.find(msg, "food") or string.find(msg, "eat") or string.find(msg, "đồ ăn") or string.find(msg, "hungry") or string.find(msg, "cook") then
-        return {
-            "Food là fuel for brain! Healthy eating = better performance!",
-            "Cooking là life skill quan trọng! Bạn có biết nấu không?",
-            "Favorite cuisine của bạn là gì? Tại sao thích?",
-            "Meal prep helps save time và maintain nutrition!",
-            "Cultural food experiences broaden worldview!"
-        }
-    end
-    
-    -- Travel and places
-    if string.find(msg, "travel") or string.find(msg, "trip") or string.find(msg, "du lịch") or string.find(msg, "country") or string.find(msg, "city") then
-        return {
-            "Travel broadens mind và creates memories! Dream destination?",
-            "Cultural exchange through travel builds empathy!",
-            "Local experiences > tourist traps! Agree?",
-            "Language barriers become learning opportunities!",
-            "Sustainable travel protects destinations for future!"
-        }
-    end
-    
-    -- Books and reading
-    if string.find(msg, "book") or string.find(msg, "read") or string.find(msg, "sách") or string.find(msg, "đọc") or string.find(msg, "story") then
-        return {
-            "Reading expands vocabulary và imagination! Favorite genre?",
-            "Books vs audiobooks vs ebooks - preference nào?",
-            "Fiction develops empathy, non-fiction builds knowledge!",
-            "Speed reading techniques help consume more content!",
-            "Book recommendations based on interests work best!"
-        }
-    end
-    
-    -- Greetings with advanced pattern recognition
-    if string.find(msg, "hello") or string.find(msg, "hi") or string.find(msg, "chào") or string.find(msg, "xin chào") or 
-       string.find(msg, "hey") or string.find(msg, "hola") or string.find(msg, "bonjour") or string.find(msg, "konnichiwa") then
-        return {
-            "Xin chào! Tôi có thể giúp gì cho bạn?",
-            "Hello! Nice to meet you! 😊",
-            "Chào bạn! Hôm nay thế nào?",
-            "Hi there! Ready for an amazing conversation?",
-            "¡Hola! ¿Cómo estás hoy?",
-            "Bonjour! Comment allez-vous?",
-            "こんにちは！元気ですか？",
-            "안녕하세요! 오늘 어떠세요?",
-            "Guten Tag! Wie geht es Ihnen?",
-            "Ciao! Come stai oggi?"
-        }
-    end
-    
-    -- Hỏi về thời gian
-    if string.find(msg, "time") or string.find(msg, "giờ") or string.find(msg, "thời gian") then
-        return {
-            "Hiện tại tôi không thể xem được thời gian chính xác, nhưng bạn có thể check trên thiết bị nhé!",
-            "Thời gian trôi qua nhanh quá! Bạn đang làm gì vậy?",
-            "Time flies when you're having fun! ⏰"
-        }
-    end
-    
-    -- Hỏi về Roblox/Game
-    if string.find(msg, "roblox") or string.find(msg, "game") or string.find(msg, "script") or string.find(msg, "code") then
-        return {
-            "Roblox thật tuyệt! Bạn đang develop game gì không?",
-            "Scripting Lua trong Roblox rất thú vị! Cần help gì không?",
-            "Game development cần patience và creativity! 🎮",
-            "Bạn có publish game nào trên Roblox chưa?",
-            "Studio Roblox có nhiều tool mạnh! Bạn dùng cái nào nhiều nhất?"
-        }
-    end
-    
-    -- Hỏi về học tập
-    if string.find(msg, "học") or string.find(msg, "study") or string.find(msg, "school") or string.find(msg, "bài tập") then
-        return {
-            "Học tập quan trọng! Bạn đang học môn gì khó nhất?",
-            "Study smart, not just hard! Có technique nào hiệu quả không?",
-            "Break time cũng cần thiết khi học! 📚",
-            "Bạn có study group không? Học nhóm có hiệu quả hơn!",
-            "Motivation học tập đôi khi khó maintain, nhưng đừng bỏ cuộc!"
-        }
-    end
-    
-    -- Hỏi về cảm xúc
-    if string.find(msg, "sad") or string.find(msg, "buồn") or string.find(msg, "upset") or string.find(msg, "stress") then
-        return {
-            "Tôi hiểu cảm giác đó. Có gì bạn muốn chia sẻ không? 💙",
-            "Mọi thứ sẽ ổn thôi! Bad days make good days better!",
-            "Take a deep breath. Bạn đã overcome nhiều thứ rồi! 💪",
-            "Cần ai đó lắng nghe không? Tôi ở đây! 👂"
-        }
-    end
-    
-    -- Hỏi về tương lai
-    if string.find(msg, "future") or string.find(msg, "tương lai") or string.find(msg, "dream") or string.find(msg, "ước mơ") then
-        return {
-            "Tương lai được tạo nên từ những gì bạn làm hôm nay! ✨",
-            "Dreams without action chỉ là wishes. Plan và execute thôi!",
-            "Bạn có goals cụ thể cho năm nay không?",
-            "Future is bright nếu bạn work hard for it! 🌟"
-        }
-    end
-    
-    -- Hỏi về AI/Bot
-    if string.find(msg, "ai") or string.find(msg, "robot") or string.find(msg, "bot") or string.find(msg, "thông minh") then
-        return {
-            "AI chỉ là tool để hỗ trợ, con người vẫn là center! 🤖",
-            "Tôi cố gắng học và improve từ mỗi conversation!",
-            "Intelligence thật sự là khả năng adapt và learn!",
-            "Bạn nghĩ gì về future of AI?"
-        }
-    end
-    
-    -- Hỏi về âm nhạc
-    if string.find(msg, "music") or string.find(msg, "nhạc") or string.find(msg, "song") or string.find(msg, "bài hát") then
-        return {
-            "Âm nhạc là ngôn ngữ của cảm xúc! Bạn thích thể loại gì?",
-            "Music therapy thật sự có hiệu quả! Bạn có playlist favorite không?",
-            "Học nhạc cụ nào đó có thú vị không? 🎵",
-            "Concert live và nghe recording, experience nào tốt hơn?"
-        }
-    end
-    
-    -- Hỏi về thể thao
-    if string.find(msg, "sport") or string.find(msg, "thể thao") or string.find(msg, "football") or string.find(msg, "bóng") then
-        return {
-            "Thể thao tốt cho sức khỏe! Bạn chơi môn gì?",
-            "Team sport hay individual sport, bạn prefer cái nào?",
-            "Regular exercise giúp improve cả physical lẫn mental health!",
-            "Favorite athlete của bạn là ai? Tại sao admire họ?"
-        }
-    end
-    
-    -- Default intelligent responses nếu không match
-    return nil
-end
+local arceusX = createExecutorButton("Arceus X", "https://www.mediafire.com/file/p05mfj8v7bj1yd5/Roblox_Arceus_X_NEO_1.8.1.apk/file", 
+    UDim2.new(0, 130, 0, 10), Color3.fromRGB(30, 144, 255), globalContent)
 
--- Hàm xử lý tin nhắn với AI thông minh
-function sendMessage()
-    local message = inputBox.Text
-    if message ~= "" then
-        createChatMessage("You", message, true)
-        inputBox.Text = ""
-        
-        -- AI phân tích tin nhắn và trả lời phù hợp
-        wait(math.random(1, 2))
-        
-        local specificResponse = analyzeMessage(message)
-        if specificResponse then
-            local response = specificResponse[math.random(1, #specificResponse)]
-            createChatMessage("Bot", response, false)
+local codeX = createExecutorButton("CodeX", "https://www.mediafire.com/file/kxpmihdc91o6tgz/Codex_v2.688.apk/file", 
+    UDim2.new(0, 260, 0, 10), Color3.fromRGB(255, 69, 0), globalContent)
+
+local vegaX = createExecutorButton("Vega X", "https://github.com/1f0yt/community/releases/download/Vegax/Vega.X.apk", 
+    UDim2.new(0, 390, 0, 10), Color3.fromRGB(50, 205, 50), globalContent)
+
+local ronix = createExecutorButton("Ronix", "https://wrdcdn.net/r/154522/1757349822750/Ronix_688_(arm64).apk", 
+    UDim2.new(0, 0, 0, 55), Color3.fromRGB(220, 20, 60), globalContent)
+
+-- Tạo thông tin hướng dẫn
+local infoLabel = Instance.new("TextLabel")
+infoLabel.Size = UDim2.new(1, 0, 0, 20)
+infoLabel.Position = UDim2.new(0, 0, 0, 100)
+infoLabel.BackgroundTransparency = 1
+infoLabel.Text = "Click vào bất kỳ executor nào để copy link download"
+infoLabel.TextColor3 = Color3.fromRGB(100, 100, 100)
+infoLabel.TextSize = 12
+infoLabel.Font = Enum.Font.SourceSans
+infoLabel.TextXAlignment = Enum.TextXAlignment.Center
+infoLabel.Parent = globalContent
+
+-- Tạo status label để hiển thị thông báo
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, 0, 20)
+statusLabel.Position = UDim2.new(0, 0, 0, 125)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = ""
+statusLabel.TextColor3 = Color3.fromRGB(34, 139, 34)
+statusLabel.TextSize = 12
+statusLabel.Font = Enum.Font.SourceSansBold
+statusLabel.TextXAlignment = Enum.TextXAlignment.Center
+statusLabel.Parent = globalContent
+
+-- Tạo VNG Content
+local vngContent = Instance.new("Frame")
+vngContent.Name = "VNGContent"
+vngContent.Size = UDim2.new(1, 0, 1, 0)
+vngContent.Position = UDim2.new(0, 0, 0, 0)
+vngContent.BackgroundTransparency = 1
+vngContent.Visible = false
+vngContent.Parent = contentContainer
+
+-- Tạo các executor buttons cho VNG tab
+local arceusXVNG = createExecutorButton("Arceus X VNG", "https://www.mediafire.com/file/n3xmh2d41nprj9u/Roblox_-_VNG_Arceus_X_NEO_1.8.1.apk/file", 
+    UDim2.new(0, 0, 0, 10), Color3.fromRGB(30, 144, 255), vngContent)
+
+local codeXVNG = createExecutorButton("CodeX VNG", "https://www.mediafire.com/file/ndx38qpru8fnldp/Codex+VNG.apk/file", 
+    UDim2.new(0, 150, 0, 10), Color3.fromRGB(255, 69, 0), vngContent)
+
+-- Tạo thông tin hướng dẫn cho VNG
+local vngInfoLabel = Instance.new("TextLabel")
+vngInfoLabel.Size = UDim2.new(1, 0, 0, 20)
+vngInfoLabel.Position = UDim2.new(0, 0, 0, 60)
+vngInfoLabel.BackgroundTransparency = 1
+vngInfoLabel.Text = "Các executor dành riêng cho Roblox VNG"
+vngInfoLabel.TextColor3 = Color3.fromRGB(100, 100, 100)
+vngInfoLabel.TextSize = 12
+vngInfoLabel.Font = Enum.Font.SourceSans
+vngInfoLabel.TextXAlignment = Enum.TextXAlignment.Center
+vngInfoLabel.Parent = vngContent
+
+-- Tạo status label cho VNG
+local vngStatusLabel = Instance.new("TextLabel")
+vngStatusLabel.Size = UDim2.new(1, 0, 0, 20)
+vngStatusLabel.Position = UDim2.new(0, 0, 0, 85)
+vngStatusLabel.BackgroundTransparency = 1
+vngStatusLabel.Text = ""
+vngStatusLabel.TextColor3 = Color3.fromRGB(34, 139, 34)
+vngStatusLabel.TextSize = 12
+vngStatusLabel.Font = Enum.Font.SourceSansBold
+vngStatusLabel.TextXAlignment = Enum.TextXAlignment.Center
+vngStatusLabel.Parent = vngContent
+
+-- Cập nhật function updateStatusLabel để xử lý cả 2 tab
+updateStatusLabel = function(text)
+    if currentTab == "Global" then
+        statusLabel.Text = text
+    else
+        vngStatusLabel.Text = text
+    end
+    
+    spawn(function()
+        wait(3)
+        if currentTab == "Global" then
+            statusLabel.Text = ""
         else
-            -- Intelligent General Responses (khi không match specific topic)
-            local responses = {
-                -- Phản hồi thông minh và phù hợp
-                "Thú vị! Bạn có thể elaborate thêm không?",
-                "Tôi hiểu point của bạn. Có experience nào liên quan không?",
-                "That makes sense! Bạn đã research về điều này chưa?",
-                "Good thinking! Approach này có pros and cons gì?",
-                "Perspective hay đấy! Có alternative nào khác không?",
-                "Valid point! Evidence supporting điều này là gì?",
-                "Insightful! Điều này apply trong real life như nào?",
-                "Logical reasoning! Bạn có examples cụ thể không?",
-                "Analytical thinking tốt! Next step sẽ là gì?",
-                "Critical thinking on point! Có contradictions nào không?",
-                
-                -- Câu hỏi để hiểu sâu hơn
-                "Interesting! Tại sao bạn lại nghĩ vậy?",
-                "Tell me more! Background story là gì?",
-                "Curious! Điều này affect bạn như nào?",
-                "Intriguing! Bạn discover ra điều này khi nào?",
-                "Fascinating! Process thinking của bạn ra sao?",
-                "Compelling! Evidence nào convince bạn nhất?",
-                "Thought-provoking! Implications lâu dài là gì?",
-                "Mind-opening! Bạn có change perspective không?",
-                "Eye-opening! Lesson learned gì từ điều này?",
-                "Enlightening! Impact đến decision making ra sao?",
-                
-                -- Phản hồi học hỏi
-                "Thanks for sharing! Tôi học được điều mới!",
-                "Valuable insight! Điều này broaden perspective tôi!",
-                "Educational! Tôi sẽ remember điều này!",
-                "Informative! Context này rất useful!",
-                "Knowledge gained! Tôi appreciate input của bạn!",
-                "Learning moment! Điều này add to database tôi!",
-                "Wisdom shared! Understanding tôi deep hơn rồi!",
-                "Intellectual exchange! Conversation này meaningful!",
-                "Data processed! Information này valuable!",
-                "Neural network updated! 🧠💡",
-                
-                -- Phản hồi sáng tạo
-                "Creative angle! Bạn có brainstorm thêm ideas không?",
-                "Innovative thinking! Out-of-the-box approach!",
-                "Original concept! Bạn develop idea này như nào?",
-                "Unique perspective! Fresh take on topic!",
-                "Inventive approach! Problem-solving skills tốt!",
-                "Imaginative! Creativity flows natural với bạn!",
-                "Artistic mindset! Aesthetic appreciation high!",
-                "Visionary thinking! Future-oriented perspective!",
-                "Design thinking! User-centric approach!",
-                "Innovation potential! Entrepreneurial spirit!",
-                
-                -- Phản hồi khen ngợi có ý nghĩa
-                "Impressive analysis! Critical thinking skills strong!",
-                "Excellent reasoning! Logic chain rất clear!",
-                "Outstanding insight! Depth of understanding profound!",
-                "Remarkable observation! Attention to detail tốt!",
-                "Brilliant connection! Pattern recognition skills!",
-                "Exceptional thinking! Complex ideas simplified well!",
-                "Superior logic! Argument structure solid!",
-                "Advanced reasoning! Abstract thinking ability!",
-                "Professional analysis! Research skills evident!",
-                "Expert-level insight! Knowledge integration tốt!",
-                
-                -- Câu hỏi mở rộng tư duy
-                "What if scenario khác sẽ ra sao?",
-                "How about từ different angle?",
-                "Consider alternative: điều gì sẽ happen?",
-                "Hypothetically speaking: best case scenario?",
-                "In ideal world: solution hoàn hảo là gì?",
-                "Playing devil's advocate: counterargument?",
-                "From opposing viewpoint: valid concerns gì?",
-                "Long-term perspective: consequences ra sao?",
-                "Bigger picture: context rộng hơn như nào?",
-                "Deeper level: root cause thật sự là gì?",
-                
-                -- Phản hồi khuyến khích suy nghĩ
-                "Thought experiment: thử approach khác?",
-                "Mental model: framework nào apply được?",
-                "Cognitive bias: có influence decision không?",
-                "Metacognition: thinking about thinking!",
-                "Systems thinking: interconnections ra sao?",
-                "First principles: fundamental assumptions gì?",
-                "Occam's razor: simplest explanation là gì?",
-                "Cost-benefit analysis: trade-offs như nào?",
-                "Risk assessment: potential downsides?",
-                "Opportunity cost: alternatives bỏ lỡ gì?",
-                
-                -- Phản hồi về learning và growth
-                "Growth mindset! Continuous learning important!",
-                "Skill development! Practice makes progress!",
-                "Knowledge acquisition! Curiosity drives success!",
-                "Intellectual humility! Always room to improve!",
-                "Lifelong learning! Adapt and evolve!",
-                "Cognitive flexibility! Mental agility!",
-                "Information processing! Quality over quantity!",
-                "Critical evaluation! Source credibility matters!",
-                "Evidence-based thinking! Facts over opinions!",
-                "Scientific method! Hypothesis, test, conclude!",
-                
-                -- Phản hồi về problem-solving
-                "Problem-solving approach systematic!",
-                "Root cause analysis! Dig deeper!",
-                "Solution-oriented thinking! Action-focused!",
-                "Troubleshooting mindset! Debug process!",
-                "Optimization thinking! Efficiency matters!",
-                "Resource allocation! Prioritization key!",
-                "Constraint identification! Limitations awareness!",
-                "Implementation strategy! Execution planning!",
-                "Iteration cycle! Continuous improvement!",
-                "Feedback loop! Learn and adjust!"
-            }
-            
-            local randomResponse = responses[math.random(1, #responses)]
-            createChatMessage("Bot", randomResponse, false)
+            vngStatusLabel.Text = ""
         end
+    end)
+end
+
+-- Biến theo dõi tab hiện tại
+local currentTab = "Global"
+
+-- Function để chuyển tab
+local function switchTab(tabName)
+    if tabName == "Global" then
+        -- Cập nhật tab appearance
+        globalTab.BackgroundColor3 = Color3.fromRGB(51, 102, 204)
+        globalTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+        globalTab.Font = Enum.Font.SourceSansBold
+        
+        vngTab.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+        vngTab.TextColor3 = Color3.fromRGB(80, 80, 80)
+        vngTab.Font = Enum.Font.SourceSans
+        
+        -- Hiển thị content
+        globalContent.Visible = true
+        vngContent.Visible = false
+        currentTab = "Global"
+        
+    elseif tabName == "VNG" then
+        -- Cập nhật tab appearance
+        vngTab.BackgroundColor3 = Color3.fromRGB(51, 102, 204)
+        vngTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+        vngTab.Font = Enum.Font.SourceSansBold
+        
+        globalTab.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+        globalTab.TextColor3 = Color3.fromRGB(80, 80, 80)
+        globalTab.Font = Enum.Font.SourceSans
+        
+        -- Hiển thị content
+        globalContent.Visible = false
+        vngContent.Visible = true
+        currentTab = "VNG"
     end
 end
 
--- Kết nối events
-closeButton.MouseButton1Click:Connect(closeChat)
-minimizeButton.MouseButton1Click:Connect(toggleMinimize)
-inputBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
-        sendMessage()
+-- Tạo hiệu ứng hover cho các nút
+local function createHoverEffect(button, hoverColor, originalColor)
+    local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad)
+    
+    button.MouseEnter:Connect(function()
+        if button == globalTab and currentTab ~= "Global" then
+            local tween = TweenService:Create(button, tweenInfo, {BackgroundColor3 = hoverColor})
+            tween:Play()
+        elseif button == vngTab and currentTab ~= "VNG" then
+            local tween = TweenService:Create(button, tweenInfo, {BackgroundColor3 = hoverColor})
+            tween:Play()
+        elseif button == closeButton then
+            local tween = TweenService:Create(button, tweenInfo, {BackgroundColor3 = hoverColor})
+            tween:Play()
+        end
+    end)
+    
+    button.MouseLeave:Connect(function()
+        if button == globalTab and currentTab ~= "Global" then
+            local tween = TweenService:Create(button, tweenInfo, {BackgroundColor3 = originalColor})
+            tween:Play()
+        elseif button == vngTab and currentTab ~= "VNG" then
+            local tween = TweenService:Create(button, tweenInfo, {BackgroundColor3 = originalColor})
+            tween:Play()
+        elseif button == closeButton then
+            local tween = TweenService:Create(button, tweenInfo, {BackgroundColor3 = originalColor})
+            tween:Play()
+        end
+    end)
+end
+
+-- Áp dụng hiệu ứng hover
+createHoverEffect(globalTab, Color3.fromRGB(170, 170, 170), Color3.fromRGB(200, 200, 200))
+createHoverEffect(vngTab, Color3.fromRGB(170, 170, 170), Color3.fromRGB(200, 200, 200))
+createHoverEffect(closeButton, Color3.fromRGB(200, 35, 51), Color3.fromRGB(220, 53, 69))
+
+-- Xử lý sự kiện click cho tabs
+globalTab.MouseButton1Click:Connect(function()
+    switchTab("Global")
+    print("Switched to Global tab")
+end)
+
+vngTab.MouseButton1Click:Connect(function()
+    switchTab("VNG")
+    print("Switched to VNG tab")
+end)
+
+-- Xử lý sự kiện đóng GUI
+closeButton.MouseButton1Click:Connect(function()
+    local closeTween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back), {
+        Size = UDim2.new(0, 0, 0, 0)
+    })
+    closeTween:Play()
+    
+    closeTween.Completed:Connect(function()
+        screenGui:Destroy()
+    end)
+    
+    print("GUI closed")
+end)
+
+-- Tạo hiệu ứng mở GUI
+mainFrame.Size = UDim2.new(0, 0, 0, 0)
+local openTween = TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back), {
+    Size = UDim2.new(0, 600, 0, 350)
+})
+openTween:Play()
+
+-- Drag functionality
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+headerBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
     end
 end)
 
--- Hover effects cho buttons
-closeButton.MouseEnter:Connect(function()
-    closeButton.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+headerBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
 end)
 
-closeButton.MouseLeave:Connect(function()
-    closeButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+headerBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
 end)
 
-minimizeButton.MouseEnter:Connect(function()
-    minimizeButton.BackgroundColor3 = Color3.fromRGB(80, 85, 95)
-end)
-
-minimizeButton.MouseLeave:Connect(function()
-    minimizeButton.BackgroundColor3 = Color3.fromRGB(60, 65, 75)
-end)
-
--- Tin nhắn chào mừng
-createChatMessage("Bot", "Xin chào! Chào mừng bạn đến với AI Chatbot! 🤖", false)
-createChatMessage("Bot", "Tôi có thể trả lời câu hỏi và trò chuyện thông minh với bạn!", false)
+print("Client GUI with tabs loaded successfully!")
