@@ -206,30 +206,13 @@ local qaDatabase = {
 	["how.*make.*gui"] = "Create GUIs in StarterGui using ScreenGui, Frame, TextButton, and TextLabel objects!",
 	
 	-- Câu hỏi chung
-	["hello"] = "Hello! How can I help you today? 😊",
-	["hi"] = "Hi there! What do you need help with?",
-	["help"] = "I can help you with game tips, scripting questions, and general Roblox information!",
-	["thank"] = "You're welcome! Feel free to ask anything else! 🎉",
-	["bye"] = "Goodbye! Have fun playing! 👋",
-	
-	-- Câu hỏi về tài nguyên
-	["where.*find.*iron"] = "Iron ore can be found in caves and mountains. Look for brownish stones!",
-	["how.*get.*robux"] = "You can get Robux by purchasing them, or earning through game passes and premium payouts!",
-	["what.*best.*way.*farm"] = "The best farming method is to set up automated systems or find high-yield areas!",
-	
-	-- Câu hỏi về PvP
-	["how.*win.*pvp"] = "Practice your aim, learn to strafe, and always keep moving! Stay unpredictable!",
-	["best.*pvp.*strategy"] = "Use cover, time your attacks, and manage your health/resources carefully!",
-	
-	-- Câu hỏi về building
-	["how.*build"] = "Use the building tools! Press B to open the toolbox and select blocks to place.",
-	["building.*tips"] = "Start with a plan, use different materials for texture, and don't forget lighting!",
-	
-	-- Easter eggs
-	["who.*are.*you"] = "I'm your friendly Roblox AI Helper! I'm here to assist you 24/7! 🤖",
-	["tell.*joke"] = "Why did the Robloxian cross the road? To get to the other obby! 😄",
-	[".*cool"] = "Thanks! You're pretty cool too! 😎",
-}
+	["hello"] = "Hello! tôi có thể giúp gì cho bạn? 😊",
+	["hi"] = "Hi there! Banj có cần giúp dỡ gì ko?",
+	["help"] = "Bạn đang cầu cứu về điều gì!",
+	["thank"] = "Không có gì! Khi nào cần giúp đỡ thì nói mình nhé 😊",
+	["bye"] = "Goodbye! Chúc một ngày tốt lành! 👋",
+["Tôi yêu bạn"] = "Tôi cũng yêu bạn rất nhiều ❤️",
+["Bạn có thể làm gì"] = "You're welcome! Feel free to ask anything else! 🎉",
 
 -- Hàm tìm câu trả lời
 local function getBotResponse(userMessage)
