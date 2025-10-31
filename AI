@@ -1,0 +1,320 @@
+-- Roblox AI Helper Chatbot
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Tạo ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ChatbotGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Frame chính
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 320, 0, 420)
+mainFrame.Position = UDim2.new(0.5, -160, 0.5, -210)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+mainFrame.BorderSizePixel = 0
+mainFrame.ClipsDescendants = true
+mainFrame.Parent = screenGui
+
+-- Bo tròn góc
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 15)
+corner.Parent = mainFrame
+
+-- Viền sáng
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(0, 200, 255)
+stroke.Thickness = 3
+stroke.Parent = mainFrame
+
+-- Header
+local header = Instance.new("Frame")
+header.Name = "Header"
+header.Size = UDim2.new(1, 0, 0, 60)
+header.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+header.BorderSizePixel = 0
+header.Parent = mainFrame
+
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 15)
+headerCorner.Parent = header
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -120, 1, 0)
+title.Position = UDim2.new(0, 55, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "Roblox AI Helper"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 16
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = header
+
+-- Icon
+local icon = Instance.new("TextLabel")
+icon.Size = UDim2.new(0, 35, 0, 35)
+icon.Position = UDim2.new(0, 10, 0.5, -17)
+icon.BackgroundTransparency = 1
+icon.Text = "🤖"
+icon.TextSize = 24
+icon.Parent = header
+
+-- Nút thu gọn
+local minimizeBtn = Instance.new("TextButton")
+minimizeBtn.Name = "MinimizeBtn"
+minimizeBtn.Size = UDim2.new(0, 40, 0, 40)
+minimizeBtn.Position = UDim2.new(1, -90, 0.5, -20)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+minimizeBtn.Text = "─"
+minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeBtn.TextSize = 20
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.Parent = header
+
+local minCorner = Instance.new("UICorner")
+minCorner.CornerRadius = UDim.new(0, 8)
+minCorner.Parent = minimizeBtn
+
+-- Nút đóng
+local closeBtn = Instance.new("TextButton")
+closeBtn.Name = "CloseBtn"
+closeBtn.Size = UDim2.new(0, 40, 0, 40)
+closeBtn.Position = UDim2.new(1, -45, 0.5, -20)
+closeBtn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+closeBtn.Text = "✕"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.TextSize = 20
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.Parent = header
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = closeBtn
+
+-- Chat container
+local chatContainer = Instance.new("ScrollingFrame")
+chatContainer.Name = "ChatContainer"
+chatContainer.Size = UDim2.new(1, -20, 1, -140)
+chatContainer.Position = UDim2.new(0, 10, 0, 70)
+chatContainer.BackgroundTransparency = 1
+chatContainer.BorderSizePixel = 0
+chatContainer.ScrollBarThickness = 4
+chatContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+chatContainer.Parent = mainFrame
+
+local listLayout = Instance.new("UIListLayout")
+listLayout.Padding = UDim.new(0, 10)
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Parent = chatContainer
+
+-- Input container
+local inputContainer = Instance.new("Frame")
+inputContainer.Size = UDim2.new(1, -20, 0, 50)
+inputContainer.Position = UDim2.new(0, 10, 1, -60)
+inputContainer.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+inputContainer.BorderSizePixel = 0
+inputContainer.Parent = mainFrame
+
+local inputCorner = Instance.new("UICorner")
+inputCorner.CornerRadius = UDim.new(0, 10)
+inputCorner.Parent = inputContainer
+
+-- TextBox
+local textBox = Instance.new("TextBox")
+textBox.Size = UDim2.new(1, -60, 1, 0)
+textBox.Position = UDim2.new(0, 10, 0, 0)
+textBox.BackgroundTransparency = 1
+textBox.PlaceholderText = "Type your message..."
+textBox.Text = ""
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+textBox.TextSize = 16
+textBox.Font = Enum.Font.Gotham
+textBox.TextXAlignment = Enum.TextXAlignment.Left
+textBox.ClearTextOnFocus = false
+textBox.Parent = inputContainer
+
+-- Send button
+local sendBtn = Instance.new("TextButton")
+sendBtn.Size = UDim2.new(0, 40, 0, 40)
+sendBtn.Position = UDim2.new(1, -45, 0.5, -20)
+sendBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+sendBtn.Text = "➤"
+sendBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+sendBtn.TextSize = 18
+sendBtn.Font = Enum.Font.GothamBold
+sendBtn.Parent = inputContainer
+
+local sendCorner = Instance.new("UICorner")
+sendCorner.CornerRadius = UDim.new(1, 0)
+sendCorner.Parent = sendBtn
+
+-- Hàm tạo tin nhắn
+local function createMessage(text, isBot)
+	local msgFrame = Instance.new("Frame")
+	msgFrame.Size = UDim2.new(0.7, 0, 0, 0)
+	msgFrame.BackgroundColor3 = isBot and Color3.fromRGB(60, 150, 255) or Color3.fromRGB(100, 200, 100)
+	msgFrame.BorderSizePixel = 0
+	msgFrame.Position = isBot and UDim2.new(0, 0, 0, 0) or UDim2.new(0.3, 0, 0, 0)
+	
+	local msgCorner = Instance.new("UICorner")
+	msgCorner.CornerRadius = UDim.new(0, 12)
+	msgCorner.Parent = msgFrame
+	
+	local msgText = Instance.new("TextLabel")
+	msgText.Size = UDim2.new(1, -20, 1, 0)
+	msgText.Position = UDim2.new(0, 10, 0, 0)
+	msgText.BackgroundTransparency = 1
+	msgText.Text = text
+	msgText.TextColor3 = Color3.fromRGB(255, 255, 255)
+	msgText.TextSize = 14
+	msgText.Font = Enum.Font.Gotham
+	msgText.TextWrapped = true
+	msgText.TextXAlignment = Enum.TextXAlignment.Left
+	msgText.TextYAlignment = Enum.TextYAlignment.Top
+	msgText.Parent = msgFrame
+	
+	local textSize = game:GetService("TextService"):GetTextSize(text, 14, Enum.Font.Gotham, Vector2.new(250, math.huge))
+	msgFrame.Size = UDim2.new(0.7, 0, 0, textSize.Y + 20)
+	
+	msgFrame.Parent = chatContainer
+	chatContainer.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
+	chatContainer.CanvasPosition = Vector2.new(0, chatContainer.CanvasSize.Y.Offset)
+end
+
+-- Tin nhắn mẫu
+createMessage("Hi! How can I assist you?", true)
+createMessage("Hello there!", false)
+createMessage("You can find diamonds in the hidden cave or by mining deep underground.", true)
+
+-- Database câu hỏi và trả lời
+local qaDatabase = {
+	-- Câu hỏi về game
+	["how.*find.*diamond"] = "You can find diamonds in the hidden cave or by mining deep underground at Y-level 12!",
+	["where.*diamond"] = "Diamonds spawn between Y-levels 5-12. Try mining in caves or strip mining!",
+	["how.*make.*money"] = "You can make money by completing quests, selling items, or farming resources!",
+	["how.*level.*up"] = "Level up by completing missions, defeating monsters, and gaining XP points!",
+	["what.*best.*weapon"] = "The best weapon depends on your playstyle. Swords are great for close combat, bows for ranged!",
+	
+	-- Câu hỏi về scripting
+	["how.*script"] = "To script in Roblox, use Lua language! Start with simple scripts in ServerScriptService or StarterPlayer.",
+	["what.*lua"] = "Lua is the programming language used in Roblox. It's easy to learn and very powerful!",
+	["how.*make.*gui"] = "Create GUIs in StarterGui using ScreenGui, Frame, TextButton, and TextLabel objects!",
+	
+	-- Câu hỏi chung
+	["hello"] = "Hello! How can I help you today? 😊",
+	["hi"] = "Hi there! What do you need help with?",
+	["help"] = "I can help you with game tips, scripting questions, and general Roblox information!",
+	["thank"] = "You're welcome! Feel free to ask anything else! 🎉",
+	["bye"] = "Goodbye! Have fun playing! 👋",
+	
+	-- Câu hỏi về tài nguyên
+	["where.*find.*iron"] = "Iron ore can be found in caves and mountains. Look for brownish stones!",
+	["how.*get.*robux"] = "You can get Robux by purchasing them, or earning through game passes and premium payouts!",
+	["what.*best.*way.*farm"] = "The best farming method is to set up automated systems or find high-yield areas!",
+	
+	-- Câu hỏi về PvP
+	["how.*win.*pvp"] = "Practice your aim, learn to strafe, and always keep moving! Stay unpredictable!",
+	["best.*pvp.*strategy"] = "Use cover, time your attacks, and manage your health/resources carefully!",
+	
+	-- Câu hỏi về building
+	["how.*build"] = "Use the building tools! Press B to open the toolbox and select blocks to place.",
+	["building.*tips"] = "Start with a plan, use different materials for texture, and don't forget lighting!",
+	
+	-- Easter eggs
+	["who.*are.*you"] = "I'm your friendly Roblox AI Helper! I'm here to assist you 24/7! 🤖",
+	["tell.*joke"] = "Why did the Robloxian cross the road? To get to the other obby! 😄",
+	[".*cool"] = "Thanks! You're pretty cool too! 😎",
+}
+
+-- Hàm tìm câu trả lời
+local function getBotResponse(userMessage)
+	local lowerMsg = string.lower(userMessage)
+	
+	for pattern, response in pairs(qaDatabase) do
+		if string.match(lowerMsg, pattern) then
+			return response
+		end
+	end
+	
+	-- Câu trả lời mặc định nếu không tìm thấy
+	local defaultResponses = {
+		"I'm not sure about that. Can you ask something else?",
+		"Hmm, I don't have info on that. Try asking about diamonds, scripting, or game tips!",
+		"Interesting question! But I might need to learn more about that. Ask me about gameplay or Lua!",
+		"I'm still learning! Try asking: 'How to find diamonds?' or 'How to script?'",
+	}
+	return defaultResponses[math.random(1, #defaultResponses)]
+end
+
+-- Xử lý gửi tin nhắn
+local function sendMessage()
+	local msg = textBox.Text
+	if msg ~= "" then
+		createMessage(msg, false)
+		textBox.Text = ""
+		wait(0.5)
+		local response = getBotResponse(msg)
+		createMessage(response, true)
+	end
+end
+
+sendBtn.MouseButton1Click:Connect(sendMessage)
+textBox.FocusLost:Connect(function(enterPressed)
+	if enterPressed then sendMessage() end
+end)
+
+-- Đóng UI
+closeBtn.MouseButton1Click:Connect(function()
+	screenGui:Destroy()
+end)
+
+-- Thu gọn/Mở rộng
+local isMinimized = false
+minimizeBtn.MouseButton1Click:Connect(function()
+	isMinimized = not isMinimized
+	if isMinimized then
+		mainFrame:TweenSize(UDim2.new(0, 320, 0, 60), "Out", "Quad", 0.3, true)
+		minimizeBtn.Text = "+"
+	else
+		mainFrame:TweenSize(UDim2.new(0, 320, 0, 420), "Out", "Quad", 0.3, true)
+		minimizeBtn.Text = "─"
+	end
+end)
+
+-- Kéo thả UI
+local dragging, dragInput, dragStart, startPos
+local function update(input)
+	local delta = input.Position - dragStart
+	mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+header.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+		
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+header.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
+end)
