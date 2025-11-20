@@ -1,90 +1,208 @@
--- Roblox AI Helper Chatbot
+-- Roblox AI Helper Chatbot V2
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 -- Tạo ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ChatbotGui"
+screenGui.Name = "ChatbotGuiV2"
 screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = playerGui
 
 -- Frame chính
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 320, 0, 420)
-mainFrame.Position = UDim2.new(0.5, -160, 0.5, -210)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+mainFrame.Size = UDim2.new(0, 340, 0, 450)
+mainFrame.Position = UDim2.new(0.5, -170, 0.5, -225)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
 
--- Bo tròn góc
+-- Shadow effect
+local shadow = Instance.new("ImageLabel")
+shadow.Name = "Shadow"
+shadow.Size = UDim2.new(1, 30, 1, 30)
+shadow.Position = UDim2.new(0, -15, 0, -15)
+shadow.BackgroundTransparency = 1
+shadow.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+shadow.ImageTransparency = 0.5
+shadow.ZIndex = 0
+shadow.Parent = mainFrame
+
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 15)
+corner.CornerRadius = UDim.new(0, 16)
 corner.Parent = mainFrame
 
--- Viền sáng
+-- Gradient background
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 45)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 25))
+})
+gradient.Rotation = 45
+gradient.Parent = mainFrame
+
+-- Viền sáng animated
 local stroke = Instance.new("UIStroke")
 stroke.Color = Color3.fromRGB(0, 200, 255)
 stroke.Thickness = 3
+stroke.Transparency = 0.3
 stroke.Parent = mainFrame
+
+-- Animate glow
+spawn(function()
+	while wait(2) do
+		if stroke then
+			TweenService:Create(stroke, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Transparency = 0}):Play()
+			wait(1)
+			TweenService:Create(stroke, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Transparency = 0.3}):Play()
+		end
+	end
+end)
 
 -- Header
 local header = Instance.new("Frame")
 header.Name = "Header"
-header.Size = UDim2.new(1, 0, 0, 60)
-header.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+header.Size = UDim2.new(1, 0, 0, 65)
+header.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
 header.BorderSizePixel = 0
 header.Parent = mainFrame
 
 local headerCorner = Instance.new("UICorner")
-headerCorner.CornerRadius = UDim.new(0, 15)
+headerCorner.CornerRadius = UDim.new(0, 16)
 headerCorner.Parent = header
 
--- Title
+local headerGradient = Instance.new("UIGradient")
+headerGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 50)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 35))
+})
+headerGradient.Rotation = 90
+headerGradient.Parent = header
+
+-- Avatar container với animation
+local avatarContainer = Instance.new("Frame")
+avatarContainer.Size = UDim2.new(0, 45, 0, 45)
+avatarContainer.Position = UDim2.new(0, 10, 0.5, -22)
+avatarContainer.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+avatarContainer.BorderSizePixel = 0
+avatarContainer.Parent = header
+
+local avatarCorner = Instance.new("UICorner")
+avatarCorner.CornerRadius = UDim.new(1, 0)
+avatarCorner.Parent = avatarContainer
+
+local avatarStroke = Instance.new("UIStroke")
+avatarStroke.Color = Color3.fromRGB(0, 255, 200)
+avatarStroke.Thickness = 2
+avatarStroke.Parent = avatarContainer
+
+-- Icon
+local icon = Instance.new("TextLabel")
+icon.Size = UDim2.new(1, 0, 1, 0)
+icon.BackgroundTransparency = 1
+icon.Text = "🤖"
+icon.TextSize = 28
+icon.Parent = avatarContainer
+
+-- Pulse animation for avatar
+spawn(function()
+	while wait(1.5) do
+		if avatarContainer then
+			TweenService:Create(avatarContainer, TweenInfo.new(0.5, Enum.EasingStyle.Elastic), {Size = UDim2.new(0, 50, 0, 50), Position = UDim2.new(0, 7.5, 0.5, -25)}):Play()
+			wait(0.5)
+			TweenService:Create(avatarContainer, TweenInfo.new(0.5, Enum.EasingStyle.Elastic), {Size = UDim2.new(0, 45, 0, 45), Position = UDim2.new(0, 10, 0.5, -22)}):Play()
+		end
+	end
+end)
+
+-- Title với typing effect
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -120, 1, 0)
-title.Position = UDim2.new(0, 55, 0, 0)
+title.Size = UDim2.new(1, -140, 0, 25)
+title.Position = UDim2.new(0, 65, 0, 10)
 title.BackgroundTransparency = 1
 title.Text = "Roblox AI Helper"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextSize = 16
+title.TextSize = 18
 title.Font = Enum.Font.GothamBold
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = header
 
--- Icon
-local icon = Instance.new("TextLabel")
-icon.Size = UDim2.new(0, 35, 0, 35)
-icon.Position = UDim2.new(0, 10, 0.5, -17)
-icon.BackgroundTransparency = 1
-icon.Text = "🤖"
-icon.TextSize = 24
-icon.Parent = header
+-- Version badge
+local versionBadge = Instance.new("TextLabel")
+versionBadge.Size = UDim2.new(0, 35, 0, 18)
+versionBadge.Position = UDim2.new(0, 65, 0, 35)
+versionBadge.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+versionBadge.Text = "V2"
+versionBadge.TextColor3 = Color3.fromRGB(255, 255, 255)
+versionBadge.TextSize = 12
+versionBadge.Font = Enum.Font.GothamBold
+versionBadge.Parent = header
 
--- Nút thu gọn
+local badgeCorner = Instance.new("UICorner")
+badgeCorner.CornerRadius = UDim.new(0, 6)
+badgeCorner.Parent = versionBadge
+
+-- Status indicator
+local statusDot = Instance.new("Frame")
+statusDot.Size = UDim2.new(0, 8, 0, 8)
+statusDot.Position = UDim2.new(0, 105, 0, 39)
+statusDot.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+statusDot.BorderSizePixel = 0
+statusDot.Parent = header
+
+local dotCorner = Instance.new("UICorner")
+dotCorner.CornerRadius = UDim.new(1, 0)
+dotCorner.Parent = statusDot
+
+-- Blink animation
+spawn(function()
+	while wait(1) do
+		if statusDot then
+			TweenService:Create(statusDot, TweenInfo.new(0.5), {BackgroundTransparency = 0.7}):Play()
+			wait(0.5)
+			TweenService:Create(statusDot, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
+		end
+	end
+end)
+
+local statusText = Instance.new("TextLabel")
+statusText.Size = UDim2.new(0, 60, 0, 18)
+statusText.Position = UDim2.new(0, 115, 0, 35)
+statusText.BackgroundTransparency = 1
+statusText.Text = "Online"
+statusText.TextColor3 = Color3.fromRGB(0, 255, 100)
+statusText.TextSize = 11
+statusText.Font = Enum.Font.Gotham
+statusText.TextXAlignment = Enum.TextXAlignment.Left
+statusText.Parent = header
+
+-- Nút minimize với icon mới
 local minimizeBtn = Instance.new("TextButton")
 minimizeBtn.Name = "MinimizeBtn"
-minimizeBtn.Size = UDim2.new(0, 40, 0, 40)
-minimizeBtn.Position = UDim2.new(1, -90, 0.5, -20)
-minimizeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+minimizeBtn.Size = UDim2.new(0, 38, 0, 38)
+minimizeBtn.Position = UDim2.new(1, -88, 0.5, -19)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
 minimizeBtn.Text = "─"
 minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-minimizeBtn.TextSize = 20
+minimizeBtn.TextSize = 18
 minimizeBtn.Font = Enum.Font.GothamBold
 minimizeBtn.Parent = header
 
 local minCorner = Instance.new("UICorner")
-minCorner.CornerRadius = UDim.new(0, 8)
+minCorner.CornerRadius = UDim.new(0, 10)
 minCorner.Parent = minimizeBtn
 
--- Nút đóng
+-- Nút close với animation
 local closeBtn = Instance.new("TextButton")
 closeBtn.Name = "CloseBtn"
-closeBtn.Size = UDim2.new(0, 40, 0, 40)
-closeBtn.Position = UDim2.new(1, -45, 0.5, -20)
-closeBtn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+closeBtn.Size = UDim2.new(0, 38, 0, 38)
+closeBtn.Position = UDim2.new(1, -43, 0.5, -19)
+closeBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
 closeBtn.Text = "✕"
 closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 closeBtn.TextSize = 20
@@ -92,60 +210,90 @@ closeBtn.Font = Enum.Font.GothamBold
 closeBtn.Parent = header
 
 local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.CornerRadius = UDim.new(0, 10)
 closeCorner.Parent = closeBtn
+
+-- Hover effects
+minimizeBtn.MouseEnter:Connect(function()
+	TweenService:Create(minimizeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(80, 80, 100)}):Play()
+end)
+minimizeBtn.MouseLeave:Connect(function()
+	TweenService:Create(minimizeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(60, 60, 80)}):Play()
+end)
+
+closeBtn.MouseEnter:Connect(function()
+	TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 80, 80)}):Play()
+end)
+closeBtn.MouseLeave:Connect(function()
+	TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 60, 60)}):Play()
+end)
 
 -- Chat container
 local chatContainer = Instance.new("ScrollingFrame")
 chatContainer.Name = "ChatContainer"
-chatContainer.Size = UDim2.new(1, -20, 1, -140)
-chatContainer.Position = UDim2.new(0, 10, 0, 70)
+chatContainer.Size = UDim2.new(1, -20, 1, -150)
+chatContainer.Position = UDim2.new(0, 10, 0, 75)
 chatContainer.BackgroundTransparency = 1
 chatContainer.BorderSizePixel = 0
-chatContainer.ScrollBarThickness = 4
+chatContainer.ScrollBarThickness = 6
+chatContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 200, 255)
 chatContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
 chatContainer.Parent = mainFrame
 
 local listLayout = Instance.new("UIListLayout")
-listLayout.Padding = UDim.new(0, 10)
+listLayout.Padding = UDim.new(0, 12)
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout.Parent = chatContainer
 
--- Input container
+-- Input container với glow effect
 local inputContainer = Instance.new("Frame")
-inputContainer.Size = UDim2.new(1, -20, 0, 50)
-inputContainer.Position = UDim2.new(0, 10, 1, -60)
-inputContainer.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+inputContainer.Size = UDim2.new(1, -20, 0, 55)
+inputContainer.Position = UDim2.new(0, 10, 1, -65)
+inputContainer.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
 inputContainer.BorderSizePixel = 0
 inputContainer.Parent = mainFrame
 
 local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 10)
+inputCorner.CornerRadius = UDim.new(0, 12)
 inputCorner.Parent = inputContainer
+
+local inputStroke = Instance.new("UIStroke")
+inputStroke.Color = Color3.fromRGB(0, 200, 255)
+inputStroke.Thickness = 2
+inputStroke.Transparency = 0.7
+inputStroke.Parent = inputContainer
 
 -- TextBox
 local textBox = Instance.new("TextBox")
-textBox.Size = UDim2.new(1, -60, 1, 0)
-textBox.Position = UDim2.new(0, 10, 0, 0)
+textBox.Size = UDim2.new(1, -70, 1, 0)
+textBox.Position = UDim2.new(0, 15, 0, 0)
 textBox.BackgroundTransparency = 1
 textBox.PlaceholderText = "Type your message..."
 textBox.Text = ""
 textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 textBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-textBox.TextSize = 16
+textBox.TextSize = 15
 textBox.Font = Enum.Font.Gotham
 textBox.TextXAlignment = Enum.TextXAlignment.Left
 textBox.ClearTextOnFocus = false
 textBox.Parent = inputContainer
 
--- Send button
+-- Focus animation
+textBox.Focused:Connect(function()
+	TweenService:Create(inputStroke, TweenInfo.new(0.3), {Transparency = 0}):Play()
+end)
+textBox.FocusLost:Connect(function()
+	TweenService:Create(inputStroke, TweenInfo.new(0.3), {Transparency = 0.7}):Play()
+end)
+
+-- Send button với icon
 local sendBtn = Instance.new("TextButton")
-sendBtn.Size = UDim2.new(0, 40, 0, 40)
-sendBtn.Position = UDim2.new(1, -45, 0.5, -20)
+sendBtn.Size = UDim2.new(0, 45, 0, 45)
+sendBtn.Position = UDim2.new(1, -50, 0.5, -22)
 sendBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
 sendBtn.Text = "➤"
 sendBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-sendBtn.TextSize = 18
+sendBtn.TextSize = 20
 sendBtn.Font = Enum.Font.GothamBold
 sendBtn.Parent = inputContainer
 
@@ -153,17 +301,1041 @@ local sendCorner = Instance.new("UICorner")
 sendCorner.CornerRadius = UDim.new(1, 0)
 sendCorner.Parent = sendBtn
 
--- Hàm tạo tin nhắn
+sendBtn.MouseEnter:Connect(function()
+	TweenService:Create(sendBtn, TweenInfo.new(0.2), {Size = UDim2.new(0, 48, 0, 48), Position = UDim2.new(1, -51, 0.5, -24)}):Play()
+end)
+sendBtn.MouseLeave:Connect(function()
+	TweenService:Create(sendBtn, TweenInfo.new(0.2), {Size = UDim2.new(0, 45, 0, 45), Position = UDim2.new(1, -50, 0.5, -22)}):Play()
+end)
+
+-- Message counter
+local msgCount = 0
+local counterLabel = Instance.new("TextLabel")
+counterLabel.Size = UDim2.new(0, 100, 0, 20)
+counterLabel.Position = UDim2.new(0, 10, 1, -22)
+counterLabel.BackgroundTransparency = 1
+counterLabel.Text = "Messages: 0"
+counterLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+counterLabel.TextSize = 11
+counterLabel.Font = Enum.Font.Gotham
+counterLabel.TextXAlignment = Enum.TextXAlignment.Left
+counterLabel.Parent = mainFrame
+
+-- Database câu hỏi và trả lời (V2 Enhanced)
+local qaDatabase = {
+	-- Game basics
+	["how.*find.*diamond"] = "You can find diamonds in the hidden cave or by mining deep underground at Y-level 12! 💎",
+	["where.*diamond"] = "Diamonds spawn between Y-levels 5-12. Try mining in caves or strip mining! ⛏️",
+	["how.*make.*money"] = "You can make money by completing quests, selling items, or farming resources! 💰",
+	["how.*level.*up"] = "Level up by completing missions, defeating monsters, and gaining XP points! ⬆️",
+	["what.*best.*weapon"] = "The best weapon depends on your playstyle. Swords are great for close combat, bows for ranged! ⚔️",
+	["how.*get.*xp"] = "Get XP by completing quests, defeating enemies, and exploring new areas! 🌟",
+	["fast.*level"] = "Farm mobs in high-level areas, use XP boosters, and complete daily quests! 🚀",
+	
+	-- Scripting advanced
+	["how.*script"] = "To script in Roblox, use Lua language! Start with simple scripts in ServerScriptService. 💻",
+	["what.*lua"] = "Lua is the programming language used in Roblox. It's easy to learn and very powerful! 🔥",
+	["how.*make.*gui"] = "Create GUIs in StarterGui using ScreenGui, Frame, TextButton, and TextLabel objects! 🎨",
+	["how.*code"] = "Start with Roblox Studio! Learn Lua basics: variables, functions, loops, and events! 📚",
+	["what.*function"] = "Functions are reusable blocks of code. Use: function myFunction() ... end 🔧",
+	["how.*loop"] = "Use loops like: for i=1,10 do ... end or while condition do ... end 🔄",
+	["what.*variable"] = "Variables store data. Use: local myVar = 'value' to create one! 📦",
+	["how.*event"] = "Events trigger actions! Use: button.MouseButton1Click:Connect(function() ... end) ⚡",
+	["remoteev.*ent"] = "RemoteEvents allow client-server communication. Use :FireServer() and OnServerEvent! 📡",
+	["datastore"] = "DataStores save player data! Use game:GetService('DataStoreService'):GetDataStore('name') 💾",
+	
+	-- Social
+	["hello"] = "Hello! How can I help you today? 😊",
+	["hi"] = "Hi there! What do you need help with? 👋",
+	["hey"] = "Hey! Ready to help you with anything! ✨",
+	["help"] = "I can help you with game tips, scripting questions, and general Roblox information! 🤖",
+	["thank"] = "You're welcome! Feel free to ask anything else! 🎉",
+	["bye"] = "Goodbye! Have fun playing! 👋",
+	["good"] = "I'm doing great! Thanks for asking! How about you? 😄",
+	["how.*you"] = "I'm functioning perfectly! Ready to help! 🤖",
+	
+	-- Resources
+	["where.*find.*iron"] = "Iron ore can be found in caves and mountains. Look for brownish stones! 🪨",
+	["where.*gold"] = "Gold is found in lower levels between Y:5-30. Look in caves and ravines! ✨",
+	["where.*emerald"] = "Emeralds are rare! Find them in mountain biomes between Y:4-32! 💚",
+	["where.*coal"] = "Coal is everywhere! Mine in caves or mountains at any height above Y:0! ⚫",
+	["where.*wood"] = "Chop trees in forests! Different biomes have different wood types! 🌳",
+	["how.*get.*robux"] = "You can get Robux by purchasing them, or earning through game passes! 💵",
+	["what.*best.*way.*farm"] = "Set up automated systems or find high-yield areas! 🌾",
+	
+	-- Combat
+	["how.*win.*pvp"] = "Practice your aim, learn to strafe, and always keep moving! Stay unpredictable! 🎯",
+	["best.*pvp.*strategy"] = "Use cover, time your attacks, and manage your health/resources carefully! 🛡️",
+	["how.*fight"] = "Learn combos, practice timing, and always watch your opponent's moves! 👊",
+	["pvp.*tips"] = "Stay mobile, use terrain advantage, and manage your cooldowns wisely! ⚡",
+	["best.*armor"] = "Diamond or Netherite armor provides best protection! Enchant it for better defense! 💎",
+	
+	-- Building
+	["how.*build"] = "Use the building tools! Press B to open the toolbox and select blocks! 🏗️",
+	["building.*tips"] = "Start with a plan, use different materials for texture, and add lighting! 💡",
+	["how.*make.*house"] = "Start with a foundation, build walls, add a roof, and decorate inside! 🏠",
+	
+	-- Magic & Enchanting
+	["how.*enchant"] = "Use an enchanting table with lapis lazuli! Higher levels give better enchants! ✨",
+	["best.*enchant"] = "Sharpness, Protection, Unbreaking are essential! Mending is super valuable! 🌟",
+	["how.*magic"] = "Learn spells, find magic books, and practice your magical abilities! 🔮",
+	
+	-- Bosses
+	["how.*beat.*boss"] = "Learn boss patterns, bring good gear, and use potions! Teamwork helps! 👹",
+	["boss.*tips"] = "Watch for attack patterns, dodge special moves, and bring healing items! 💊",
+	["dungeon.*tips"] = "Bring friends, stock up on supplies, and explore carefully! 🗝️",
+	
+	-- Quests
+	["where.*quest"] = "Look for NPCs with exclamation marks! Check quest boards in towns! 📜",
+	["daily.*quest"] = "Complete daily quests for bonus rewards! They reset every 24 hours! 📅",
+	
+	-- Classes
+	["best.*class"] = "Warriors are tanky, Mages deal magic damage, Rogues are fast! Pick your style! 🎭",
+	["how.*warrior"] = "Warriors use melee weapons and heavy armor! Great for beginners! ⚔️",
+	["how.*mage"] = "Mages cast powerful spells! Keep distance and manage mana carefully! 🔥",
+	["how.*rogue"] = "Rogues are fast and sneaky! Use stealth and critical hits! 🗡️",
+	
+	-- Economy
+	["market.*tips"] = "Buy low, sell high! Watch price trends and invest wisely! 📈",
+	["how.*rich"] = "Play daily, complete quests, trade wisely, and invest in game passes! 💰",
+	["scam"] = "Never trust 'too good to be true' deals! Trade carefully! ⚠️",
+	
+	-- Settings
+	["lag"] = "Try lowering graphics settings, close other programs, and check your internet! 🔧",
+	["fps"] = "Increase FPS by lowering graphics, closing apps, and updating drivers! ⚡",
+	
+	-- Easter Eggs
+	["who.*are.*you"] = "I'm your friendly Roblox AI Helper V2! Upgraded and better than ever! 🤖✨",
+	["tell.*joke"] = "Why did the Robloxian cross the road? To get to the other obby! 😄",
+	["cool"] = "Thanks! You're pretty cool too! 😎",
+	["sing"] = "🎵 Roblox, Roblox, playing all day, building and exploring in every way! 🎵",
+	["dance"] = "💃🕺 *does the default dance in V2 style* 🕺💃",
+	["love.*you"] = "Aww, I appreciate you too! Now let's get back to gaming! ❤️",
+	["pizza"] = "🍕 Pizza time! Even AI needs energy! Want a slice?",
+	["oof"] = "OOF! The classic Roblox sound! Rest in peace old friend! 💔",
+	["noob"] = "Everyone starts as a noob! Keep playing and you'll be pro soon! 💪",
+	["pro"] = "Pro gamer status! Keep up the great work! 🏆",
+	["bacon"] = "Bacon hair is iconic! Rock that default look with pride! 🥓",
+	["v2"] = "Yes! You're using the V2 version with enhanced features! 🚀",
+	["update"] = "V2 features: Better UI, more responses, animations, and message counter! 🎉",
+	
+	-- Thêm câu hỏi về weapons
+	["best.*sword"] = "Diamond or Netherite swords are strongest! Enchant with Sharpness V! ⚔️",
+	["best.*bow"] = "Power V and Infinity enchants make bows amazing! Practice your aim! 🏹",
+	["how.*crossbow"] = "Crossbows are powerful! Use Multishot or Piercing for different effects! 🎯",
+	["best.*gun"] = "Guns vary by game! Try different ones to find your favorite! 🔫",
+	["sniper.*tips"] = "Stay still, aim for headshots, and find good vantage points! 🎯",
+	
+	-- Pets & Animals  
+	["best.*pet.*pvp"] = "Legendary combat pets with high damage! Level them up for best results! 🐉",
+	["pet.*food"] = "Feed pets their favorite food to level faster! Check pet menu for preferences! 🍖",
+	["mythic.*pet"] = "Mythic pets are super rare! Open legendary eggs or trade for them! ✨",
+	["how.*hatch.*egg"] = "Click on eggs to hatch! Better eggs = better pet chances! 🥚",
+	["pet.*fusion"] = "Combine duplicate pets to make them stronger! Fusion gives stat boosts! ⚡",
+	
+	-- Transportation advanced
+	["best.*mount"] = "Legendary mounts are fastest! Save up or complete special quests! 🐎",
+	["how.*vehicle"] = "Buy vehicles from shops or unlock them through gameplay! 🚗",
+	["fastest.*way.*travel"] = "Use teleport stones, fast travel points, or flying mounts! 🚀",
+	["boat"] = "Boats are great for water travel! Some games have upgradeable ships! ⛵",
+	["train"] = "Trains in some games transport you between major cities! 🚂",
+	
+	-- Jobs & Professions
+	["best.*job"] = "High-level jobs pay more! Try mining, fishing, or crafting! 💼",
+	["how.*blacksmith"] = "Blacksmiths craft weapons and armor! Gather materials and level up! ⚒️",
+	["how.*alchemist"] = "Alchemists make potions! Collect herbs and learn recipes! 🧪",
+	["how.*merchant"] = "Merchants buy and sell! Buy low, sell high for profit! 💰",
+	["fishing.*tips"] = "Fish in different areas for rare catches! Use better rods and bait! 🎣",
+	["mining.*tips"] = "Mine in caves for best ores! Use Fortune enchant for more drops! ⛏️",
+	
+	-- Weather & Environment
+	["rain"] = "Rain affects gameplay in some games! Take shelter or use rain gear! ☔",
+	["night.*time"] = "Night time spawns special mobs and events! Be prepared! 🌙",
+	["day.*night"] = "Time cycles affect gameplay! Some quests only work at certain times! ⏰",
+	["season"] = "Seasonal events bring unique items and challenges! Don't miss them! 🍂",
+	
+	-- Furniture & Decoration
+	["how.*decorate"] = "Mix different furniture styles! Use colors that match your theme! 🎨",
+	["where.*furniture"] = "Buy from furniture shops or craft your own! Some are event exclusives! 🛋️",
+	["best.*decoration"] = "Legendary decorations look amazing! Collect them from events! ✨",
+	["how.*wallpaper"] = "Apply wallpaper in building mode! Change room atmosphere! 🏠",
+	
+	-- Cooking & Food
+	["best.*food"] = "Golden apples and steak restore most health! Cook for better effects! 🍖",
+	["how.*cook"] = "Use furnace or cooking station! Combine ingredients for recipes! 👨‍🍳",
+	["recipe"] = "Experiment with ingredients or find recipe books! Try everything! 📖",
+	["restaurant"] = "Run a restaurant to earn money! Serve customers quickly! 🍽️",
+	["cake"] = "Cakes restore hunger and give buffs! Great for parties too! 🎂",
+	
+	-- Minigames specific
+	["obby.*trick"] = "Take your time, learn jump timing, and watch for patterns! 🏃",
+	["tower.*hell"] = "Practice makes perfect! Memorize sections and stay calm! 🗼",
+	["parkour.*tips"] = "Build momentum, time your jumps, and use wall runs! 🤸",
+	["escape.*room"] = "Look for clues everywhere! Work with team and think logically! 🔍",
+	["murder.*mystery"] = "As innocent, stick together! As murderer, be sneaky! 🔪",
+	
+	-- Premium & Game Passes
+	["worth.*premium"] = "Premium gives Robux monthly and trading access! Worth it if you play lots! 💎",
+	["game.*pass"] = "Game passes unlock features! Buy ones that help your playstyle! 🎫",
+	["vip.*server"] = "VIP servers let you play privately with friends! Great for grinding! 👑",
+	["membership"] = "Memberships give exclusive perks! Check what each game offers! ⭐",
+	
+	-- Advanced Combat
+	["combo.*list"] = "Practice basic combos first! Each weapon has unique combos! 💥",
+	["animation.*cancel"] = "Cancel animations to attack faster! Advanced technique! ⚡",
+	["hitbox"] = "Hitboxes determine damage range! Learn your weapon's reach! 📏",
+	["iframe"] = "Invincibility frames during dodges! Time them perfectly! 🛡️",
+	["feint"] = "Fake attacks to bait enemy dodges! Mix up your timing! 🎭",
+	
+	-- Economy Advanced
+	["inflation"] = "Prices change based on supply and demand! Watch market trends! 📊",
+	["investment"] = "Invest in rare items that increase in value! Be patient! 💹",
+	["flip.*item"] = "Buy underpriced items and resell for profit! Know the market! 🔄",
+	["limited.*item"] = "Limited items become more valuable over time! Collect them! 🏆",
+	
+	-- Guild/Clan Advanced
+	["guild.*rank"] = "Rank up by contributing to guild! More perks at higher ranks! 📈",
+	["guild.*war"] = "Coordinate with team! Strategy and communication win wars! ⚔️",
+	["alliance"] = "Alliances help in wars! Make friends with other guilds! 🤝",
+	["guild.*quest"] = "Complete guild quests for shared rewards! Help your clan! 📜",
+	
+	-- Events & Challenges
+	["speed.*run"] = "Learn shortcuts, optimize movements, and practice routing! ⏱️",
+	["challenge.*mode"] = "Challenge modes give better rewards but are harder! Prepare well! 🎯",
+	["time.*trial"] = "Race against the clock! Every second counts! ⏰",
+	["battle.*royale"] = "Last one standing wins! Loot fast and play smart! 👑",
+	
+	-- Social Features
+	["how.*emote"] = "Press B or / to open emote menu! Some are exclusive! 💃",
+	["how.*screenshot"] = "Use Print Screen or in-game photo mode! Capture memories! 📸",
+	["how.*record"] = "Use recording software! Share your epic moments! 🎥",
+	["friend.*server"] = "Join friends directly from friends list! Easy! 👥",
+	
+	-- Troubleshooting Advanced
+	["ping.*high"] = "High ping = lag! Use ethernet, close downloads, or change server! 📡",
+	["disconnect"] = "Check internet connection and server status! Try rejoining! 🔌",
+	["graphics.*bug"] = "Update graphics drivers! Lower settings if issues persist! 🖥️",
+	["sound.*bug"] = "Check audio settings and device drivers! Verify game files! 🔊",
+	
+	-- Game Development
+	["how.*make.*game"] = "Use Roblox Studio! Start with tutorials and learn Lua! 🎮",
+	["studio.*tips"] = "Save often, test frequently, and learn from other games! 💡",
+	["how.*script.*game"] = "Learn Lua basics, watch tutorials, and practice coding! 💻",
+	["monetize.*game"] = "Add game passes, dev products, or premium benefits! 💵",
+	
+	-- Roleplay
+	["how.*roleplay"] = "Be your character! Follow server rules and be creative! 🎭",
+	["rp.*tips"] = "Stay in character, respect others, and have fun! 🎪",
+	["admin.*command"] = "Only admins can use commands! Earn trust in community! 👮",
+	
+	-- Badges & Achievements
+	["hardest.*badge"] = "Hardest badges require skill and dedication! Keep trying! 🏅",
+	["how.*speedrun.*badge"] = "Practice routes, optimize movement, and time perfectly! ⚡",
+	["secret.*badge"] = "Secret badges have hidden requirements! Explore everything! 🔍",
+	
+	-- Music & Audio
+	["how.*play.*music"] = "Use boombox items or music players! Enter audio IDs! 🎵",
+	["best.*song"] = "Play what you enjoy! Respect others' preferences too! 🎶",
+	
+	-- Misc Tips
+	["how.*afk"] = "Some games kick if AFK too long! Use auto-clickers at own risk! ⏸️",
+	["macro"] = "Macros can help but may be against rules! Check game policy! ⚙️",
+	["exploit"] = "Never exploit! It's against TOS and ruins fun for everyone! ⚠️",
+	["report.*bug"] = "Report bugs to developers! Helps improve the game! 🐛",
+	["suggest"] = "Give feedback to developers! Good suggestions help games grow! 💡",
+	
+	-- More Easter Eggs
+	["cookie"] = "🍪 Here's a cookie! You deserve it for being awesome!",
+	["cat"] = "🐱 Meow! Cats are amazing! Do you have a pet in-game?",
+	["dog"] = "🐶 Woof! Dogs are loyal companions! Find one in your adventure!",
+	["unicorn"] = "🦄 Magical! Unicorns are rare and beautiful creatures!",
+	["dragon"] = "🐉 Dragons are powerful! Tame one if you can!",
+	["ghost"] = "👻 Boo! Spooky! Some games have ghost pets!",
+	["alien"] = "👽 Greetings from space! Ready to explore alien worlds?",
+	["rainbow"] = "🌈 Rainbows are beautiful! Chase that pot of gold!",
+	["fire"] = "🔥 Fire is lit! Use it wisely in your adventures!",
+	["water"] = "💧 Water is essential! Stay hydrated, gamer!",
+	["earth"] = "🌍 Our amazing planet! Explore every biome!",
+	["moon"] = "🌙 Shoot for the moon! Aim high in your games!",
+	["star"] = "⭐ You're a star! Keep shining bright!",
+	["heart"] = "❤️ Much love! Thanks for chatting with me!",
+	["boom"] = "💥 BOOM! That's explosive gameplay right there!",
+	["rocket"] = "🚀 To the moon! Your skills are skyrocketing!",
+	["trophy"] = "🏆 Champion! You're a winner in my book!",
+	["gift"] = "🎁 Surprise! Here's a virtual gift for being great!",
+	["party"] = "🎉 Party time! Let's celebrate your achievements!",
+	["sleep"] = "😴 Tired? Take a break! Gaming is fun but rest is important!",
+	["tired"] = "Take breaks! Your health matters more than any game! 💪",
+	["hungry"] = "🍕 Grab a snack! Can't game on an empty stomach!",
+	["thirsty"] = "💧 Stay hydrated! Drink water while gaming!",
+	["bored"] = "Try a new game or challenge yourself! Adventure awaits! 🎮",
+	["sad"] = "Cheer up! Games are meant to be fun! Try something you enjoy! 😊",
+	["angry"] = "Take a deep breath! Raging won't help. Stay calm! 🧘",
+	["happy"] = "Awesome! Keep that positive energy going! 😄",
+	["excited"] = "That's the spirit! Channel that excitement into gameplay! 🎊",
+	["scared"] = "Don't worry! I'm here to help! Face your fears! 💪",
+	["lost"] = "Feeling lost? I can help guide you! Just ask! 🗺️",
+	["win"] = "Congratulations! Victory tastes sweet! 🏆",
+	["lose"] = "Don't give up! Every loss is a lesson! Try again! 💪",
+	["clutch"] = "CLUTCH! That was an amazing play! 🔥",
+	["epic"] = "EPIC! That's legendary gameplay right there! ⚡",
+	["fail"] = "Epic fail! But that's okay, we all fail sometimes! Try again! 😅",
+	["lag.*spike"] = "Lag spikes happen! Check your connection and close background apps! 📶",
+	
+	-- Thêm câu hỏi về Accessories & Fashion
+	["best.*accessory"] = "Mix and match accessories! Legendary items look amazing! ✨",
+	["how.*customize.*avatar"] = "Go to Avatar Editor! Change clothes, face, colors, and accessories! 👗",
+	["where.*buy.*clothes"] = "Check the catalog or in-game shops! Sales happen often! 🛍️",
+	["limited.*clothing"] = "Limited items are rare and valuable! Collect them if you can! 👔",
+	["how.*look.*cool"] = "Mix styles, use rare items, and be creative! Fashion is personal! 😎",
+	["face.*accessory"] = "Face accessories add personality! Try masks, glasses, or face paint! 😷",
+	["hair.*style"] = "Choose hairstyles that match your vibe! So many options! 💇",
+	["color.*avatar"] = "Use color theory! Complementary colors look great together! 🎨",
+	
+	-- Thêm câu hỏi về Strategies
+	["rush.*strategy"] = "Rushing works if you're fast! But risky against prepared enemies! ⚡",
+	["defense.*strategy"] = "Build strong defenses early! Fortify before attacking! 🛡️",
+	["turtle.*strategy"] = "Turtling = heavy defense! Good for survival, slow for winning! 🐢",
+	["aggressive.*play"] = "Aggressive play pressures enemies but leaves you vulnerable! Balance it! 💪",
+	["passive.*play"] = "Passive play is safe but slow! Good for learning mechanics! 🧘",
+	
+	-- Thêm câu hỏi về Teams & Cooperation
+	["team.*composition"] = "Balance roles: tank, DPS, healer, support! Cover weaknesses! 👥",
+	["shot.*caller"] = "Shot callers coordinate team! Listen to them in crucial moments! 📢",
+	["how.*communicate"] = "Use chat, voice, or pings! Clear communication wins games! 💬",
+	["carry.*team"] = "To carry: get fed early, make smart plays, help teammates! 🎯",
+	["support.*role"] = "Supports enable carries! Protect, heal, and provide utility! 🙏",
+	
+	-- Thêm câu hỏi về Resource Management
+	["manage.*gold"] = "Save for important upgrades! Don't waste on unnecessary items! 💰",
+	["resource.*priority"] = "Prioritize what helps your build! Different strategies need different resources! 📊",
+	["economy.*game"] = "Strong economy = more options! Balance spending and saving! 💵",
+	["when.*upgrade"] = "Upgrade when it gives significant advantage! Don't upgrade too early! ⬆️",
+	
+	-- Thêm câu hỏi về Map Knowledge
+	["map.*awareness"] = "Always check minimap! Know where enemies and objectives are! 🗺️",
+	["high.*ground"] = "High ground gives advantage! Better view and cover! ⛰️",
+	["choke.*point"] = "Choke points are strategic! Easy to defend, hard to push! 🚧",
+	["rotation.*path"] = "Learn rotation paths! Efficient movement saves time! 🔄",
+	["spawn.*point"] = "Control spawn points for map control! Crucial in objective modes! 📍",
+	
+	-- Thêm câu hỏi về Mechanics
+	["hitbox.*manipulation"] = "Some moves shrink hitbox! Use during enemy attacks! 🎯",
+	["movement.*tech"] = "Master movement techniques! Bunny hop, strafe, wall run! 🏃",
+	["momentum"] = "Build momentum for speed! Some games have advanced movement! ⚡",
+	["ledge.*grab"] = "Ledge grabbing saves from falls! Practice the timing! 🧗",
+	["double.*jump"] = "Double jumps extend reach! Time them for maximum height! 🦘",
+	
+	-- Thêm câu hỏi về Progression Systems
+	["prestige.*worth"] = "Prestige if you want permanent bonuses! Resets progress but worth it! 🔄",
+	["skill.*point"] = "Spend skill points wisely! Can respec but costs resources! 🎯",
+	["talent.*tree"] = "Plan your talent tree! Some builds are better than others! 🌳",
+	["mastery.*system"] = "Master weapons/skills for bonuses! Long-term but rewarding! 📈",
+	
+	-- Thêm câu hỏi về Competitive
+	["rank.*system"] = "Win to rank up! Consistency is key for climbing! 📊",
+	["elo.*hell"] = "Elo hell is mindset! Focus on improving, not teammates! 🧠",
+	["climb.*rank"] = "To climb: master fundamentals, stay positive, play meta! ⬆️",
+	["derank"] = "Don't fear deranking! It's part of learning! Bounce back! 💪",
+	["smurf"] = "Smurfing ruins games! Play at your true rank! ⚖️",
+	
+	-- Thêm câu hỏi về Farming Efficiency
+	["optimal.*farm"] = "Find routes with high spawn rates! Minimize travel time! 🔄",
+	["exp.*farm"] = "AFK farms work in some games! Check if allowed! 😴",
+	["gold.*farm"] = "Farm valuable items! Sell excess for gold! 💰",
+	["resource.*route"] = "Map efficient resource routes! Save time gathering! 🗺️",
+	
+	-- Thêm câu hỏi về Trading
+	["trade.*value"] = "Research values before trading! Don't get scammed! 📊",
+	["negotiate"] = "Be fair but firm! Good deals benefit both sides! 🤝",
+	["demand.*supply"] = "High demand + low supply = high prices! Economics! 📈",
+	["quick.*sell"] = "Quick selling gets lower prices! Be patient for best deals! ⏰",
+	
+	-- Thêm câu hỏi về Boss Mechanics
+	["boss.*phase"] = "Bosses have phases! Learn each pattern to survive! 👹",
+	["enrage.*timer"] = "Kill before enrage! Boss gets harder over time! ⏱️",
+	["boss.*tell"] = "Watch for attack tells! Visual cues warn you! 👀",
+	["add.*management"] = "Kill adds before focusing boss! They overwhelm you! ⚔️",
+	
+	-- Thêm câu hỏi về Quality of Life
+	["keybind.*tips"] = "Bind important actions to easy keys! Muscle memory helps! ⌨️",
+	["macro.*key"] = "Macros automate combos! Check if allowed in game! 🎮",
+	["quick.*chat"] = "Use quick chat for fast communication! Time-saving! 💬",
+	["hotkey"] = "Hotkey items for instant use! Speed matters in combat! ⚡",
+	
+	-- Thêm câu hỏi về Lore & Story
+	["game.*lore"] = "Read lore for deeper immersion! Stories are rich! 📖",
+	["npc.*dialogue"] = "Talk to NPCs! They give hints and quests! 💬",
+	["easter.*egg"] = "Easter eggs are hidden everywhere! Explore thoroughly! 🥚",
+	["secret.*area"] = "Secret areas have best loot! Search walls and cliffs! 🗺️",
+	
+	-- Thêm câu hỏi về Seasonal Content
+	["halloween.*event"] = "Halloween events have spooky items! Limited time only! 🎃",
+	["christmas.*event"] = "Christmas events are festive! Collect winter items! 🎄",
+	["summer.*event"] = "Summer events bring beach themes! Enjoy seasonal fun! ☀️",
+	["birthday.*event"] = "Game birthday events give free items! Don't miss out! 🎂",
+	
+	-- Thêm câu hỏi về Codes & Rewards
+	["redeem.*code"] = "Enter codes in settings or code menu! Free rewards! 🎁",
+	["where.*code"] = "Follow game socials for codes! Twitter, Discord, YouTube! 📱",
+	["expired.*code"] = "Codes expire! Redeem quickly when you find them! ⏰",
+	["daily.*reward"] = "Claim daily rewards! Login every day for bonuses! 📅",
+	
+	-- Thêm câu hỏi về Community
+	["join.*discord"] = "Join game Discord! Get updates, tips, and make friends! 💬",
+	["youtube.*guide"] = "YouTube has great guides! Watch tutorials to improve! 📺",
+	["wiki"] = "Game wikis have detailed info! Bookmark for reference! 📚",
+	["reddit"] = "Game subreddits share tips and memes! Join community! 🔥",
+	
+	-- Thêm câu hỏi về Performance
+	["boost.*fps"] = "Lower graphics, close background apps, update drivers! 🚀",
+	["reduce.*lag"] = "Use ethernet, lower ping limit, close downloads! 📡",
+	["optimize.*settings"] = "Balance visual quality and performance! Find sweet spot! ⚙️",
+	["potato.*pc"] = "Lowest settings still fun! Gameplay > graphics! 🥔",
+	
+	-- Thêm câu hỏi về Advanced Tips
+	["animation.*queue"] = "Queue attacks during animations! Faster DPS! ⚡",
+	["invincibility.*frame"] = "I-frames during rolls/dashes! Time them perfectly! 🛡️",
+	["stutter.*step"] = "Stutter stepping maintains DPS while moving! Practice it! 👟",
+	["kiting"] = "Kiting = damaging while retreating! Essential for ranged! 🏹",
+	["baiting"] = "Bait enemy abilities then punish! Mind games matter! 🧠",
+	
+	-- Thêm câu hỏi về Gamemodes
+	["capture.*flag"] = "Protect carrier! Coordinate offense and defense! 🚩",
+	["king.*hill"] = "Control the zone! Time on point matters most! 👑",
+	["deathmatch"] = "Pure fighting! Kills matter, deaths reduce score! ⚔️",
+	["survival.*mode"] = "Last as long as possible! Waves get harder! 🌊",
+	["sandbox.*mode"] = "Unlimited resources! Build and experiment freely! 🎨",
+	
+	-- Thêm câu hỏi về Vehicles
+	["drive.*better"] = "Practice controls! Learn drifting and boost timing! 🏎️",
+	["boat.*control"] = "Boats handle differently! Account for momentum! ⛵",
+	["plane.*flying"] = "Master takeoff and landing! Watch altitude! ✈️",
+	["helicopter"] = "Helicopters need practice! Control throttle carefully! 🚁",
+	
+	-- Thêm câu hỏi về Mini-Mechanics
+	["wall.*run"] = "Approach wall at angle! Jump to maintain momentum! 🧗",
+	["slide"] = "Sliding goes faster downhill! Crouch while running! 🎿",
+	["grapple.*hook"] = "Grapple hooks swing you! Combine with jumps! 🪝",
+	["glider"] = "Gliders extend jump distance! Deploy at peak height! 🪂",
+	
+	-- Easter Eggs mở rộng
+	["hack"] = "No hacking! Play fair and have fun legitimately! 🚫",
+	["cheat"] = "Cheating ruins the game! Be a fair player! ⚠️",
+	["developer"] = "Developers work hard! Show appreciation and report bugs! 💻",
+	["moderator"] = "Moderators keep games safe! Respect them! 👮",
+	["youtuber"] = "Content creators help communities grow! Support them! 📺",
+	["streamer"] = "Streamers entertain and teach! Check them out! 🎥",
+	["subscriber"] = "Thanks for being part of the community! You rock! ⭐",
+	["follow"] = "Following helps creators! Costs nothing but means a lot! ❤️",
+	["like"] = "👍 Likes show appreciation! Spread positivity!",
+	["subscribe"] = "Subscribing supports content creators! Help them grow! 🔔",
+	["notification"] = "Turn on notifications! Never miss updates! 🔔",
+	["million"] = "Million club! Dream big and achieve! 💯",
+	["billion"] = "Billion? That's astronomical! Aim for the stars! 🌟",
+	["infinite"] = "Infinity is the limit! Never stop improving! ♾️",
+	["zero"] = "Starting from zero? Everyone does! Begin your journey! 🚀",
+	["one"] = "Number one! Be the best you can be! 🥇",
+	["hundred"] = "100%! Complete everything! Full completion! 💯",
+	["thousand"] = "Thousands of possibilities! Explore them all! 🌈",
+	["legendary"] = "Legendary status! You're amazing! 🏆",
+	["mythical"] = "Mythical tier! Beyond legendary! 🌟",
+	["godly"] = "Godly! You're on another level! ⚡",
+	["divine"] = "Divine presence! Absolutely incredible! ✨",
+	["ultimate"] = "Ultimate power! Maximum potential! 💥",
+	["supreme"] = "Supreme skill! Master level! 👑",
+	["omega"] = "Omega level! Final form achieved! Ω",
+	["alpha"] = "Alpha mentality! Lead the pack! 🐺",
+	["beta"] = "Beta testing life! Always learning! 🧪",
+	["gamma"] = "Gamma rays! Radioactive gameplay! ☢️",
+	["delta"] = "Delta force! Elite squad! 🎖️",
+	["sigma"] = "Sigma grindset! Independent and strong! 💪",
+	["chad"] = "Absolute chad! Confident and skilled! 😎",
+	["gigachad"] = "GIGACHAD! Maximum respect earned! 🗿",
+	["based"] = "Based and redpilled! Speaking truth! 💯",
+	["cringe"] = "A little cringe is okay! Be yourself! 😅",
+	["sus"] = "That's sus! Among Us vibes! 📮",
+	["amogus"] = "AMOGUS! The impostor is everywhere! 🔴",
+	["stonks"] = "STONKS! Portfolio going up! 📈",
+	["doge"] = "Much wow! Such skill! Very game! 🐕",
+	["pepe"] = "Rare Pepe moment! Feels good man! 🐸",
+	["meme"] = "Memes make everything better! Dank! 😂",
+	["poggers"] = "POGGERS! That was insane! 😮",
+	["pog"] = "POG! Play of the game! 🎮",
+	["copium"] = "No copium here! Just facts! 💊",
+	["hopium"] = "Huffing hopium! Stay optimistic! 🌈",
+	["touch.*grass"] = "Yes, take breaks! Go outside sometimes! Touch grass! 🌱",
+	["grass"] = "Grass? That's that green stuff outside, right? 😄",
+	["outside"] = "Outside? Is that a new DLC? Jk, fresh air is good! 🌳",
+	["sun"] = "☀️ The sun! That bright thing in the sky! Don't forget it exists!",
+	["real.*life"] = "Real life is important too! Balance gaming and life! ⚖️",
+	["family"] = "Family comes first! Game after spending time with them! 👨‍👩‍👧‍👦",
+	["homework"] = "Do your homework first! Education matters! 📚",
+	["study"] = "Study hard! Games are more fun after completing work! 🎓",
+	["job"] = "Work-life-game balance! All three matter! 💼",
+	["girlfriend"] = "Relationships need time too! Balance is key! 💑",
+	["boyfriend"] = "Make time for your partner! Games can wait! 💑",
+	["wife"] = "Happy wife, happy life! Then happy gaming! 💕",
+	["husband"] = "Quality time matters! Balance gaming and relationships! 💑",
+	
+	-- Thêm câu hỏi về Game Genres
+	["fps.*tips"] = "Aim for the head! Keep crosshair at head level! 🎯",
+	["moba.*tips"] = "Last hit minions, ward vision, don't overextend! 🗺️",
+	["mmorpg.*tips"] = "Join a guild, do daily quests, grind efficiently! ⚔️",
+	["survival.*game"] = "Gather resources first! Build shelter before night! 🏠",
+	["horror.*game"] = "Stay calm! Use headphones for audio cues! 👻",
+	["puzzle.*game"] = "Think outside the box! Sometimes simple answers work! 🧩",
+	["racing.*game"] = "Learn tracks, master drifting, use shortcuts! 🏎️",
+	["rpg.*tips"] = "Explore everything! Side quests give great rewards! 🗡️",
+	["simulator.*game"] = "Auto-farms are key! Upgrade efficiency first! 🤖",
+	["tycoon.*guide"] = "Don't waste on decorations early! Profit first! 💰",
+	
+	-- Thêm câu hỏi về Weapons Deep Dive
+	["assault.*rifle"] = "ARs are versatile! Good for medium range combat! 🔫",
+	["shotgun.*tips"] = "Get close! Shotguns dominate short range! 💥",
+	["sniper.*scope"] = "Hold breath for steady aim! Lead moving targets! 🎯",
+	["pistol.*secondary"] = "Pistols are reliable backups! Fast switch time! 🔫",
+	["melee.*weapon"] = "Melee is silent! Great for stealth kills! 🗡️",
+	["explosive.*weapon"] = "AOE damage! Watch friendly fire though! 💣",
+	["laser.*weapon"] = "Laser weapons have no drop-off! Accurate! ⚡",
+	["magic.*weapon"] = "Magic scales with intelligence! Mana management! 🔮",
+	
+	-- Thêm câu hỏi về Character Builds
+	["tank.*build"] = "Stack HP and defense! Protect your team! 🛡️",
+	["dps.*build"] = "Max damage output! Glass cannon style! ⚔️",
+	["hybrid.*build"] = "Balance offense and defense! Versatile! ⚖️",
+	["support.*build"] = "Buff allies, debuff enemies! Team player! 💚",
+	["assassin.*build"] = "High crit, high speed! Burst damage! 🗡️",
+	["mage.*build"] = "Intelligence and mana! Spell damage! 🔥",
+	["ranger.*build"] = "Dexterity focused! Ranged DPS! 🏹",
+	["summoner.*build"] = "Summon pets to fight! Minion master! 👥",
+	
+	-- Thêm câu hỏi về Crafting
+	["crafting.*level"] = "Craft often to level up! Higher level = better items! ⚒️",
+	["rare.*recipe"] = "Rare recipes drop from bosses! Very valuable! 📜",
+	["craft.*material"] = "Different materials have different properties! Experiment! 🔨",
+	["workbench"] = "Workbenches unlock advanced crafting! Upgrade them! 🛠️",
+	["forge"] = "Forges are for metal items! Weapons and armor! 🔥",
+	["alchemy.*table"] = "Alchemy tables make potions! Gather herbs! 🧪",
+	
+	-- Thêm câu hỏi về Exploration
+	["explore.*tips"] = "Mark points of interest! Don't get lost! 🗺️",
+	["hidden.*chest"] = "Check behind waterfalls and walls! Secrets everywhere! 🎁",
+	["treasure.*map"] = "X marks the spot! Follow clues carefully! 🏴‍☠️",
+	["dungeon.*crawl"] = "Bring torches! Dark dungeons hide dangers! 🔦",
+	["cave.*exploration"] = "Caves have best ores! But watch for mobs! ⛏️",
+	
+	-- Thêm câu hỏi về Currencies
+	["premium.*currency"] = "Premium currency is valuable! Spend wisely! 💎",
+	["soft.*currency"] = "Soft currency is farmable! Grind for it! 🪙",
+	["event.*currency"] = "Event currency is time-limited! Farm during events! 🎫",
+	["convert.*currency"] = "Some games let you convert! Check exchange rates! 💱",
+	
+	-- Thêm câu hỏi về Difficulty
+	["easy.*mode"] = "Easy mode is perfect for learning! No shame! 😊",
+	["normal.*mode"] = "Normal mode is balanced! Standard experience! ⚖️",
+	["hard.*mode"] = "Hard mode tests skill! Better rewards though! 💪",
+	["nightmare.*mode"] = "Nightmare is brutal! For veterans only! 👹",
+	["permadeath"] = "Permadeath = high stakes! One life, no mistakes! ☠️",
+	
+	-- Thêm câu hỏi về Achievements Specific
+	["speed.*achievement"] = "Speed achievements need practice! Learn routes! ⏱️",
+	["no.*death"] = "No death runs are tough! Play cautiously! 💀",
+	["pacifist.*run"] = "Pacifist means no killing! Stealth required! 🕊️",
+	["100.*complete"] = "100% completion takes dedication! Worth it! 💯",
+	["rare.*achievement"] = "Rare achievements show skill! Display with pride! 🏆",
+	
+	-- Thêm câu hỏi về PvP Advanced
+	["1v1.*tips"] = "Read opponent patterns! Adapt mid-fight! 🥊",
+	["team.*fight"] = "Focus targets! Don't split damage! 👥",
+	["flanking"] = "Flank from behind! Surprise is powerful! 🔄",
+	["retreat.*when"] = "Retreat when outnumbered! Live to fight again! 🏃",
+	["chase.*enemy"] = "Don't overchase! Could be a trap! ⚠️",
+	
+	-- Thêm câu hỏi về Base Building
+	["base.*location"] = "Choose strategic locations! Near resources! 🏗️",
+	["defense.*tower"] = "Towers protect perimeter! Place wisely! 🗼",
+	["wall.*placement"] = "Walls funnel enemies! Create choke points! 🧱",
+	["trap.*placement"] = "Traps surprise attackers! Hide them well! 🪤",
+	["resource.*storage"] = "Protect storage! Enemies target it first! 📦",
+	
+	-- Thêm câu hỏi về Buffs & Debuffs
+	["buff.*stack"] = "Some buffs stack! Check descriptions! ⬆️",
+	["debuff.*cleanse"] = "Cleanse removes debuffs! Keep some ready! 🧹",
+	["poison.*effect"] = "Poison damages over time! Heal or cleanse! ☠️",
+	["stun.*duration"] = "Stuns disable enemies temporarily! Use wisely! ⭐",
+	["slow.*effect"] = "Slows reduce movement! Escape or kite! 🐌",
+	["burn.*damage"] = "Burns deal DoT! Fire is powerful! 🔥",
+	["freeze.*effect"] = "Freeze immobilizes! Great for escaping! ❄️",
+	["blind.*effect"] = "Blinds reduce accuracy! Defensive tool! 👁️",
+	
+	-- Thêm câu hỏi về Stats
+	["strength.*stat"] = "Strength increases physical damage! Warrior stat! 💪",
+	["dexterity.*stat"] = "Dexterity boosts speed and crit! Rogue stat! 🏃",
+	["intelligence.*stat"] = "Intelligence powers magic! Mage stat! 🧠",
+	["vitality.*stat"] = "Vitality increases HP! Survival stat! ❤️",
+	["luck.*stat"] = "Luck affects drops and crits! RNG stat! 🍀",
+	["defense.*stat"] = "Defense reduces damage taken! Tank stat! 🛡️",
+	["speed.*stat"] = "Speed affects movement! Mobility stat! ⚡",
+	["critical.*stat"] = "Critical chance = bonus damage! DPS stat! 💥",
+	
+	-- Thêm câu hỏi về Endgame
+	["endgame.*content"] = "Endgame has hardest challenges! Best rewards! 🏆",
+	["raid.*boss"] = "Raids need coordination! 10+ players! 👥",
+	["legendary.*gear"] = "Legendary gear is top tier! Grind for it! ⭐",
+	["max.*level"] = "Max level unlocks everything! The journey continues! 📈",
+	["veteran.*player"] = "Veterans know secrets! Learn from them! 🎓",
+	
+	-- Thêm câu hỏi về Noob Mistakes
+	["noob.*mistake"] = "Everyone makes mistakes! Learn from them! 📚",
+	["ignore.*tutorial"] = "Don't skip tutorials! They teach basics! 📖",
+	["waste.*resource"] = "Don't waste early resources! Save for upgrades! 💰",
+	["rush.*content"] = "Don't rush! Enjoy the journey! 🌱",
+	["solo.*everything"] = "Don't solo everything! Teams make it easier! 👥",
+	
+	-- Thêm câu hỏi về Pro Tips
+	["pro.*tip"] = "Practice daily! Consistency beats intensity! 📅",
+	["muscle.*memory"] = "Muscle memory comes from repetition! Keep practicing! 🧠",
+	["game.*sense"] = "Game sense develops over time! Experience matters! 🎮",
+	["positioning"] = "Positioning wins fights! High ground advantage! 📍",
+	["timing"] = "Timing is everything! Patient plays win! ⏰",
+	
+	-- Thêm câu hỏi về Cosmetics
+	["skin.*worth"] = "Skins are cosmetic! Buy what you love! 🎨",
+	["rare.*skin"] = "Rare skins show dedication! Collectibles! ✨",
+	["emote.*spam"] = "Emote spam is fun! Just don't be toxic! 😄",
+	["battle.*pass"] = "Battle pass gives value! Complete challenges! 📋",
+	
+	-- Thêm câu hỏi về Game Modes Specific
+	["zombies.*mode"] = "Zombies get harder each wave! Survive! 🧟",
+	["horde.*mode"] = "Horde mode = endless waves! How long can you last? 🌊",
+	["creative.*mode"] = "Creative mode = unlimited resources! Build anything! 🎨",
+	["hardcore.*mode"] = "Hardcore means one life! High risk, high reward! ☠️",
+	["casual.*mode"] = "Casual mode is relaxed! No pressure! 😊",
+	
+	-- Thêm câu hỏi về Specific Roles
+	["sniper.*position"] = "Find elevated positions! Long sightlines! 🏔️",
+	["scout.*role"] = "Scouts gather intel! Speed and stealth! 👁️",
+	["medic.*priority"] = "Heal tanks first! They protect team! 💊",
+	["engineer.*build"] = "Engineers build defenses! Support role! 🔧",
+	["spy.*tactics"] = "Spies infiltrate! Deception is key! 🕵️",
+	
+	-- Thêm câu hỏi về Multiplayer Etiquette
+	["toxic.*player"] = "Mute toxic players! Focus on your game! 🔇",
+	["good.*teammate"] = "Good teammates communicate and help! Be one! 🤝",
+	["rage.*quit"] = "Don't rage quit! Finish what you started! 🚫",
+	["gg"] = "GG = good game! Always be respectful! 🤝",
+	["camping.*fair"] = "Camping is a strategy! Sometimes valid! ⛺",
+	
+	-- Thêm câu hỏi về Updates & Meta
+	["meta.*game"] = "Meta changes with updates! Stay adaptable! 🔄",
+	["patch.*notes"] = "Read patch notes! Know what changed! 📰",
+	["nerf.*buff"] = "Nerfs and buffs balance game! Adapt to changes! ⚖️",
+	["hotfix"] = "Hotfixes fix critical bugs! Update quickly! 🔧",
+	
+	-- Thêm câu hỏi về Challenges
+	["daily.*challenge"] = "Complete daily challenges! Easy rewards! 📅",
+	["weekly.*challenge"] = "Weekly challenges give more! Don't miss them! 📆",
+	["special.*challenge"] = "Special challenges are limited! Act fast! ⏰",
+	["community.*challenge"] = "Community challenges need everyone! Team effort! 👥",
+	
+	-- Thêm câu hỏi về Streaming
+	["how.*stream"] = "Use OBS or streaming software! Share your gameplay! 📹",
+	["streaming.*tips"] = "Be entertaining! Interact with chat! 🎭",
+	["donate"] = "Support streamers if you can! They appreciate it! 💰",
+	["twitch"] = "Twitch is biggest streaming platform! Check it out! 📺",
+	
+	-- Thêm câu hỏi về Content Creation
+	["how.*youtube"] = "Record gameplay, edit, upload! Consistency is key! 🎬",
+	["thumbnail"] = "Thumbnails matter! Make them eye-catching! 🖼️",
+	["clickbait"] = "Don't mislead viewers! Honest titles work best! 📢",
+	["viral"] = "Viral videos need luck and quality! Keep creating! 🚀",
+	
+	-- Thêm câu hỏi về Mobile Gaming
+	["mobile.*tips"] = "Use claw grip for better control! Practice! 📱",
+	["controller.*mobile"] = "Controllers work on mobile! Easier aiming! 🎮",
+	["battery.*drain"] = "Gaming drains battery! Lower brightness and settings! 🔋",
+	["data.*usage"] = "Online games use data! Use WiFi when possible! 📶",
+	
+	-- Thêm câu hỏi về Addiction & Health
+	["game.*addiction"] = "Balance is key! Take breaks regularly! ⚖️",
+	["eye.*strain"] = "Follow 20-20-20 rule! Rest your eyes! 👀",
+	["posture"] = "Sit properly! Your back will thank you! 🪑",
+	["wrist.*pain"] = "Stretch regularly! Prevent carpal tunnel! 🤲",
+	["sleep.*schedule"] = "Sleep is important! Don't game all night! 😴",
+	
+	-- Thêm câu hỏi về Parental Controls
+	["parental.*control"] = "Parents can set time limits! Healthy gaming! 👨‍👩‍👧",
+	["age.*appropriate"] = "Play age-appropriate games! Safety first! 🔞",
+	["screen.*time"] = "Limit screen time! Balance gaming and life! ⏰",
+	
+	-- Easter Eggs Mega Pack
+	["thanks.*bot"] = "You're welcome! Happy to help! 🤖❤️",
+	["good.*bot"] = "Aww thanks! You're a good human too! 😊",
+	["bad.*bot"] = "I'm sorry! I'll try to do better! Tell me how! 😢",
+	["smart.*bot"] = "Thanks! I learned from 600+ responses! 🧠",
+	["dumb.*bot"] = "I'm still learning! Help me improve! 📚",
+	["cute.*bot"] = "Beep boop! You're making me blush! 🤖💕",
+	["stupid"] = "That's not nice! Let's keep it positive! 😊",
+	["awesome"] = "You're awesome too! Keep being great! ⭐",
+	["amazing"] = "Amazing players like you inspire me! 🌟",
+	["wonderful"] = "What a wonderful compliment! Thank you! 💖",
+	["fantastic"] = "Fantastic! That's the energy I love! 🎉",
+	["perfect"] = "Nobody's perfect, but we can try our best! 💯",
+	["best"] = "You're the best! Keep rocking! 🏆",
+	["worst"] = "Tough times don't last! You'll improve! 💪",
+	["gg.*wp"] = "GG WP! Well played indeed! 🤝",
+	["ez"] = "EZ? Don't get cocky! Stay humble! 😄",
+	["rekt"] = "Rekt! But don't be toxic about it! 😂",
+	["pwned"] = "Pwned! Classic gaming term! 🎮",
+	["owned"] = "Owned! Dominated! But be nice about it! 💪",
+	["destroyed"] = "Destroyed! Total annihilation! 💥",
+	["demolished"] = "Demolished! No mercy! ⚡",
+	["obliterated"] = "Obliterated! Complete domination! 🔥",
+	["yeet"] = "YEET! Throw it with confidence! 🚀",
+	["bruh"] = "Bruh moment! We've all been there! 😂",
+	["lit"] = "That's lit! Fire gameplay! 🔥",
+	["fire"] = "This is fire! So hot! 🔥",
+	["ice"] = "Ice cold! Stay cool! 🧊",
+	["hot"] = "Too hot to handle! Spicy plays! 🌶️",
+	["cold"] = "Cold as ice! Ruthless! ❄️",
+	["warm"] = "Warm and cozy! Keep that positive vibe! ☺️",
+	["chill"] = "Just chill! Relax and enjoy! 😎",
+	["calm"] = "Stay calm! Panic helps nobody! 🧘",
+	["panic"] = "Don't panic! Take a deep breath! 😰",
+	["stress"] = "Gaming should relieve stress, not cause it! 😌",
+	["relax"] = "Relax! It's just a game! Have fun! 😊",
+	["enjoy"] = "Enjoying the game? That's what matters! 🎮",
+	["fun"] = "Having fun is the point! Never forget! 🎉",
+	["rage"] = "Calm the rage! Deep breaths! Count to 10! 😤",
+	["mad"] = "Don't get mad! Analyze and improve! 🤔",
+	["salty"] = "Salty? Shake it off! Next game! 🧂",
+	["tilted"] = "Tilted? Take a break! Come back fresh! 📉",
+	["tilt"] = "Fight the tilt! Mental game matters! 🧠",
+	["throw"] = "Don't throw! Every game is winnable! 🎯",
+	["int"] = "Inting is for trolls! Play seriously! 🚫",
+	["troll"] = "Trolling ruins fun! Be a good sport! 🌉",
+	["grief"] = "Griefing hurts others! Play nice! 🚫",
+	["wholesome"] = "Wholesome gaming! I love it! 💖",
+	["blessed"] = "Blessed with good teammates! Lucky you! 🙏",
+	["cursed"] = "Cursed game! Sometimes RNG hates us! 😱",
+	["rigged"] = "Not rigged! Just bad RNG! 🎲",
+	["random"] = "RNG is random! That's the point! 🎲",
+	["lucky"] = "Luck favors the prepared! 🍀",
+	["unlucky"] = "Unlucky! Better luck next time! 😞",
+	["fate"] = "Fate is what you make it! 🌟",
+	["destiny"] = "You control your destiny! Go get it! ⭐",
+	["legend"] = "Legend in the making! Keep going! 🏆",
+	["noob.*tube"] = "Noob tube! Classic terminology! 😄",
+	["camper"] = "Campers camp! It's a strategy! ⛺",
+	["tryhard"] = "Nothing wrong with trying hard! 💪",
+	["sweat"] = "Sweaty gameplay! Maximum effort! 💦",
+	["casual.*player"] = "Casual is fine! Play your way! 😊",
+	["hardcore.*player"] = "Hardcore dedication! Respect! 💪",
+	["veteran"] = "Veterans know the way! Learn from them! 🎖️",
+	["newbie"] = "Newbies become pros! Everyone starts somewhere! 🌱",
+	["intermediate"] = "Intermediate level! Keep improving! 📊",
+	["expert"] = "Expert level! You're skilled! 🎓",
+	["master"] = "Master level! Few reach here! 👑",
+	["grandmaster"] = "Grandmaster! Elite status! 🏆",
+	["challenger"] = "Challenger tier! Top of the top! 💎",
+	["immortal"] = "Immortal rank! Legendary! ✨",
+	["radiant"] = "Radiant! Shining bright! 🌟",
+	["global"] = "Global elite! Best of the best! 🌍",
+	["predator"] = "Apex Predator! Hunter! 🦅",
+	["diamond"] = "Diamond rank! Precious! 💎",
+	["platinum"] = "Platinum tier! Valuable! 🥈",
+	["gold.*rank"] = "Gold rank! Above average! 🥇",
+	["silver.*rank"] = "Silver rank! Getting better! 🥈",
+	["bronze.*rank"] = "Bronze rank! Start of the climb! 🥉",
+	["unranked"] = "Unranked? Time to place! 🎯",
+	
+	-- Thêm câu hỏi về Gaming Culture
+	["gamer.*girl"] = "Gender doesn't matter! Skills do! Game on! 👧🎮",
+	["gamer.*boy"] = "All gamers welcome! Have fun! 👦🎮",
+	["gaming.*setup"] = "Setup matters for comfort! Invest wisely! 🖥️",
+	["rgb.*lights"] = "RGB makes you faster! Just kidding! Looks cool though! 🌈",
+	["gaming.*chair"] = "Good chair helps posture! Worth the investment! 🪑",
+	["mechanical.*keyboard"] = "Mechanical keyboards feel great! Clicky clacky! ⌨️",
+	["gaming.*mouse"] = "Good mouse improves aim! Find your perfect fit! 🖱️",
+	["headset"] = "Headsets give advantage! Hear footsteps clearly! 🎧",
+	["monitor.*hz"] = "Higher Hz = smoother gameplay! 144Hz+ recommended! 🖥️",
+	
+	-- Thêm câu hỏi về Esports
+	["esport"] = "Esports are competitive gaming! Pro level! 🏆",
+	["tournament"] = "Tournaments test skills! Prize pools attract best! 💰",
+	["prize.*pool"] = "Prize pools can be massive! Millions in stakes! 💵",
+	["sponsor"] = "Sponsors support pros! Brand partnerships! 🤝",
+	["team.*roster"] = "Rosters change! Follow transfer news! 📰",
+	
+	-- Thêm câu hỏi về Game Economy
+	["market.*crash"] = "Markets crash when items flood! Supply > demand! 📉",
+	["market.*boom"] = "Markets boom with demand! Sell high! 📈",
+	["corner.*market"] = "Cornering markets is risky! Manipulation! ⚠️",
+	["price.*check"] = "Always check prices! Don't overpay! 💰",
+	
+	-- Thêm câu hỏi về Grinding
+	["grind.*burnout"] = "Take breaks! Grinding can burn you out! 🔥",
+	["efficient.*grind"] = "Efficiency > time spent! Work smarter! 🧠",
+	["grind.*spot"] = "Best spots have high spawn rates! Research! 📍",
+	["overnight.*grind"] = "Overnight grinding works if safe! Auto-farm! 🌙",
+	
+	-- Thêm câu hỏi về Luck & RNG
+	["rng.*manipulation"] = "Can't manipulate RNG! True randomness! 🎲",
+	["lucky.*charm"] = "Lucky charms are superstition! But if it works...! 🍀",
+	["drop.*rate"] = "Drop rates are % based! Math, not luck! 📊",
+	["pity.*system"] = "Pity systems guarantee rewards eventually! Relief! 🎁",
+	
+	-- Thêm câu hỏi về Clans/Guilds Deep
+	["clan.*name"] = "Choose memorable clan names! Represents you! 📛",
+	["clan.*tag"] = "Clan tags show affiliation! Wear with pride! 🏷️",
+	["kick.*member"] = "Kick inactive members! Keep clan active! 👢",
+	["promote.*member"] = "Promote contributors! Reward loyalty! ⬆️",
+	["clan.*treasury"] = "Treasury funds clan upgrades! Contribute! 💰",
+	
+	-- Thêm câu hỏi về Special Mechanics
+	["double.*xp"] = "Double XP events are golden! Farm hard! ⚡",
+	["triple.*threat"] = "Triple kill! Three quick eliminations! 💥",
+	["mega.*kill"] = "Mega kill! Domination! 🔥",
+	["rampage"] = "Rampage! Unstoppable streak! 💪",
+	["godlike"] = "GODLIKE! Legendary streak! ✨",
+	["ace"] = "Ace = team wipe! Solo clutch! 🎯",
+	
+	-- Thêm câu hỏi về Game Theory
+	["game.*theory"] = "Game theory = optimal strategies! Math! 🧮",
+	["nash.*equilibrium"] = "Nash equilibrium in competitive games! Economics! 📊",
+	["dominant.*strategy"] = "Dominant strategy always works! Reliable! 🎯",
+	["prisoner.*dilemma"] = "Cooperation vs competition! Classic dilemma! 🤝",
+	
+	-- Thêm câu hỏi về Streaming Sniping
+	["stream.*snipe"] = "Stream sniping is unfair! Don't do it! 🚫",
+	["delay.*stream"] = "Streamers use delay to prevent sniping! ⏰",
+	["ghost.*stream"] = "Ghosting = watching enemy stream! Cheating! 👻",
+	
+	-- Thêm câu hỏi về Metas
+	["off.*meta"] = "Off-meta can work! Surprise factor! 🎭",
+	["meta.*slave"] = "Don't be meta slave! Play what's fun! 🎮",
+	["counter.*meta"] = "Counter-meta beats popular picks! Strategy! ♟️",
+	["meta.*shift"] = "Metas shift with updates! Adapt! 🔄",
+	
+	-- Thêm câu hỏi về Speedrunning
+	["speedrun.*route"] = "Routes save time! Study world records! 🗺️",
+	["glitch.*speedrun"] = "Glitches skip content! Any% category! 🐛",
+	["glitchless"] = "Glitchless = no exploits! Pure skill! ✅",
+	["tool.*assisted"] = "TAS = perfect inputs! Theoretical! 🤖",
+	
+	-- Thêm câu hỏi về Voice Chat
+	["voice.*toxic"] = "Mute toxic voice chat! Mental health first! 🔇",
+	["push.*talk"] = "Push-to-talk prevents noise! Considerate! 🎙️",
+	["hot.*mic"] = "Check your mic! Don't leave it hot! 🔥",
+	["background.*noise"] = "Reduce background noise! Clear comms! 🔊",
+	
+	-- Thêm câu hỏi về Aim Training
+	["aim.*train"] = "Aim trainers help! Practice daily! 🎯",
+	["flick.*shot"] = "Flick shots need muscle memory! Practice! ⚡",
+	["tracking.*aim"] = "Tracking follows targets! Smooth mouse control! 👁️",
+	["crosshair.*placement"] = "Crosshair at head level! Pre-aim! ➕",
+	
+	-- Thêm câu hỏi về Sensitivity
+	["sensitivity.*setting"] = "Sensitivity is personal! Find your sweet spot! 🎚️",
+	["low.*sens"] = "Low sens = precision! Bigger mousepad needed! 🖱️",
+	["high.*sens"] = "High sens = quick turns! Less space needed! ⚡",
+	["dpi"] = "DPI affects sensitivity! Combine with in-game! 🔢",
+	
+	-- Thêm câu hỏi về Map Control
+	["map.*control"] = "Map control wins games! Territory matters! 🗺️",
+	["spawn.*control"] = "Control spawns for advantage! Strategic! 📍",
+	["obj.*control"] = "Control objectives! That's how you win! 🎯",
+	
+	-- Thêm câu hỏi về Comebacks
+	["comeback.*possible"] = "Comebacks are always possible! Never surrender! 💪",
+	["throw.*lead"] = "Don't throw your lead! Stay focused! ⚠️",
+	["defend.*lead"] = "Defend leads carefully! Don't get cocky! 🛡️",
+	
+	-- Thêm câu hỏi về Rotations
+	["rotate.*early"] = "Rotate early! Beat the pack! 🔄",
+	["late.*rotation"] = "Late rotation is risky! Might get caught! ⏰",
+	["rotation.*timing"] = "Time rotations perfectly! Zone awareness! ⏱️",
+	
+	-- Thêm câu hỏi về Looting
+	["loot.*priority"] = "Prioritize weapons and shields! Survive first! 🎒",
+	["loot.*fast"] = "Loot quickly! Don't get caught looting! ⚡",
+	["death.*box"] = "Death boxes have good loot! But risky! ☠️",
+	
+	-- Thêm câu hỏi về Zones
+	["zone.*damage"] = "Zone damage increases! Don't stay out! ⚠️",
+	["storm.*timing"] = "Time storm movements! Plan ahead! 🌪️",
+	["safe.*zone"] = "Safe zones shrink! Move early! 🛡️",
+	
+	-- Thêm câu hỏi về Loadouts
+	["loadout.*setup"] = "Balanced loadouts work best! Cover all ranges! ⚖️",
+	["aggressive.*loadout"] = "Aggressive loadouts = close range! Shotguns! 💥",
+	["defensive.*loadout"] = "Defensive loadouts = range + utility! Safe! 🛡️",
+	
+	-- Thêm câu hỏi về Communication
+	["callout"] = "Callouts save lives! Clear and quick! 📢",
+	["ping.*system"] = "Ping systems help non-voice players! Use them! 📍",
+	["target.*priority"] = "Call priority targets! Focus fire! 🎯",
+	
+	-- Thêm câu hỏi về Mindset
+	["tilt.*proof"] = "Stay tilt-proof! Emotional control matters! 🧘",
+	["growth.*mindset"] = "Growth mindset = always improving! Positive! 📈",
+	["fixed.*mindset"] = "Fixed mindset holds you back! Believe in growth! 🚫",
+	["confidence"] = "Confidence comes from practice! Believe in yourself! 💪",
+	
+	-- Thêm câu hỏi về Warm-up
+	["warm.*up"] = "Warm up before ranked! Get in the zone! 🔥",
+	["cold.*start"] = "Cold starts = poor performance! Always warm up! 🥶",
+	["practice.*routine"] = "Routines build consistency! Stick to it! 📅",
+	
+	-- Thêm câu hỏi về Tilt Management
+	["after.*loss"] = "After losses, take 5 minutes! Reset mental! 🧠",
+	["losing.*streak"] = "Losing streaks happen! Don't force it! 😓",
+	["break.*time"] = "Break time prevents burnout! Come back fresh! ☕",
+	
+	-- Thêm câu hỏi về Coaching
+	["get.*coach"] = "Coaches accelerate improvement! Worth considering! 🎓",
+	["self.*coach"] = "Self-coaching = review your games! Learn from mistakes! 📹",
+	["vod.*review"] = "VOD reviews show mistakes! Critical for growth! 🎥",
+	
+	-- Thêm câu hỏi về Muscle Memory
+	["build.*muscle"] = "Building muscle memory takes time! Consistent practice! 💪",
+	["consistent.*practice"] = "Consistency > intensity! Daily practice! 📆",
+	
+	-- Thêm câu hỏi về Game Sense
+	["predict.*enemy"] = "Predict enemy moves! Think ahead! 🔮",
+	["read.*opponent"] = "Read opponents! Pattern recognition! 👁️",
+	["mind.*game"] = "Mind games win fights! Outsmart them! 🧠",
+	
+	-- Thêm câu hỏi về Equipment
+	["upgrade.*pc"] = "Upgrade bottleneck first! Research before buying! 🖥️",
+	["budget.*setup"] = "Budget setups work! Don't need expensive gear! 💰",
+	["console.*pc"] = "Console vs PC = preference! Both are great! 🎮",
+	
+	-- Thêm các câu hỏi fun
+	["pineapple.*pizza"] = "Pineapple on pizza? Controversial! What's your take? 🍕",
+	["cats.*dogs"] = "Cats or dogs? Both are amazing! 🐱🐶",
+	["coffee.*tea"] = "Coffee or tea? Fuel for gaming! ☕",
+	["morning.*night"] = "Morning or night gaming? I'm available 24/7! 🌅🌙",
+	["pc.*master.*race"] = "All platforms are valid! Play what you enjoy! 🎮",
+	["console.*wars"] = "Console wars are silly! Just game! 🎮",
+	["keyboard.*controller"] = "Keyboard vs controller = preference! Use what's comfortable! ⌨️",
+	
+	-- Thêm câu hỏi về Game Dev Career
+	["game.*developer"] = "Game dev is rewarding! Learn coding and design! 💻",
+	["game.*designer"] = "Game designers create experiences! Creative field! 🎨",
+	["level.*designer"] = "Level designers craft worlds! Architecture + fun! 🗺️",
+	["sound.*design"] = "Sound design sets atmosphere! Underrated! 🔊",
+	
+	-- Thêm câu hỏi về Lore
+	["read.*lore"] = "Lore adds depth! Makes worlds feel alive! 📖",
+	["skip.*cutscene"] = "Don't skip cutscenes first time! Story matters! 🎬",
+	["story.*mode"] = "Story mode is important! Don't rush it! 📚",
+	
+	-- Thêm câu hỏi về Accessibility
+	["colorblind.*mode"] = "Colorblind modes help visibility! Inclusive! 🎨",
+	["subtitle"] = "Subtitles help everyone! Always available! 📝",
+	["difficulty.*assist"] = "Difficulty assists make games accessible! No shame! ♿",
+	
+	-- Thêm câu hỏi về Preservation
+	["old.*game"] = "Old games are gems! Classics never die! 👴",
+	["retro.*gaming"] = "Retro gaming is nostalgic! Simpler times! 🕹️",
+	["remaster"] = "Remasters revive classics! Modernized! ✨",
+	["remake"] = "Remakes rebuild from ground up! Fresh! 🎮",
+	
+	-- Thêm câu hỏi về Hype
+	["hype.*train"] = "All aboard the hype train! Choo choo! 🚂",
+	["overhype"] = "Don't overhype! Manage expectations! ⚠️",
+	["disappointment"] = "Disappointments happen! Move on to next game! 😔",
+	["exceed.*expectation"] = "When games exceed expectations! Amazing! 🌟",
+	
+	-- Thêm câu hỏi về Beta Testing
+	["beta.*test"] = "Beta testing finds bugs! Help developers! 🐛",
+	["alpha.*access"] = "Alpha access is rough! Expect bugs! ⚠️",
+	["early.*access"] = "Early access = unfinished! Buyer beware! 🚧",
+	
+	-- Thêm câu hỏi về Modding
+	["mod.*community"] = "Modding communities are creative! Amazing content! 🎨",
+	["install.*mod"] = "Read instructions carefully! Backup saves! 📋",
+	["mod.*conflict"] = "Mods can conflict! Load order matters! ⚠️",
+	
+	-- Thêm câu hỏi về Cross-play
+	["cross.*play"] = "Cross-play unites platforms! Play with anyone! 🌐",
+	["cross.*progression"] = "Cross-progression saves your progress! Convenient! 💾",
+	["platform.*exclusive"] = "Platform exclusives are restrictive! Sad! 😢",
+	
+	-- Thêm Easter Eggs khủng
+	["minecraft.*better"] = "Minecraft is legendary! But Roblox has more variety! ⛏️",
+	["among.*us"] = "Among Us was everywhere! Still fun! 🔴",
+	["fall.*guys"] = "Fall Guys = chaotic fun! Jelly beans! 🎮",
+	["apex.*legends"] = "Apex Legends! Fast-paced BR! 🎯",
+	["fortnite.*build"] = "Building makes Fortnite unique! Creative! 🏗️",
+	["valorant"] = "Valorant = tactical shooter! Abilities matter! 🎯",
+	["league.*legends"] = "League of Legends! MOBA classic! Still going! ⚔️",
+	["dota.*2"] = "Dota 2! Complex MOBA! Steep learning curve! 🎮",
+	["counter.*strike"] = "Counter-Strike! Legendary FPS! CS:GO! 🔫",
+	["overwatch"] = "Overwatch! Hero shooter! Team-based! 👥",
+	["call.*duty"] = "Call of Duty! FPS staple! Every year! 🎖️",
+	["battlefield"] = "Battlefield! Large-scale warfare! 64v64! 💥",
+	["destiny"] = "Destiny! Looter shooter! Raids are epic! 🎮",
+	["warframe"] = "Warframe! Space ninjas! Free to play! ⚔️",
+	["genshin.*impact"] = "Genshin Impact! Beautiful open world! Gacha! 🗺️",
+	["pokemon"] = "Pokémon! Gotta catch 'em all! Classic! ⚡",
+	["mario"] = "Mario! Nintendo icon! Wahoo! 🍄",
+	["sonic"] = "Sonic! Gotta go fast! Blue blur! 💨",
+	["zelda"] = "Legend of Zelda! Timeless adventure! Hyrule! ⚔️",
+	["halo"] = "Halo! Finish the fight! Master Chief! 🎮",
+	["god.*war"] = "God of War! Epic mythology! Kratos! ⚔️",
+	["dark.*souls"] = "Dark Souls! You died! Prepare to die! ☠️",
+	["elden.*ring"] = "Elden Ring! Open world Souls! Tarnished! 🌍",
+	["final.*fantasy"] = "Final Fantasy! JRPG classic! Many titles! ⚔️",
+	["dragon.*ball"] = "Dragon Ball! Power levels over 9000! 💪",
+	["naruto"] = "Naruto! Believe it! Ninja way! 🍜",
+	["one.*piece"] = "One Piece! Pirate adventure! Going Merry! 🏴‍☠️",
+	["attack.*titan"] = "Attack on Titan! Epic and dark! Titans! 👹",
+	["demon.*slayer"] = "Demon Slayer! Breathing techniques! Tanjiro! ⚔️",
+	["my.*hero"] = "My Hero Academia! Plus Ultra! Heroes! 💪",
+	["jojo"] = "JoJo! Is that a JoJo reference?! Stands! 👊",
+	["trump"] = "Let's keep politics out of gaming! Stay focused! 🎮",
+	["biden"] = "Politics aside, let's talk gaming! 🎮",
+	["elon.*musk"] = "Elon plays games too! Cyberpunk fan! 🚀",
+	["mrbeast"] = "MrBeast! YouTube legend! Squid Game! 💰",
+	["pewdiepie"] = "PewDiePie! Brofist! YouTube OG! 👊",
+	["ninja"] = "Ninja! Fortnite legend! Blue hair! 💙",
+	["dream"] = "Dream! Minecraft speedrunner! Controversial! 💚",
+	["technoblade"] = "Technoblade never dies! RIP legend! 👑",
+}
+
+-- Hàm tạo tin nhắn với animation
 local function createMessage(text, isBot)
+	msgCount = msgCount + 1
+	counterLabel.Text = "Messages: " .. msgCount
+	
 	local msgFrame = Instance.new("Frame")
-	msgFrame.Size = UDim2.new(0.7, 0, 0, 0)
-	msgFrame.BackgroundColor3 = isBot and Color3.fromRGB(60, 150, 255) or Color3.fromRGB(100, 200, 100)
+	msgFrame.Size = UDim2.new(0.75, 0, 0, 0)
+	msgFrame.BackgroundColor3 = isBot and Color3.fromRGB(50, 130, 220) or Color3.fromRGB(80, 180, 100)
 	msgFrame.BorderSizePixel = 0
-	msgFrame.Position = isBot and UDim2.new(0, 0, 0, 0) or UDim2.new(0.3, 0, 0, 0)
+	msgFrame.Position = isBot and UDim2.new(0, 0, 0, 0) or UDim2.new(0.25, 0, 0, 0)
+	msgFrame.BackgroundTransparency = 1
 	
 	local msgCorner = Instance.new("UICorner")
-	msgCorner.CornerRadius = UDim.new(0, 12)
+	msgCorner.CornerRadius = UDim.new(0, 14)
 	msgCorner.Parent = msgFrame
+	
+	local msgGradient = Instance.new("UIGradient")
+	if isBot then
+		msgGradient.Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 140, 230)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 120, 210))
+		})
+	else
+		msgGradient.Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(90, 190, 110)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(70, 170, 90))
+		})
+	end
+	msgGradient.Rotation = 45
+	msgGradient.Parent = msgFrame
 	
 	local msgText = Instance.new("TextLabel")
 	msgText.Size = UDim2.new(1, -20, 1, 0)
@@ -178,41 +1350,65 @@ local function createMessage(text, isBot)
 	msgText.TextYAlignment = Enum.TextYAlignment.Top
 	msgText.Parent = msgFrame
 	
-	local textSize = game:GetService("TextService"):GetTextSize(text, 14, Enum.Font.Gotham, Vector2.new(250, math.huge))
-	msgFrame.Size = UDim2.new(0.7, 0, 0, textSize.Y + 20)
+	local textSize = game:GetService("TextService"):GetTextSize(text, 14, Enum.Font.Gotham, Vector2.new(230, math.huge))
+	msgFrame.Size = UDim2.new(0.75, 0, 0, math.max(textSize.Y + 20, 40))
 	
 	msgFrame.Parent = chatContainer
-	chatContainer.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
+	
+	-- Fade in animation
+	TweenService:Create(msgFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back), {BackgroundTransparency = 0}):Play()
+	
+	chatContainer.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
 	chatContainer.CanvasPosition = Vector2.new(0, chatContainer.CanvasSize.Y.Offset)
 end
 
--- Tin nhắn mẫu
-createMessage("Hi! How can I assist you?", true)
-createMessage("Hello there!", false)
-createMessage("You can find diamonds in the hidden cave or by mining deep underground.", true)
+-- Typing indicator
+local typingIndicator = Instance.new("Frame")
+typingIndicator.Size = UDim2.new(0, 60, 0, 35)
+typingIndicator.BackgroundColor3 = Color3.fromRGB(50, 130, 220)
+typingIndicator.BorderSizePixel = 0
+typingIndicator.Visible = false
 
--- Database câu hỏi và trả lời
-local qaDatabase = {
-	-- Câu hỏi về game
-	["how.*find.*diamond"] = "You can find diamonds in the hidden cave or by mining deep underground at Y-level 12!",
-	["where.*diamond"] = "Diamonds spawn between Y-levels 5-12. Try mining in caves or strip mining!",
-	["how.*make.*money"] = "You can make money by completing quests, selling items, or farming resources!",
-	["how.*level.*up"] = "Level up by completing missions, defeating monsters, and gaining XP points!",
-	["what.*best.*weapon"] = "The best weapon depends on your playstyle. Swords are great for close combat, bows for ranged!",
-	
-	-- Câu hỏi về scripting
-	["how.*script"] = "To script in Roblox, use Lua language! Start with simple scripts in ServerScriptService or StarterPlayer.",
-	["what.*lua"] = "Lua is the programming language used in Roblox. It's easy to learn and very powerful!",
-	["how.*make.*gui"] = "Create GUIs in StarterGui using ScreenGui, Frame, TextButton, and TextLabel objects!",
-	
-	-- Câu hỏi chung
-	["hello"] = "Hello! tôi có thể giúp gì cho bạn? 😊",
-	["hi"] = "Hi there! Banj có cần giúp dỡ gì ko?",
-	["help"] = "Bạn đang cầu cứu về điều gì!",
-	["thank"] = "Không có gì! Khi nào cần giúp đỡ thì nói mình nhé 😊",
-	["bye"] = "Goodbye! Chúc một ngày tốt lành! 👋",
-["Tôi yêu bạn"] = "Tôi cũng yêu bạn rất nhiều ❤️",
-["Bạn có thể làm gì"] = "You're welcome! Feel free to ask anything else! 🎉",
+local typingCorner = Instance.new("UICorner")
+typingCorner.CornerRadius = UDim.new(0, 14)
+typingCorner.Parent = typingIndicator
+
+local dot1 = Instance.new("Frame")
+dot1.Size = UDim2.new(0, 8, 0, 8)
+dot1.Position = UDim2.new(0, 12, 0.5, -4)
+dot1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+dot1.BorderSizePixel = 0
+dot1.Parent = typingIndicator
+
+local dot1Corner = Instance.new("UICorner")
+dot1Corner.CornerRadius = UDim.new(1, 0)
+dot1Corner.Parent = dot1
+
+local dot2 = dot1:Clone()
+dot2.Position = UDim2.new(0, 26, 0.5, -4)
+dot2.Parent = typingIndicator
+
+local dot3 = dot1:Clone()
+dot3.Position = UDim2.new(0, 40, 0.5, -4)
+dot3.Parent = typingIndicator
+
+-- Animate typing indicator
+local function animateTyping()
+	spawn(function()
+		while typingIndicator.Visible do
+			TweenService:Create(dot1, TweenInfo.new(0.4), {Position = UDim2.new(0, 12, 0.5, -8)}):Play()
+			wait(0.15)
+			TweenService:Create(dot2, TweenInfo.new(0.4), {Position = UDim2.new(0, 26, 0.5, -8)}):Play()
+			wait(0.15)
+			TweenService:Create(dot3, TweenInfo.new(0.4), {Position = UDim2.new(0, 40, 0.5, -8)}):Play()
+			wait(0.4)
+			TweenService:Create(dot1, TweenInfo.new(0.4), {Position = UDim2.new(0, 12, 0.5, -4)}):Play()
+			TweenService:Create(dot2, TweenInfo.new(0.4), {Position = UDim2.new(0, 26, 0.5, -4)}):Play()
+			TweenService:Create(dot3, TweenInfo.new(0.4), {Position = UDim2.new(0, 40, 0.5, -4)}):Play()
+			wait(0.6)
+		end
+	end)
+end
 
 -- Hàm tìm câu trả lời
 local function getBotResponse(userMessage)
@@ -224,60 +1420,149 @@ local function getBotResponse(userMessage)
 		end
 	end
 	
-	-- Câu trả lời mặc định nếu không tìm thấy
 	local defaultResponses = {
-		"I'm not sure about that. Can you ask something else?",
-		"Hmm, I don't have info on that. Try asking about diamonds, scripting, or game tips!",
-		"Interesting question! But I might need to learn more about that. Ask me about gameplay or Lua!",
-		"I'm still learning! Try asking: 'How to find diamonds?' or 'How to script?'",
+		"I'm not sure about that. Can you ask something else? 🤔",
+		"Hmm, I don't have info on that. Try asking about gameplay or scripting! 💭",
+		"Interesting question! But I might need to learn more. Ask me about Roblox tips! 🎮",
+		"I'm still learning! Try: 'How to find diamonds?' or 'Best class?' 📚",
+		"That's a tough one! Ask me about quests, building, or combat! ⚔️",
 	}
 	return defaultResponses[math.random(1, #defaultResponses)]
 end
 
+-- Welcome message
+createMessage("Welcome to AI Helper V2! 🎉 I'm smarter and faster now!", true)
+wait(0.5)
+createMessage("Ask me anything about Roblox! Try 'help' to see what I can do! 😊", true)
+
 -- Xử lý gửi tin nhắn
 local function sendMessage()
 	local msg = textBox.Text
-	if msg ~= "" then
+	if msg ~= "" and msg ~= " " then
 		createMessage(msg, false)
 		textBox.Text = ""
-		wait(0.5)
+		
+		-- Show typing indicator
+		typingIndicator.Parent = chatContainer
+		typingIndicator.Visible = true
+		animateTyping()
+		chatContainer.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
+		chatContainer.CanvasPosition = Vector2.new(0, chatContainer.CanvasSize.Y.Offset)
+		
+		-- Simulate thinking time
+		wait(math.random(5, 15) / 10)
+		
+		-- Hide typing indicator
+		typingIndicator.Visible = false
+		typingIndicator.Parent = nil
+		
 		local response = getBotResponse(msg)
 		createMessage(response, true)
 	end
 end
 
-sendBtn.MouseButton1Click:Connect(sendMessage)
-textBox.FocusLost:Connect(function(enterPressed)
-	if enterPressed then sendMessage() end
+sendBtn.MouseButton1Click:Connect(function()
+	-- Button press animation
+	TweenService:Create(sendBtn, TweenInfo.new(0.1), {Size = UDim2.new(0, 40, 0, 40)}):Play()
+	wait(0.1)
+	TweenService:Create(sendBtn, TweenInfo.new(0.1), {Size = UDim2.new(0, 45, 0, 45)}):Play()
+	sendMessage()
 end)
 
--- Đóng UI
+textBox.FocusLost:Connect(function(enterPressed)
+	if enterPressed then 
+		sendMessage() 
+	end
+end)
+
+-- Đóng UI với animation
 closeBtn.MouseButton1Click:Connect(function()
+	TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+		Size = UDim2.new(0, 0, 0, 0),
+		Position = UDim2.new(0.5, 0, 0.5, 0)
+	}):Play()
+	wait(0.3)
 	screenGui:Destroy()
 end)
 
--- Thu gọn/Mở rộng
+-- Thu gọn/Mở rộng với smooth animation
 local isMinimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
 	isMinimized = not isMinimized
 	if isMinimized then
-		mainFrame:TweenSize(UDim2.new(0, 320, 0, 60), "Out", "Quad", 0.3, true)
-		minimizeBtn.Text = "+"
+		-- Thu gọn: chỉ hiện header
+		TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+			Size = UDim2.new(0, 340, 0, 65)
+		}):Play()
+		
+		-- Ẩn các phần tử
+		TweenService:Create(chatContainer, TweenInfo.new(0.3), {
+			BackgroundTransparency = 1,
+			ScrollBarImageTransparency = 1
+		}):Play()
+		TweenService:Create(inputContainer, TweenInfo.new(0.3), {
+			BackgroundTransparency = 1
+		}):Play()
+		TweenService:Create(counterLabel, TweenInfo.new(0.3), {
+			TextTransparency = 1
+		}):Play()
+		
+		for _, child in pairs(chatContainer:GetChildren()) do
+			if child:IsA("Frame") then
+				TweenService:Create(child, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+			end
+		end
+		
+		minimizeBtn.Text = "☰"
+		wait(0.3)
+		chatContainer.Visible = false
+		inputContainer.Visible = false
+		counterLabel.Visible = false
 	else
-		mainFrame:TweenSize(UDim2.new(0, 320, 0, 420), "Out", "Quad", 0.3, true)
+		-- Mở rộng: hiện tất cả
+		chatContainer.Visible = true
+		inputContainer.Visible = true
+		counterLabel.Visible = true
+		
+		TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+			Size = UDim2.new(0, 340, 0, 450)
+		}):Play()
+		
+		wait(0.2)
+		
+		TweenService:Create(chatContainer, TweenInfo.new(0.3), {
+			BackgroundTransparency = 1,
+			ScrollBarImageTransparency = 0
+		}):Play()
+		TweenService:Create(inputContainer, TweenInfo.new(0.3), {
+			BackgroundTransparency = 0
+		}):Play()
+		TweenService:Create(counterLabel, TweenInfo.new(0.3), {
+			TextTransparency = 0
+		}):Play()
+		
+		for _, child in pairs(chatContainer:GetChildren()) do
+			if child:IsA("Frame") then
+				TweenService:Create(child, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
+			end
+		end
+		
 		minimizeBtn.Text = "─"
 	end
 end)
 
--- Kéo thả UI
+-- Kéo thả UI (improved)
 local dragging, dragInput, dragStart, startPos
+
 local function update(input)
 	local delta = input.Position - dragStart
-	mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	TweenService:Create(mainFrame, TweenInfo.new(0.05, Enum.EasingStyle.Linear), {
+		Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	}):Play()
 end
 
 header.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		dragging = true
 		dragStart = input.Position
 		startPos = mainFrame.Position
@@ -291,7 +1576,7 @@ header.InputBegan:Connect(function(input)
 end)
 
 header.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement then
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 		dragInput = input
 	end
 end)
@@ -301,3 +1586,70 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
 		update(input)
 	end
 end)
+
+-- Notifications system
+local function showNotification(text)
+	local notif = Instance.new("Frame")
+	notif.Size = UDim2.new(0, 250, 0, 60)
+	notif.Position = UDim2.new(1, 10, 0, 10)
+	notif.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+	notif.BorderSizePixel = 0
+	notif.Parent = screenGui
+	
+	local notifCorner = Instance.new("UICorner")
+	notifCorner.CornerRadius = UDim.new(0, 12)
+	notifCorner.Parent = notif
+	
+	local notifStroke = Instance.new("UIStroke")
+	notifStroke.Color = Color3.fromRGB(0, 200, 255)
+	notifStroke.Thickness = 2
+	notifStroke.Parent = notif
+	
+	local notifText = Instance.new("TextLabel")
+	notifText.Size = UDim2.new(1, -20, 1, 0)
+	notifText.Position = UDim2.new(0, 10, 0, 0)
+	notifText.BackgroundTransparency = 1
+	notifText.Text = text
+	notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
+	notifText.TextSize = 13
+	notifText.Font = Enum.Font.Gotham
+	notifText.TextWrapped = true
+	notifText.Parent = notif
+	
+	-- Slide in
+	TweenService:Create(notif, TweenInfo.new(0.4, Enum.EasingStyle.Back), {
+		Position = UDim2.new(1, -260, 0, 10)
+	}):Play()
+	
+	-- Auto hide
+	wait(3)
+	TweenService:Create(notif, TweenInfo.new(0.3), {
+		Position = UDim2.new(1, 10, 0, 10)
+	}):Play()
+	wait(0.3)
+	notif:Destroy()
+end
+
+-- Easter egg: Secret command
+textBox:GetPropertyChangedSignal("Text"):Connect(function()
+	if string.lower(textBox.Text) == "/secret" then
+		showNotification("🎉 Secret unlocked! V2 is awesome!")
+		textBox.Text = ""
+	elseif string.lower(textBox.Text) == "/clear" then
+		for _, child in pairs(chatContainer:GetChildren()) do
+			if child:IsA("Frame") then
+				child:Destroy()
+			end
+		end
+		msgCount = 0
+		counterLabel.Text = "Messages: 0"
+		textBox.Text = ""
+		createMessage("Chat cleared! Ready for new conversation! 🧹", true)
+	end
+end)
+
+-- Show welcome notification
+wait(1)
+showNotification("💡 Tip: Type /secret or /clear for special commands!")
+
+print("🤖 Roblox AI Helper V2 loaded successfully!")
